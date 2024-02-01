@@ -10,6 +10,8 @@ public class Board extends Main{
     public long whiteKingBoard;
     public long whiteQueenBoard;
 
+    public long whiteOccBoard;
+
 
     //black
     public long blackPawnBoard;
@@ -18,9 +20,9 @@ public class Board extends Main{
     public long blackRookBoard;
     public long blackQueenBoard;
     public long blackKingBoard;
+    public long blackOccBoard;
 
-    //Make holding board
-    public long occBoard;
+
 
     // Bitmasks for each file
     public static final long FILE_A = 0x0101010101010101L;
@@ -47,13 +49,14 @@ public class Board extends Main{
     //constructor
     public Board() {
         //initialize an empty board
-        whitePawnBoard = 0L;
-        whiteKnightBoard = 0L;
-        whiteRookBoard = 0L;
-        whiteBishopBoard = 0L;
-        whiteKingBoard = 0L;
-        whiteQueenBoard = 0L;
-        occBoard = 0L;
+        //whitePawnBoard = 0L;
+        //whiteKnightBoard = 0L;
+        //whiteRookBoard = 0L;
+        //whiteBishopBoard = 0L;
+        //whiteKingBoard = 0L;
+        //whiteQueenBoard = 0L;
+        //whiteOccBoard = 0l;
+        //occBoard = 0L;
     }
 
     //CHANGES BOARD STRING INTO BITBOARDS
@@ -68,51 +71,51 @@ public class Board extends Main{
                     break;
                 case 'P':
                     whitePawnBoard |= bitBoard << i;
-                    occBoard |= bitBoard << i;
+                    whiteOccBoard |= bitBoard << i;
                     break;
                 case 'N':
                     whiteKnightBoard |= bitBoard << i;
-                    occBoard |= bitBoard << i;
+                    whiteOccBoard |= bitBoard << i;
                     break;
                 case 'B':
                     whiteBishopBoard |= bitBoard << i;
-                    occBoard |= bitBoard << i;
+                    whiteOccBoard |= bitBoard << i;
                     break;
                 case 'R':
                     whiteRookBoard |= bitBoard << i;
-                    occBoard |= bitBoard << i;
+                    whiteOccBoard |= bitBoard << i;
                     break;
                 case 'Q':
                     whiteQueenBoard |= bitBoard << i;
-                    occBoard |= bitBoard << i;
+                    whiteOccBoard |= bitBoard << i;
                     break;
                 case 'K':
                     whiteKingBoard |= bitBoard << i;
-                    occBoard |= bitBoard << i;
+                    whiteOccBoard |= bitBoard << i;
                     break;
                 case 'p':
                     blackPawnBoard |= bitBoard << i;
-                    occBoard |= bitBoard << i;
+                    blackOccBoard |= bitBoard << i;
                     break;
                 case 'n':
                     blackKnightBoard |= bitBoard << i;
-                    occBoard |= bitBoard << i;
+                    blackOccBoard |= bitBoard << i;
                     break;
                 case 'b':
                     blackBishopBoard |= bitBoard << i;
-                    occBoard |= bitBoard << i;
+                    blackOccBoard |= bitBoard << i;
                     break;
                 case 'r':
                     blackRookBoard |= bitBoard << i;
-                    occBoard |= bitBoard << i;
+                    blackOccBoard |= bitBoard << i;
                     break;
                 case 'q':
                     blackQueenBoard |= bitBoard << i;
-                    occBoard |= bitBoard << i;
+                    blackOccBoard |= bitBoard << i;
                     break;
                 case 'k':
                     blackKingBoard |= bitBoard << i;
-                    occBoard |= bitBoard << i;
+                    blackOccBoard |= bitBoard << i;
                     break;
             }
         }
@@ -158,58 +161,6 @@ public class Board extends Main{
                 System.out.print(piece + " ");
             }
             System.out.println();
-        }
-    }
-
-
-
-
-    //function to set a piece NOT CURRENTLY IN USE, JUST ANOTHER OPTION
-
-    public void setPiece(char piece, int place) { //REPLACE CHAR PIECE WITH ENUM PIECE?
-
-        long squareMask = 1L << place;  //this sets the bitmask to have a 1 at the square "Place"
-        occBoard |= squareMask; // Mark the square as occupied by adding the squaremask 1 to it
-
-        // |= means or for bits. so 0101 |= 0110 will equal 0111
-
-        switch (piece) {
-            case 'P':
-                whitePawnBoard |= squareMask;
-                break;
-            case 'N':
-                whiteKnightBoard |= squareMask;
-                break;
-            case 'B':
-                whiteBishopBoard |= squareMask;
-                break;
-            case 'R':
-                whiteRookBoard |= squareMask;
-                break;
-            case 'Q':
-                whiteQueenBoard |= squareMask;
-                break;
-            case 'K':
-                whiteKingBoard |= squareMask;
-                break;
-            case 'p':
-                blackPawnBoard |= squareMask;
-                break;
-            case 'n':
-                blackKnightBoard |= squareMask;
-                break;
-            case 'b':
-                blackBishopBoard |= squareMask;
-                break;
-            case 'r':
-                blackRookBoard |= squareMask;
-                break;
-            case 'q':
-                blackQueenBoard |= squareMask;
-                break;
-            case 'k':
-                blackKingBoard |= squareMask;
-                break;
         }
     }
 }
