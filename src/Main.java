@@ -3,25 +3,15 @@ public class Main {
 
         Board chessBoard = new Board();
 
-        //bitboard through string
-        String board =
-                        "--------" +
-                        "---R-r--" +
-                        "----P---" +
-                        "--------" +
-                        "--------" +
-                        "---q-Q--" +
-                        "P---p---" +
-                        "--------";
         //how would we determine the differences if two pawns move to the same square
-        chessBoard.stringToBitBoard(board);
+        chessBoard.stringToBitBoard();
 
 
         Move move = new Move();
 
 //TEST PAWN MOVES
-        //chessBoard.whitePawnBoard = move.pawnMove(chessBoard.whitePawnBoard, chessBoard.whiteOccBoard, chessBoard.blackOccBoard,true);
-        chessBoard.blackPawnBoard = move.pawnMove(chessBoard.blackPawnBoard, chessBoard.whiteOccBoard, chessBoard.blackOccBoard,false);
+        //chessBoard.whitePawnBoard = move.whitePawnMove(chessBoard.whitePawnBoard, chessBoard.whiteOccBoard, chessBoard.blackOccBoard);
+        chessBoard.blackPawnBoard = move.blackPawnMove(chessBoard.blackPawnBoard, chessBoard.whiteOccBoard, chessBoard.blackOccBoard);
 
 //TEST Knight MOVES
         //chessBoard.whiteKnightBoard = move.knightMove(chessBoard.whiteKnightBoard, chessBoard.occBoard);

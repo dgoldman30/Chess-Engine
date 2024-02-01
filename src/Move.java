@@ -23,23 +23,12 @@ public class Move {
         return result;
     }
 
-    public Long pawnMove(Long pawns, Long whiteOcc, Long blackOcc, boolean isWhite){
+    public Long whitePawnMove(Long pawns, Long whiteOcc, Long blackOcc){
 
         //current bug: both sides only capture black pieces
 
         //total occ board
         Long occ = whiteOcc |= blackOcc;
-        //set opposing team occupancy
-        Long oppOcc = isWhite ? blackOcc : whiteOcc;
-
-
-        if(!isWhite){
-            //rotate the board 180
-            pawns = rotate180(pawns);
-            occ = rotate180(occ);
-            oppOcc = whiteOcc;
-            oppOcc = rotate180(oppOcc);
-        }
 
         //move one forward
         Long singleMove = (pawns >> 8) & ~occ;
@@ -48,44 +37,33 @@ public class Move {
         long doubleMoves = ((singleMove & Board.RANK_6) >> 8) & ~occ;
 
         //move diagonal to left
-        long captureLeft = (pawns >> (7)) & ~Board.FILE_A & oppOcc;
+        long captureLeft = (pawns >> (7)) & ~Board.FILE_A & blackOcc;
 
         //move diagonal to right
-        long captureRight = (pawns >> (9)) & ~Board.FILE_H & oppOcc;
+        long captureRight = (pawns >> (9)) & ~Board.FILE_H & blackOcc;
 
-        //combine all possible moves
-        Long allMoves = singleMove | doubleMoves | captureLeft | captureRight;
-
-
-        if(!isWhite){
-            //rotate the board back 180
-            allMoves = rotate180(allMoves);
-        }
-
-
-        return allMoves;
+        return singleMove | doubleMoves | captureLeft | captureRight;
     }
 
-    /*public Long pawnMove(Long pawns, Long occ, boolean isWhite) {
-        // Define shift direction based on the color
-        int shiftDirection = isWhite ? 8 : 8;
+    public Long blackPawnMove(Long pawns, Long whiteOcc, Long blackOcc){
 
-        // Move one forward
-        Long singleMove = (pawns >> shiftDirection) & ~occ;
+        //total occ board
+        Long occ = whiteOcc |= blackOcc;
 
-        // Move 2 forward if the single move ended on the appropriate rank
-        long doubleMoves = ((singleMove & (isWhite ? Board.RANK_6 : Board.RANK_3)) << shiftDirection) & ~occ;
+        //move one forward
+        Long singleMove = (pawns << 8) & ~occ;
 
-        // Move diagonal to the left
-        long captureLeft = (pawns << (shiftDirection + 1)) & ~Board.FILE_A & occ;
+        //move one more forward if single move ended on correct rank
+        long doubleMoves = ((singleMove & Board.RANK_6) << 8) & ~occ;
 
-        // Move diagonal to the right
-        long captureRight = (pawns << (shiftDirection - 1)) & ~Board.FILE_H & occ;
+        //move diagonal to left
+        long captureLeft = (pawns << (7)) & ~Board.FILE_A & whiteOcc;
 
-        // Return bitboard containing all possibilities
-        //return singleMove | doubleMoves | captureLeft | captureRight;
-        return singleMove;
-    }*/
+        //move diagonal to right
+        long captureRight = (pawns << (9)) & ~Board.FILE_H & whiteOcc;
+
+        return singleMove | doubleMoves | captureLeft | captureRight;
+    }
 
     public Long knightMove(Long knights, Long occ){
         long moves = 0L;

@@ -1,5 +1,17 @@
 public class Board {
 
+    //bitboard through string
+    String str =
+                    "rnbqkbnr" +
+                    "----p---" +
+                    "---k-Q--" +
+                    "--------" +
+                    "--------" +
+                    "--q-Q---" +
+                    "---P----" +
+                    "RNBKQBNR";
+
+
     //set the bitboards for each type
 
     //white
@@ -120,7 +132,7 @@ public class Board {
     }
 
     //CHANGES BOARD STRING INTO BITBOARDS
-    public void stringToBitBoard(String str){
+    public void stringToBitBoard(){
 
         Long bitBoard = 0000000000000000000000000000000000000000000000000000000000000001L;
         //need to shift the 1 to the place of the char and then add it to the bitBoard for the individual piece.
