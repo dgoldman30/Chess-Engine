@@ -36,7 +36,7 @@ public class Main {
         //chessBoard.whiteQueenBoard = move.queenMove(chessBoard.whiteQueenBoard, chessBoard.occBoard);
 
         //Print Board
-        chessBoard.printBoard();
+        System.out.println(chessBoard);
     }
 }
 

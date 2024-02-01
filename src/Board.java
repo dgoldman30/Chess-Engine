@@ -1,4 +1,4 @@
-public class Board extends Main{
+public class Board {
 
     //set the bitboards for each type
 
@@ -44,9 +44,25 @@ public class Board extends Main{
     public static final long RANK_7 = RANK_1 << 48;
     public static final long RANK_8 = RANK_1 << 56;
 
+    //all args constructor
+    public Board(long whitePawnBoard, long whiteKnightBoard, long whiteRookBoard, long whiteBishopBoard, long whiteKingBoard, long whiteQueenBoard, long whiteOccBoard, long blackPawnBoard, long blackKnightBoard, long blackBishopBoard, long blackRookBoard, long blackQueenBoard, long blackKingBoard, long blackOccBoard) {
+        this.whitePawnBoard = whitePawnBoard;
+        this.whiteKnightBoard = whiteKnightBoard;
+        this.whiteRookBoard = whiteRookBoard;
+        this.whiteBishopBoard = whiteBishopBoard;
+        this.whiteKingBoard = whiteKingBoard;
+        this.whiteQueenBoard = whiteQueenBoard;
+        this.whiteOccBoard = whiteOccBoard;
+        this.blackPawnBoard = blackPawnBoard;
+        this.blackKnightBoard = blackKnightBoard;
+        this.blackBishopBoard = blackBishopBoard;
+        this.blackRookBoard = blackRookBoard;
+        this.blackQueenBoard = blackQueenBoard;
+        this.blackKingBoard = blackKingBoard;
+        this.blackOccBoard = blackOccBoard;
+    }
 
-
-    //constructor
+    //empty constructor
     public Board() {
         //initialize an empty board
         //whitePawnBoard = 0L;
@@ -57,6 +73,50 @@ public class Board extends Main{
         //whiteQueenBoard = 0L;
         //whiteOccBoard = 0l;
         //occBoard = 0L;
+    }
+
+    @Override
+    public String toString() {
+        String ret = "";
+        for (int rank = 7; rank >= 0; rank--) {
+            for (int file = 0; file < 8; file++) {
+                int square = rank * 8 + file;
+                long squareMask = 1L << square;
+
+                char piece = '-';//empty square
+
+                //place piece if bitboard is occupied for the given piece
+                if ((whitePawnBoard & squareMask) != 0) {
+                    piece = 'P';
+                } else if ((whiteKnightBoard & squareMask) != 0) {
+                    piece = 'N';
+                } else if ((whiteBishopBoard & squareMask) != 0) {
+                    piece = 'B';
+                } else if ((whiteRookBoard & squareMask) != 0) {
+                    piece = 'R';
+                } else if ((whiteQueenBoard & squareMask) != 0) {
+                    piece = 'Q';
+                } else if ((whiteKingBoard & squareMask) != 0) {
+                    piece = 'K';
+                }else if ((blackPawnBoard & squareMask) != 0) {
+                    piece = 'p';
+                } else if ((blackKnightBoard & squareMask) != 0) {
+                    piece = 'n';
+                } else if ((blackBishopBoard & squareMask) != 0) {
+                    piece = 'b';
+                } else if ((blackRookBoard & squareMask) != 0) {
+                    piece = 'r';
+                } else if ((blackQueenBoard & squareMask) != 0) {
+                    piece = 'q';
+                } else if ((blackKingBoard & squareMask) != 0) {
+                    piece = 'k';
+                }
+                ret += piece + " ";
+            }
+            System.out.println();
+            ret += "\n";
+        }
+        return ret;
     }
 
     //CHANGES BOARD STRING INTO BITBOARDS
@@ -122,45 +182,4 @@ public class Board extends Main{
 
     }
 
-
-    // Print the board state
-    public void printBoard() {
-        for (int rank = 7; rank >= 0; rank--) {
-            for (int file = 0; file < 8; file++) {
-                int square = rank * 8 + file;
-                long squareMask = 1L << square;
-
-                char piece = '-';//empty square
-
-                //place piece if bitboard is occupied for the given piece
-                if ((whitePawnBoard & squareMask) != 0) {
-                    piece = 'P';
-                } else if ((whiteKnightBoard & squareMask) != 0) {
-                    piece = 'N';
-                } else if ((whiteBishopBoard & squareMask) != 0) {
-                    piece = 'B';
-                } else if ((whiteRookBoard & squareMask) != 0) {
-                    piece = 'R';
-                } else if ((whiteQueenBoard & squareMask) != 0) {
-                    piece = 'Q';
-                } else if ((whiteKingBoard & squareMask) != 0) {
-                    piece = 'K';
-                }else if ((blackPawnBoard & squareMask) != 0) {
-                    piece = 'p';
-                } else if ((blackKnightBoard & squareMask) != 0) {
-                    piece = 'n';
-                } else if ((blackBishopBoard & squareMask) != 0) {
-                    piece = 'b';
-                } else if ((blackRookBoard & squareMask) != 0) {
-                    piece = 'r';
-                } else if ((blackQueenBoard & squareMask) != 0) {
-                    piece = 'q';
-                } else if ((blackKingBoard & squareMask) != 0) {
-                    piece = 'k';
-                }
-                System.out.print(piece + " ");
-            }
-            System.out.println();
-        }
-    }
 }
