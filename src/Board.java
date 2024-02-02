@@ -6,10 +6,10 @@ public class Board {
                     "--------" +
                     "--------" +
                     "--------" +
+                    "-N------" +
                     "--------" +
                     "--------" +
-                    "--------" +
-                    "---p----";
+                    "--------";
 
     //set the bitboards for each type
 
@@ -34,7 +34,7 @@ public class Board {
     public long blackOccBoard;
 
 
-    public long occBoard = blackOccBoard |= whiteOccBoard;
+    public long occBoard = blackOccBoard | whiteOccBoard;
 
 
 

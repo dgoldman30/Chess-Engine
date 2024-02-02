@@ -14,7 +14,7 @@ public class Main {
         chessBoard.blackPawnBoard = move.blackPawnMove(chessBoard.blackPawnBoard, chessBoard.whiteOccBoard, chessBoard.blackOccBoard);
 
 //TEST Knight MOVES
-        //chessBoard.whiteKnightBoard = move.knightMove(chessBoard.whiteKnightBoard, chessBoard.occBoard);
+        chessBoard.whiteKnightBoard = move.knightMove(chessBoard.whiteKnightBoard, chessBoard.occBoard);
         //chessBoard.blackKnightBoard = move.knightMove(chessBoard.blackKnightBoard, chessBoard.occBoard);
 
 //TEST Bishop MOVES DOESNT WORK, NEED TO FIX ask mr.Chat, issue with board boundaries

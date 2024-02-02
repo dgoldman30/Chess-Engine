@@ -26,7 +26,7 @@ public class Move {
     public Long whitePawnMove(Long pawns, Long whiteOcc, Long blackOcc){
 
         //total occ board
-        Long occ = whiteOcc |= blackOcc;
+        Long occ = blackOcc | whiteOcc;
 
         //move one forward
         Long singleMove = (pawns >> 8) & ~occ;
@@ -46,7 +46,7 @@ public class Move {
     public Long blackPawnMove(Long pawns, Long whiteOcc, Long blackOcc){
 
         //total occ board
-        Long occ = whiteOcc |= blackOcc;
+        Long occ = blackOcc | whiteOcc;
 
         //move one forward
         Long singleMove = (pawns << 8) & ~occ;
