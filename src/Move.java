@@ -25,8 +25,6 @@ public class Move {
 
     public Long whitePawnMove(Long pawns, Long whiteOcc, Long blackOcc){
 
-        //current bug: both sides only capture black pieces
-
         //total occ board
         Long occ = whiteOcc |= blackOcc;
 
@@ -54,7 +52,7 @@ public class Move {
         Long singleMove = (pawns << 8) & ~occ;
 
         //move one more forward if single move ended on correct rank
-        long doubleMoves = ((singleMove & Board.RANK_6) << 8) & ~occ;
+        long doubleMoves = ((singleMove & Board.RANK_3) << 8) & ~occ;
 
         //move diagonal to left
         long captureLeft = (pawns << (7)) & ~Board.FILE_A & whiteOcc;
@@ -65,6 +63,7 @@ public class Move {
         return singleMove | doubleMoves | captureLeft | captureRight;
     }
 
+    //knightMove wraps around board when called on the perimeter
     public Long knightMove(Long knights, Long occ){
         long moves = 0L;
 
@@ -78,72 +77,11 @@ public class Move {
     }
 
     public long bishopMove(long bishopBoard, long occ) {
-        long moves = 0L;
-
-        // Bishop move offsets
-        int[] bishopOffsets = { -9, -7, 7, 9 };
-
-        for (int offset : bishopOffsets) {
-            long potentialMoves = bishopBoard;
-
-            while (true) {
-                // Calculate potential moves
-                potentialMoves = (potentialMoves << offset) & ~(1L << 64); // Clear bit at 64th position
-                potentialMoves = (potentialMoves >>> -offset) & ~(1L << -1); // Clear bit at -1st position
-
-                // Check if there are no more valid moves in this direction or out of the board
-                if (potentialMoves == 0L || (potentialMoves & occ) != 0L) {
-                    break;
-                }
-
-                // Add potential moves to the moves bitmask
-                moves |= potentialMoves;
-            }
-        }
-
-        // Remove squares already occupied by own pieces
-        moves &= ~bishopBoard;
-
-        return moves;
+        return bishopBoard;
     }
 
     public long rookMove(long rookBoard, long occ) {
         long moves = 0L;
-
-        // Rook move offsets
-        int[] rookOffsets = {1, -1, 8, -8};
-
-        for (int offset : rookOffsets) {
-            long potentialMoves = rookBoard;
-
-            while (true) {
-                // Clear the bits of the rook's file if moving horizontally
-                if (offset == 1 || offset == -1) {
-                    potentialMoves &= ~Board.FILE_A & ~Board.FILE_H;
-                }
-
-                // Clear the bits of the rook's rank if moving vertically
-                if (offset == 8 || offset == -8) {
-                    potentialMoves &= ~Board.RANK_1 & ~Board.RANK_8;
-                }
-
-                // Calculate potential moves
-                potentialMoves = (potentialMoves << offset) | (potentialMoves >>> -offset);
-
-                // Check if there are no more valid moves in this direction
-                if (potentialMoves == 0L) {
-                    break;
-                }
-
-                // Add potential moves to the moves bitmask
-                moves |= potentialMoves;
-
-                // Check if potential moves are blocked by another piece
-                if ((potentialMoves & occ) != 0L) {
-                    break;
-                }
-            }
-        }
 
         return moves;
     }

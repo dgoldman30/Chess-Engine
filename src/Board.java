@@ -1,16 +1,15 @@
 public class Board {
 
-    //bitboard through string
+    //UPPERCASE IS WHITE AND STARTS AT THE BOTTOM OF THIS STRING AND MOVES UP
     String str =
-                    "rnbqkbnr" +
-                    "----p---" +
-                    "---k-Q--" +
                     "--------" +
                     "--------" +
-                    "--q-Q---" +
-                    "---P----" +
-                    "RNBKQBNR";
-
+                    "--------" +
+                    "--------" +
+                    "--------" +
+                    "--------" +
+                    "--------" +
+                    "---p----";
 
     //set the bitboards for each type
 
@@ -33,6 +32,9 @@ public class Board {
     public long blackQueenBoard;
     public long blackKingBoard;
     public long blackOccBoard;
+
+
+    public long occBoard = blackOccBoard |= whiteOccBoard;
 
 
 
