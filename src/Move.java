@@ -69,21 +69,26 @@ public class Move {
 
         // Knight move offsets
         int[] knightOffsets = {6, 10, 15, 17 };
-        for (int offset : knightOffsets) {
-            moves |= (knights >> offset) & ~occ;
-            moves |= (knights << offset) & ~occ;
-        }
+
+        moves |= (knights >> 6) & ~occ & ~(Board.FILE_A | Board.FILE_B); //& will check the end position
+        moves |= (knights >> 10) & ~occ & ~(Board.FILE_G | Board.FILE_H);
+        moves |= (knights >> 15) & ~occ & ~Board.FILE_A;
+        moves |= (knights >> 17) & ~occ & ~Board.FILE_H;
+
+        moves |= (knights << 6) & ~occ & ~(Board.FILE_G | Board.FILE_H);
+        moves |= (knights << 10) & ~occ & ~(Board.FILE_A | Board.FILE_B);
+        moves |= (knights << 15) & ~occ & ~Board.FILE_H;
+        moves |= (knights << 17) & ~occ & ~Board.FILE_A;
         return moves;
     }
+
 
     public long bishopMove(long bishopBoard, long occ) {
         return bishopBoard;
     }
 
     public long rookMove(long rookBoard, long occ) {
-        long moves = 0L;
-
-        return moves;
+        return 0L;
     }
 
 
@@ -94,6 +99,15 @@ public class Move {
 
         // Combine the moves of the rook and bishop
         return rookMoves | bishopMoves;
+    }
+
+    public long kingMove(long kingBoard, long occ) {
+        return 0L;
+    }
+
+//Tests to see if move will make own king in check
+    public boolean inCheck(){
+        return false;
     }
 
 

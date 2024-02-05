@@ -3,12 +3,12 @@ public class Board {
     //UPPERCASE IS WHITE AND STARTS AT THE BOTTOM OF THIS STRING AND MOVES UP
     String str =
                     "--------" +
+                    "---N----" +
                     "--------" +
                     "--------" +
                     "--------" +
-                    "-N------" +
                     "--------" +
-                    "--------" +
+                    "-------n" +
                     "--------";
 
     //set the bitboards for each type
