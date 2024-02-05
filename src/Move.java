@@ -1,10 +1,24 @@
+import java.util.ArrayList;
+import java.util.List;
+
 public class Move {
 
-    //May need to pass add instance of chessboard
+//list of all available moves
+    public List<Long> moves = new ArrayList<>();
 
 
     //this will have different return statement later
-    public void generateAllMoves(){
+    public void generateAllMoves(Long whiteOcc, Long blackOcc, Long occ, Long whitePawn, Long blackPawn, Long whiteKnights,Long blackKnights, Long whiteKings, Long blackKings){
+        moves.add(whitePawnMove(whitePawn, whiteOcc, blackOcc));
+        moves.add(knightMove(whiteKnights, occ));
+        moves.add(kingMove(whiteKings, occ));
+
+
+        moves.add(blackPawnMove(blackPawn, whiteOcc, blackOcc));
+        moves.add(knightMove(blackKnights, occ));
+        moves.add(kingMove(blackKings, occ));
+
+
     }
     public static long rotate180(long bitboard) {
         long result = 0L;
@@ -102,6 +116,8 @@ public class Move {
     }
 
     public long kingMove(long kingBoard, long occ) {
+        //DOESNT CHECK FOR CAPTURES OR FOR CHECK
+
         //forward
         Long singleMove = (kingBoard >> 8) & ~occ;
         Long diagLeftMove = (kingBoard >> 7) & ~occ & ~Board.FILE_A;
@@ -125,5 +141,8 @@ public class Move {
 
 
 }
+
+//Later on: if we want to speed up move generaton functions, make king and knight lookup instead of calculation
+
 
 //use magic bitboard for sliding pieces like rook and bishop

@@ -6,7 +6,6 @@ public class Main {
         //how would we determine the differences if two pawns move to the same square
         chessBoard.stringToBitBoard();
 
-
         Move move = new Move();
 
 //TEST PAWN MOVES
