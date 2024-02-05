@@ -102,7 +102,19 @@ public class Move {
     }
 
     public long kingMove(long kingBoard, long occ) {
-        return 0L;
+        //forward
+        Long singleMove = (kingBoard >> 8) & ~occ;
+        Long diagLeftMove = (kingBoard >> 7) & ~occ & ~Board.FILE_A;
+        Long diagrightMove = (kingBoard >> 9) & ~occ & ~Board.FILE_H;
+        //back
+        Long backMove = (kingBoard << 8) & ~occ;
+        Long backLeftMove = (kingBoard << 7) & ~occ & ~Board.FILE_H;
+        Long backrightMove = (kingBoard << 9) & ~occ & ~Board.FILE_A;
+        //inline
+        Long rightMove = (kingBoard >> 1) & ~occ & ~Board.FILE_H;
+        Long LeftMove = (kingBoard << 1) & ~occ& ~Board.FILE_A;
+
+        return singleMove | diagLeftMove| diagrightMove| backMove | backLeftMove | backrightMove | rightMove | LeftMove;
     }
 
 //Tests to see if move will make own king in check

@@ -27,7 +27,7 @@ public class Main {
         //chessBoard.whiteQueenBoard = move.queenMove(chessBoard.whiteQueenBoard, chessBoard.occBoard);
 
 //TEST King MOVES
-
+        chessBoard.whiteKingBoard = move.kingMove(chessBoard.whiteKingBoard, chessBoard.occBoard);
 
 
         //Print Board
