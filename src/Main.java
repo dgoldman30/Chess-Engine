@@ -13,8 +13,8 @@ public class Main {
         //chessBoard.blackPawnBoard = move.blackPawnMove(chessBoard.blackPawnBoard, chessBoard.whiteOccBoard, chessBoard.blackOccBoard);
 
 //TEST Knight MOVES
-        chessBoard.whiteKnightBoard = move.knightMove(chessBoard.whiteKnightBoard, chessBoard.occBoard);
-        chessBoard.blackKnightBoard = move.knightMove(chessBoard.blackKnightBoard, chessBoard.occBoard);
+        chessBoard.whiteKnightBoard = move.whiteKnightMove(chessBoard.whiteKnightBoard, chessBoard.whiteOccBoard);
+        chessBoard.blackKnightBoard = move.blackKnightMove(chessBoard.blackKnightBoard, chessBoard.blackOccBoard);
 
 //TEST Bishop MOVES DOESNT WORK, NEED TO FIX ask mr.Chat, issue with board boundaries
         //chessBoard.whiteBishopBoard = move.bishopMove(chessBoard.whiteBishopBoard, chessBoard.occBoard);
@@ -26,7 +26,7 @@ public class Main {
         //chessBoard.whiteQueenBoard = move.queenMove(chessBoard.whiteQueenBoard, chessBoard.occBoard);
 
 //TEST King MOVES
-        chessBoard.whiteKingBoard = move.kingMove(chessBoard.whiteKingBoard, chessBoard.occBoard);
+        //chessBoard.whiteKingBoard = move.kingMove(chessBoard.whiteKingBoard, chessBoard.occBoard);
 
 
         //Print Board
@@ -44,9 +44,3 @@ public class Main {
 //DeBruijn sequences
 //used to find the board position of a bit
 //MSB-most signifigant bit LSB- least signifigant bit
-
-
-
-//make board represetation
-//move generator, fetch legal move
-//

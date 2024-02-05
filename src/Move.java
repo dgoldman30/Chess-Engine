@@ -8,17 +8,16 @@ public class Move {
 
 
     //this will have different return statement later
-    public void generateAllMoves(Long whiteOcc, Long blackOcc, Long occ, Long whitePawn, Long blackPawn, Long whiteKnights,Long blackKnights, Long whiteKings, Long blackKings){
+    public void generateWhiteMoves(Long whiteOcc, Long blackOcc, Long whitePawn, Long whiteKnights, Long whiteKings){
         moves.add(whitePawnMove(whitePawn, whiteOcc, blackOcc));
-        moves.add(knightMove(whiteKnights, occ));
-        moves.add(kingMove(whiteKings, occ));
+        moves.add(whiteKnightMove(whiteKnights, whiteOcc));
+        moves.add(whiteKingMove(whiteKings, whiteOcc));
+    }
 
-
+    public void generateBlackMoves(Long whiteOcc, Long blackOcc, Long blackPawn,Long blackKnights, Long blackKings){
         moves.add(blackPawnMove(blackPawn, whiteOcc, blackOcc));
-        moves.add(knightMove(blackKnights, occ));
-        moves.add(kingMove(blackKings, occ));
-
-
+        moves.add(blackKnightMove(blackKnights, blackOcc));
+        moves.add(blackKingMove(blackKings, blackOcc));
     }
     public static long rotate180(long bitboard) {
         long result = 0L;
@@ -77,22 +76,33 @@ public class Move {
         return singleMove | doubleMoves | captureLeft | captureRight;
     }
 
-    //knightMove wraps around board when called on the perimeter
-    public Long knightMove(Long knights, Long occ){
+    public Long whiteKnightMove(Long knights, Long whiteOcc){
         long moves = 0L;
 
-        // Knight move offsets
-        int[] knightOffsets = {6, 10, 15, 17 };
+        moves |= (knights >> 6) & ~whiteOcc & ~(Board.FILE_A | Board.FILE_B); //& will check the end position
+        moves |= (knights >> 10) & ~whiteOcc & ~(Board.FILE_G | Board.FILE_H);
+        moves |= (knights >> 15) & ~whiteOcc & ~Board.FILE_A;
+        moves |= (knights >> 17) & ~whiteOcc & ~Board.FILE_H;
 
-        moves |= (knights >> 6) & ~occ & ~(Board.FILE_A | Board.FILE_B); //& will check the end position
-        moves |= (knights >> 10) & ~occ & ~(Board.FILE_G | Board.FILE_H);
-        moves |= (knights >> 15) & ~occ & ~Board.FILE_A;
-        moves |= (knights >> 17) & ~occ & ~Board.FILE_H;
+        moves |= (knights << 6) & ~whiteOcc & ~(Board.FILE_G | Board.FILE_H);
+        moves |= (knights << 10) & ~whiteOcc & ~(Board.FILE_A | Board.FILE_B);
+        moves |= (knights << 15) & ~whiteOcc & ~Board.FILE_H;
+        moves |= (knights << 17) & ~whiteOcc & ~Board.FILE_A;
+        return moves;
+    }
 
-        moves |= (knights << 6) & ~occ & ~(Board.FILE_G | Board.FILE_H);
-        moves |= (knights << 10) & ~occ & ~(Board.FILE_A | Board.FILE_B);
-        moves |= (knights << 15) & ~occ & ~Board.FILE_H;
-        moves |= (knights << 17) & ~occ & ~Board.FILE_A;
+    public Long blackKnightMove(Long knights, Long blackOcc){
+        long moves = 0L;
+
+        moves |= (knights >> 6) & ~blackOcc & ~(Board.FILE_A | Board.FILE_B); //& will check the end position
+        moves |= (knights >> 10) & ~blackOcc & ~(Board.FILE_G | Board.FILE_H);
+        moves |= (knights >> 15) & ~blackOcc & ~Board.FILE_A;
+        moves |= (knights >> 17) & ~blackOcc & ~Board.FILE_H;
+
+        moves |= (knights << 6) & ~blackOcc & ~(Board.FILE_G | Board.FILE_H);
+        moves |= (knights << 10) & ~blackOcc & ~(Board.FILE_A | Board.FILE_B);
+        moves |= (knights << 15) & ~blackOcc & ~Board.FILE_H;
+        moves |= (knights << 17) & ~blackOcc & ~Board.FILE_A;
         return moves;
     }
 
@@ -115,27 +125,48 @@ public class Move {
         return rookMoves | bishopMoves;
     }
 
-    public long kingMove(long kingBoard, long occ) {
-        //DOESNT CHECK FOR CAPTURES OR FOR CHECK
+    public long whiteKingMove(long kingBoard, long whiteOcc) {
 
         //forward
-        Long singleMove = (kingBoard >> 8) & ~occ;
-        Long diagLeftMove = (kingBoard >> 7) & ~occ & ~Board.FILE_A;
-        Long diagrightMove = (kingBoard >> 9) & ~occ & ~Board.FILE_H;
+        Long singleMove = (kingBoard >> 8) & ~whiteOcc;
+        Long diagLeftMove = (kingBoard >> 7) & ~whiteOcc & ~Board.FILE_A;
+        Long diagrightMove = (kingBoard >> 9) & ~whiteOcc & ~Board.FILE_H;
         //back
-        Long backMove = (kingBoard << 8) & ~occ;
-        Long backLeftMove = (kingBoard << 7) & ~occ & ~Board.FILE_H;
-        Long backrightMove = (kingBoard << 9) & ~occ & ~Board.FILE_A;
+        Long backMove = (kingBoard << 8) & ~whiteOcc;
+        Long backLeftMove = (kingBoard << 7) & ~whiteOcc & ~Board.FILE_H;
+        Long backrightMove = (kingBoard << 9) & ~whiteOcc & ~Board.FILE_A;
         //inline
-        Long rightMove = (kingBoard >> 1) & ~occ & ~Board.FILE_H;
-        Long LeftMove = (kingBoard << 1) & ~occ& ~Board.FILE_A;
+        Long rightMove = (kingBoard >> 1) & ~whiteOcc & ~Board.FILE_H;
+        Long LeftMove = (kingBoard << 1) & ~whiteOcc & ~Board.FILE_A;
+
+        return singleMove | diagLeftMove| diagrightMove| backMove | backLeftMove | backrightMove | rightMove | LeftMove;
+    }
+    public long blackKingMove(long kingBoard, long blackOcc) {
+
+        //forward
+        Long singleMove = (kingBoard >> 8) & ~blackOcc;
+        Long diagLeftMove = (kingBoard >> 7) & ~blackOcc & ~Board.FILE_A;
+        Long diagrightMove = (kingBoard >> 9) & ~blackOcc & ~Board.FILE_H;
+        //back
+        Long backMove = (kingBoard << 8) & ~blackOcc;
+        Long backLeftMove = (kingBoard << 7) & ~blackOcc & ~Board.FILE_H;
+        Long backrightMove = (kingBoard << 9) & ~blackOcc & ~Board.FILE_A;
+        //inline
+        Long rightMove = (kingBoard >> 1) & ~blackOcc & ~Board.FILE_H;
+        Long LeftMove = (kingBoard << 1) & ~blackOcc & ~Board.FILE_A;
 
         return singleMove | diagLeftMove| diagrightMove| backMove | backLeftMove | backrightMove | rightMove | LeftMove;
     }
 
 //Tests to see if move will make own king in check
-    public boolean inCheck(){
-        return false;
+    public boolean inCheck(Long kingBoard, Boolean isWhite){
+        //split generate al moves into black vs white and & it to the king board to see if kings in check
+        if(isWhite){
+            //return kingBoard & generateBlackMoves();
+        } else{
+            //return kingBoard & generateWhiteMoves();
+        }
+        return false; //get rid of this once inputs are fixed above
     }
 
 
