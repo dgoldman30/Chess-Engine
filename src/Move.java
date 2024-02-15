@@ -9,100 +9,128 @@ public class Move {
 
     //this will have different return statement later
     public void generateWhiteMoves(Long whiteOcc, Long blackOcc, Long whitePawn, Long whiteKnights, Long whiteKings){
-        moves.add(whitePawnMove(whitePawn, whiteOcc, blackOcc));
-        moves.add(whiteKnightMove(whiteKnights, whiteOcc));
+        moves.addAll(whiteKnightMove(whiteKnights, whiteOcc));
+        moves.addAll(whitePawnMove(whitePawn, whiteOcc, blackOcc));
         moves.add(whiteKingMove(whiteKings, whiteOcc));
     }
 
     public void generateBlackMoves(Long whiteOcc, Long blackOcc, Long blackPawn,Long blackKnights, Long blackKings){
-        moves.add(blackPawnMove(blackPawn, whiteOcc, blackOcc));
-        moves.add(blackKnightMove(blackKnights, blackOcc));
+        moves.addAll(blackKnightMove(blackKnights, blackOcc));
+        moves.addAll(blackPawnMove(blackPawn, whiteOcc, blackOcc));
         moves.add(blackKingMove(blackKings, blackOcc));
     }
-    public static long rotate180(long bitboard) {
-        long result = 0L;
 
-        // Rotate rows
-        for (int i = 0; i < 8; i++) {
-            result |= (bitboard & 0xFFL) << (56 - 8 * i);
-            bitboard >>>= 8;
+
+    public List<Long> whitePawnMove(Long pawns, Long whiteOcc, Long blackOcc){
+        List<Long> moves = new ArrayList<>();
+
+        // Iterate through each pawn individually
+        for (int i = 0; i < 64; i++) {                  //pawn will never be able to get to first or last rank. room for improvement
+            long pawnMask = 1L << i;
+            // Check if there's a white pawn at the current position
+            if ((pawns & pawnMask) != 0) {
+                // Total occupied squares on the board
+                Long occ = blackOcc | whiteOcc;
+                // Move one square forward
+                Long singleMove = (pawnMask >> 8) & ~occ;
+                if (singleMove != 0) {
+                    moves.add(singleMove);
+                }
+                // Move two squares forward if the pawn is on its starting rank
+                Long doubleMove = ((singleMove & Board.RANK_6) >> 8) & ~occ;
+                if (doubleMove != 0) {
+                    moves.add(doubleMove);
+                }
+                // Capture to the left
+                Long captureLeft = (pawnMask >> 7) & ~Board.FILE_A & blackOcc;
+                if (captureLeft != 0) {
+                    moves.add(captureLeft);
+                }
+                // Capture to the right
+                Long captureRight = (pawnMask >> 9) & ~Board.FILE_H & blackOcc;
+                if (captureRight != 0) {
+                    moves.add(captureRight);
+                }
+            }
         }
-
-        // Rotate columns
-        for (int i = 0; i < 8; i++) {
-            result |= ((result & (1L << i)) << (15 - 2 * i)) | ((result & (1L << (i + 8))) >>> (15 - 2 * i));
-        }
-
-        return result;
-    }
-
-    public Long whitePawnMove(Long pawns, Long whiteOcc, Long blackOcc){
-
-        //total occ board
-        Long occ = blackOcc | whiteOcc;
-
-        //move one forward
-        Long singleMove = (pawns >> 8) & ~occ;
-
-        //move one more forward if single move ended on correct rank
-        long doubleMoves = ((singleMove & Board.RANK_6) >> 8) & ~occ;
-
-        //move diagonal to left
-        long captureLeft = (pawns >> (7)) & ~Board.FILE_A & blackOcc;
-
-        //move diagonal to right
-        long captureRight = (pawns >> (9)) & ~Board.FILE_H & blackOcc;
-
-        return singleMove | doubleMoves | captureLeft | captureRight;
-    }
-
-    public Long blackPawnMove(Long pawns, Long whiteOcc, Long blackOcc){
-
-        //total occ board
-        Long occ = blackOcc | whiteOcc;
-
-        //move one forward
-        Long singleMove = (pawns << 8) & ~occ;
-
-        //move one more forward if single move ended on correct rank
-        long doubleMoves = ((singleMove & Board.RANK_3) << 8) & ~occ;
-
-        //move diagonal to left
-        long captureLeft = (pawns << (7)) & ~Board.FILE_A & whiteOcc;
-
-        //move diagonal to right
-        long captureRight = (pawns << (9)) & ~Board.FILE_H & whiteOcc;
-
-        return singleMove | doubleMoves | captureLeft | captureRight;
-    }
-
-    public Long whiteKnightMove(Long knights, Long whiteOcc){
-        long moves = 0L;
-
-        moves |= (knights >> 6) & ~whiteOcc & ~(Board.FILE_A | Board.FILE_B); //& will check the end position
-        moves |= (knights >> 10) & ~whiteOcc & ~(Board.FILE_G | Board.FILE_H);
-        moves |= (knights >> 15) & ~whiteOcc & ~Board.FILE_A;
-        moves |= (knights >> 17) & ~whiteOcc & ~Board.FILE_H;
-
-        moves |= (knights << 6) & ~whiteOcc & ~(Board.FILE_G | Board.FILE_H);
-        moves |= (knights << 10) & ~whiteOcc & ~(Board.FILE_A | Board.FILE_B);
-        moves |= (knights << 15) & ~whiteOcc & ~Board.FILE_H;
-        moves |= (knights << 17) & ~whiteOcc & ~Board.FILE_A;
         return moves;
     }
 
-    public Long blackKnightMove(Long knights, Long blackOcc){
-        long moves = 0L;
+    public List<Long> blackPawnMove(Long pawns, Long whiteOcc, Long blackOcc){
+        List<Long> moves = new ArrayList<>();
 
-        moves |= (knights >> 6) & ~blackOcc & ~(Board.FILE_A | Board.FILE_B); //& will check the end position
-        moves |= (knights >> 10) & ~blackOcc & ~(Board.FILE_G | Board.FILE_H);
-        moves |= (knights >> 15) & ~blackOcc & ~Board.FILE_A;
-        moves |= (knights >> 17) & ~blackOcc & ~Board.FILE_H;
+        // Iterate through each pawn individually
+        for (int i = 0; i < 64; i++) {
+            long pawnMask = 1L << i;
+            // Check if there's a black pawn at the current position
+            if ((pawns & pawnMask) != 0) {
+                // Total occupied squares on the board
+                Long occ = blackOcc | whiteOcc;
+                // Move one square forward
+                Long singleMove = (pawnMask << 8) & ~occ;
+                if (singleMove != 0) {
+                    moves.add(singleMove);
+                }
+                // Move two squares forward if the pawn is on its starting rank
+                Long doubleMove = ((singleMove & Board.RANK_3) << 8) & ~occ;
+                if (doubleMove != 0) {
+                    moves.add(doubleMove);
+                }
+                // Capture to the left
+                Long captureLeft = (pawnMask << 7) & ~Board.FILE_A & whiteOcc;
+                if (captureLeft != 0) {
+                    moves.add(captureLeft);
+                }
+                // Capture to the right
+                Long captureRight = (pawnMask << 9) & ~Board.FILE_H & whiteOcc;
+                if (captureRight != 0) {
+                    moves.add(captureRight);
+                }
+            }
+        }
+        return moves;
+    }
 
-        moves |= (knights << 6) & ~blackOcc & ~(Board.FILE_G | Board.FILE_H);
-        moves |= (knights << 10) & ~blackOcc & ~(Board.FILE_A | Board.FILE_B);
-        moves |= (knights << 15) & ~blackOcc & ~Board.FILE_H;
-        moves |= (knights << 17) & ~blackOcc & ~Board.FILE_A;
+    public List<Long> whiteKnightMove(Long knights, Long whiteOcc){
+        List<Long> moves = new ArrayList<>();
+        // Iterate through each knight individually
+        for (int i = 0; i < 64; i++) {
+            long knightMask = 1L << i;
+            // Check if there's a black knight at the current position
+            if ((knights & knightMask) != 0) {
+                moves.add((knightMask >> 6) & ~whiteOcc & ~(Board.FILE_A | Board.FILE_B)); //& will check the end position
+                moves.add((knightMask >> 10) & ~whiteOcc & ~(Board.FILE_G | Board.FILE_H));
+                moves.add((knightMask >> 15) & ~whiteOcc & ~Board.FILE_A);
+                moves.add((knightMask >> 17) & ~whiteOcc & ~Board.FILE_H);
+
+                moves.add((knightMask << 6) & ~whiteOcc & ~(Board.FILE_G | Board.FILE_H));
+                moves.add((knightMask << 10) & ~whiteOcc & ~(Board.FILE_A | Board.FILE_B));
+                moves.add((knightMask << 15) & ~whiteOcc & ~Board.FILE_H);
+                moves.add((knightMask << 17) & ~whiteOcc & ~Board.FILE_A);
+            }
+        }
+        return moves;
+    }
+
+    public List<Long> blackKnightMove(Long knights, Long blackOcc){
+        List<Long> moves = new ArrayList<>();
+
+        // Iterate through each knight individually
+        for (int i = 0; i < 64; i++) {
+            long knightMask = 1L << i;
+            // Check if there's a black knight at the current position
+            if ((knights & knightMask) != 0) {
+                moves.add((knightMask >> 6) & ~blackOcc & ~(Board.FILE_A | Board.FILE_B)); //& will check the end position
+                moves.add((knightMask >> 10) & ~blackOcc & ~(Board.FILE_G | Board.FILE_H));
+                moves.add((knightMask >> 15) & ~blackOcc & ~Board.FILE_A);
+                moves.add((knightMask >> 17) & ~blackOcc & ~Board.FILE_H);
+
+                moves.add((knightMask << 6) & ~blackOcc & ~(Board.FILE_G | Board.FILE_H));
+                moves.add((knightMask << 10) & ~blackOcc & ~(Board.FILE_A | Board.FILE_B));
+                moves.add((knightMask << 15) & ~blackOcc & ~Board.FILE_H);
+                moves.add((knightMask << 17) & ~blackOcc & ~Board.FILE_A);
+            }
+        }
         return moves;
     }
 

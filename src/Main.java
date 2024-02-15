@@ -13,8 +13,8 @@ public class Main {
         //chessBoard.blackPawnBoard = move.blackPawnMove(chessBoard.blackPawnBoard, chessBoard.whiteOccBoard, chessBoard.blackOccBoard);
 
 //TEST Knight MOVES
-        chessBoard.whiteKnightBoard = move.whiteKnightMove(chessBoard.whiteKnightBoard, chessBoard.whiteOccBoard);
-        chessBoard.blackKnightBoard = move.blackKnightMove(chessBoard.blackKnightBoard, chessBoard.blackOccBoard);
+        //chessBoard.whiteKnightBoard = move.whiteKnightMove(chessBoard.whiteKnightBoard, chessBoard.whiteOccBoard);
+        //chessBoard.blackKnightBoard = move.blackKnightMove(chessBoard.blackKnightBoard, chessBoard.blackOccBoard);
 
 //TEST Bishop MOVES
         //chessBoard.whiteBishopBoard = move.bishopMove(chessBoard.whiteBishopBoard, chessBoard.occBoard);
