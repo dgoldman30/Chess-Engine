@@ -1,137 +1,198 @@
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 public class Move {
 
 //list of all available moves
     public List<Long> moves = new ArrayList<>();
+    Random randomGenerator = new Random(); //for random move REMOVE LATER LOL
 
 
     //this will have different return statement later
-    public void generateWhiteMoves(Long whiteOcc, Long blackOcc, Long whitePawn, Long whiteKnights, Long whiteKings){
-        moves.addAll(whiteKnightMove(whiteKnights, whiteOcc));
-        moves.addAll(whitePawnMove(whitePawn, whiteOcc, blackOcc));
-        moves.add(whiteKingMove(whiteKings, whiteOcc));
+    public List<Tuple<Long, List<Long>>> generateWhiteMoves(Board chessBoard){
+        List<Tuple<Long, List<Long>>> moveList = new ArrayList<Tuple<Long, List<Long>>>();
+
+        moveList.addAll(whitePawnMove(chessBoard.whitePawnBoard, chessBoard.whiteOccBoard, chessBoard.blackOccBoard));
+        moveList.addAll(whiteKnightMove(chessBoard.whiteKnightBoard, chessBoard.whiteOccBoard));
+
+        return moveList;
     }
 
-    public void generateBlackMoves(Long whiteOcc, Long blackOcc, Long blackPawn,Long blackKnights, Long blackKings){
-        moves.addAll(blackKnightMove(blackKnights, blackOcc));
-        moves.addAll(blackPawnMove(blackPawn, whiteOcc, blackOcc));
-        moves.add(blackKingMove(blackKings, blackOcc));
+    public void generateBlackMoves(Board chessBoard){
+
     }
 
 
-    public List<Long> whitePawnMove(Long pawns, Long whiteOcc, Long blackOcc){
-        List<Long> moves = new ArrayList<>();
+    public List<Tuple<Long, List<Long>>> whitePawnMove(Long pawns, Long whiteOcc, Long blackOcc){
+
+        List<Tuple<Long, List<Long>>> finalMoves = new ArrayList<Tuple<Long, List<Long>>>();
 
         // Iterate through each pawn individually
         for (int i = 0; i < 64; i++) {                  //pawn will never be able to get to first or last rank. room for improvement
             long pawnMask = 1L << i;
+
+
             // Check if there's a white pawn at the current position
             if ((pawns & pawnMask) != 0) {
+
+                List<Long> moveList = new ArrayList<>();
+
+                Tuple tuple = new Tuple(0L ,moveList);
+                tuple.setFirst(pawnMask);
+
+
                 // Total occupied squares on the board
                 Long occ = blackOcc | whiteOcc;
                 // Move one square forward
                 Long singleMove = (pawnMask >> 8) & ~occ;
                 if (singleMove != 0) {
-                    moves.add(singleMove);
+                    moveList.add(singleMove);
                 }
                 // Move two squares forward if the pawn is on its starting rank
                 Long doubleMove = ((singleMove & Board.RANK_6) >> 8) & ~occ;
                 if (doubleMove != 0) {
-                    moves.add(doubleMove);
+                    moveList.add(doubleMove);
                 }
                 // Capture to the left
                 Long captureLeft = (pawnMask >> 7) & ~Board.FILE_A & blackOcc;
                 if (captureLeft != 0) {
-                    moves.add(captureLeft);
+                    moveList.add(captureLeft);
                 }
                 // Capture to the right
                 Long captureRight = (pawnMask >> 9) & ~Board.FILE_H & blackOcc;
                 if (captureRight != 0) {
-                    moves.add(captureRight);
+                    moveList.add(captureRight);
+                }
+
+                tuple.setSecond(moveList);
+                if(!moveList.isEmpty()) {
+                    finalMoves.add(tuple);
                 }
             }
         }
-        return moves;
+
+        return finalMoves;
     }
 
-    public List<Long> blackPawnMove(Long pawns, Long whiteOcc, Long blackOcc){
-        List<Long> moves = new ArrayList<>();
+    public List<Tuple<Long, List<Long>>> blackPawnMove(Long pawns, Long whiteOcc, Long blackOcc){
+
+        List<Tuple<Long, List<Long>>> finalMoves = new ArrayList<Tuple<Long, List<Long>>>();
 
         // Iterate through each pawn individually
-        for (int i = 0; i < 64; i++) {
+        for (int i = 0; i < 64; i++) {                  //pawn will never be able to get to first or last rank. room for improvement
             long pawnMask = 1L << i;
-            // Check if there's a black pawn at the current position
+
+
+            // Check if there's a white pawn at the current position
             if ((pawns & pawnMask) != 0) {
+
+                List<Long> moveList = new ArrayList<>();
+
+                Tuple tuple = new Tuple(0L ,moveList);
+                tuple.setFirst(pawnMask);
+
                 // Total occupied squares on the board
                 Long occ = blackOcc | whiteOcc;
                 // Move one square forward
                 Long singleMove = (pawnMask << 8) & ~occ;
                 if (singleMove != 0) {
-                    moves.add(singleMove);
+                    moveList.add(singleMove);
                 }
                 // Move two squares forward if the pawn is on its starting rank
                 Long doubleMove = ((singleMove & Board.RANK_3) << 8) & ~occ;
                 if (doubleMove != 0) {
-                    moves.add(doubleMove);
+                    moveList.add(doubleMove);
                 }
                 // Capture to the left
-                Long captureLeft = (pawnMask << 7) & ~Board.FILE_A & whiteOcc;
+                Long captureLeft = (pawnMask << 7) & ~Board.FILE_H & whiteOcc;
                 if (captureLeft != 0) {
-                    moves.add(captureLeft);
+                    moveList.add(captureLeft);
                 }
                 // Capture to the right
-                Long captureRight = (pawnMask << 9) & ~Board.FILE_H & whiteOcc;
+                Long captureRight = (pawnMask << 9) & ~Board.FILE_A & whiteOcc;
                 if (captureRight != 0) {
-                    moves.add(captureRight);
+                    moveList.add(captureRight);
                 }
+
+                tuple.setSecond(moveList);
+                finalMoves.add(tuple);
             }
         }
-        return moves;
+        return finalMoves;
     }
+    public List<Tuple<Long, List<Long>>> whiteKnightMove(Long knights, Long whiteOcc){    //HAVING BOUND ISSUES. it still adds the out of bounds moves to the list, resulting in empty moves
 
-    public List<Long> whiteKnightMove(Long knights, Long whiteOcc){
-        List<Long> moves = new ArrayList<>();
-        // Iterate through each knight individually
-        for (int i = 0; i < 64; i++) {
-            long knightMask = 1L << i;
-            // Check if there's a black knight at the current position
-            if ((knights & knightMask) != 0) {
-                moves.add((knightMask >> 6) & ~whiteOcc & ~(Board.FILE_A | Board.FILE_B)); //& will check the end position
-                moves.add((knightMask >> 10) & ~whiteOcc & ~(Board.FILE_G | Board.FILE_H));
-                moves.add((knightMask >> 15) & ~whiteOcc & ~Board.FILE_A);
-                moves.add((knightMask >> 17) & ~whiteOcc & ~Board.FILE_H);
-
-                moves.add((knightMask << 6) & ~whiteOcc & ~(Board.FILE_G | Board.FILE_H));
-                moves.add((knightMask << 10) & ~whiteOcc & ~(Board.FILE_A | Board.FILE_B));
-                moves.add((knightMask << 15) & ~whiteOcc & ~Board.FILE_H);
-                moves.add((knightMask << 17) & ~whiteOcc & ~Board.FILE_A);
-            }
-        }
-        return moves;
-    }
-
-    public List<Long> blackKnightMove(Long knights, Long blackOcc){
-        List<Long> moves = new ArrayList<>();
+        List<Tuple<Long, List<Long>>> finalMoves = new ArrayList<Tuple<Long, List<Long>>>();
 
         // Iterate through each knight individually
         for (int i = 0; i < 64; i++) {
             long knightMask = 1L << i;
             // Check if there's a black knight at the current position
             if ((knights & knightMask) != 0) {
-                moves.add((knightMask >> 6) & ~blackOcc & ~(Board.FILE_A | Board.FILE_B)); //& will check the end position
-                moves.add((knightMask >> 10) & ~blackOcc & ~(Board.FILE_G | Board.FILE_H));
-                moves.add((knightMask >> 15) & ~blackOcc & ~Board.FILE_A);
-                moves.add((knightMask >> 17) & ~blackOcc & ~Board.FILE_H);
 
-                moves.add((knightMask << 6) & ~blackOcc & ~(Board.FILE_G | Board.FILE_H));
-                moves.add((knightMask << 10) & ~blackOcc & ~(Board.FILE_A | Board.FILE_B));
-                moves.add((knightMask << 15) & ~blackOcc & ~Board.FILE_H);
-                moves.add((knightMask << 17) & ~blackOcc & ~Board.FILE_A);
+                List<Long> moveList = new ArrayList<>(); //make movelist for the individual piece
+
+                Tuple tuple = new Tuple(0L ,moveList); //initiate tuple for individual piece
+                tuple.setFirst(knightMask);   //set starting board
+
+
+                moveList.add((knightMask >> 6) & ~whiteOcc & ~(Board.FILE_A | Board.FILE_B)); //& will check the end position
+                moveList.add((knightMask >> 10) & ~whiteOcc & ~(Board.FILE_G | Board.FILE_H));
+                moveList.add((knightMask >> 15) & ~whiteOcc & ~Board.FILE_A);
+                moveList.add((knightMask >> 17) & ~whiteOcc & ~Board.FILE_H);
+
+                moveList.add((knightMask << 6) & ~whiteOcc & ~(Board.FILE_G | Board.FILE_H));
+                moveList.add((knightMask << 10) & ~whiteOcc & ~(Board.FILE_A | Board.FILE_B));
+                moveList.add((knightMask << 15) & ~whiteOcc & ~Board.FILE_H);
+                moveList.add((knightMask << 17) & ~whiteOcc & ~Board.FILE_A);
+
+                // Iterate through the list and remove elements with all 0's     THIS REMOVES THE MOVES THAT WERE REMOVED FOR BOUNDARIES
+                for (int X = moveList.size() - 1; X >= 0; X--) {
+                    Long value = moveList.get(X);
+                    if (value == 0L) {
+                        moveList.remove(X);
+                    }
+                }
+
+
+                tuple.setSecond(moveList); //add moveList to individual pieces tuple
+                finalMoves.add(tuple); //add tuple of individual piece to list
             }
         }
-        return moves;
+        return finalMoves;
+    }
+
+    public List<Tuple<Long, List<Long>>> blackKnightMove(Long knights, Long blackOcc){
+
+        List<Tuple<Long, List<Long>>> finalMoves = new ArrayList<Tuple<Long, List<Long>>>();
+
+        // Iterate through each knight individually
+        for (int i = 0; i < 64; i++) {
+            long knightMask = 1L << i;
+            // Check if there's a black knight at the current position
+            if ((knights & knightMask) != 0) {
+
+                List<Long> moveList = new ArrayList<>(); //make movelist for the individual piece
+
+                Tuple tuple = new Tuple(0L ,moveList); //initiate tuple for individual piece
+                tuple.setFirst(knightMask);   //set starting board
+
+
+                moveList.add((knightMask >> 6) & ~blackOcc & ~(Board.FILE_A | Board.FILE_B)); //& will check the end position
+                moveList.add((knightMask >> 10) & ~blackOcc & ~(Board.FILE_G | Board.FILE_H));
+                moveList.add((knightMask >> 15) & ~blackOcc & ~Board.FILE_A);
+                moveList.add((knightMask >> 17) & ~blackOcc & ~Board.FILE_H);
+
+                moveList.add((knightMask << 6) & ~blackOcc & ~(Board.FILE_G | Board.FILE_H));
+                moveList.add((knightMask << 10) & ~blackOcc & ~(Board.FILE_A | Board.FILE_B));
+                moveList.add((knightMask << 15) & ~blackOcc & ~Board.FILE_H);
+                moveList.add((knightMask << 17) & ~blackOcc & ~Board.FILE_A);
+                tuple.setSecond(moveList); //add moveList to individual pieces tuple
+                finalMoves.add(tuple); //add tuple of individual piece to list
+            }
+        }
+        return finalMoves;
     }
 
 
@@ -199,6 +260,104 @@ public class Move {
 
 
 
+    public Board doMove(Board currentBoard, Tuple tuple){
+        //this inputs the bitboard of the piece that is being moved and removes the starting piece
+        Long start = (Long) tuple.getStart();
+
+        Long endMove = (Long) tuple.getMoves();
+
+//CLEAR END SQUARE FIRST
+        //find type of piece on end square to capture
+        if((currentBoard.whitePawnBoard & endMove) != 0){
+            currentBoard.whitePawnBoard = currentBoard.whitePawnBoard & ~endMove; //remove captured piece
+        }
+        else if((currentBoard.blackPawnBoard & endMove) != 0){
+            currentBoard.blackPawnBoard = currentBoard.blackPawnBoard & ~endMove;
+        }
+        else if((currentBoard.whiteQueenBoard & endMove) != 0){
+            currentBoard.whiteQueenBoard = currentBoard.whiteQueenBoard & ~endMove;
+        }
+        else if((currentBoard.blackQueenBoard & endMove) != 0){
+            currentBoard.blackQueenBoard = currentBoard.blackQueenBoard & ~endMove;
+        }
+        else if((currentBoard.whiteKnightBoard & endMove) != 0){
+            currentBoard.whiteKnightBoard = currentBoard.whiteKnightBoard & ~endMove;
+        }
+        else if((currentBoard.blackKnightBoard & endMove) != 0){
+            currentBoard.blackKnightBoard = currentBoard.blackKnightBoard & ~endMove;
+        }
+        else if((currentBoard.whiteRookBoard & endMove) != 0){
+            currentBoard.whiteRookBoard = currentBoard.whiteRookBoard & ~endMove;
+        }
+        else if((currentBoard.blackRookBoard & endMove) != 0){
+            currentBoard.blackRookBoard = currentBoard.blackRookBoard & ~endMove;
+        }
+        else if((currentBoard.whiteBishopBoard & endMove) != 0){
+            currentBoard.whiteBishopBoard = currentBoard.whiteBishopBoard & ~endMove;
+        }
+        else if((currentBoard.blackBishopBoard & endMove) != 0){
+            currentBoard.blackBishopBoard = currentBoard.blackBishopBoard & ~endMove;
+        }
+        else if((currentBoard.whiteKingBoard & endMove) != 0){
+            currentBoard.whiteKingBoard = currentBoard.whiteKingBoard & ~endMove;
+        }
+        else if((currentBoard.blackKingBoard & endMove) != 0){
+            currentBoard.blackKingBoard = currentBoard.blackKingBoard & ~endMove;
+        }
+
+
+//CLEAR START SQUARE, POPULATE END SQUARE
+// CASES TO REMOVE START PIECE AND ADD END PIECE TO CORRECT BOARD.
+        if((currentBoard.whitePawnBoard & start) != 0){
+            currentBoard.whitePawnBoard = currentBoard.whitePawnBoard & ~start;   //REMOVES THE STARTING SQUARE PIECE
+            currentBoard.whitePawnBoard |= endMove;                               //ADDS ENDMOVE TO CORRECT BITBOARD
+        }
+        else if((currentBoard.blackPawnBoard & start) != 0){
+            currentBoard.blackPawnBoard = currentBoard.blackPawnBoard & ~start;
+            currentBoard.blackPawnBoard |= endMove;
+        }
+        else if((currentBoard.whiteKnightBoard & start) != 0){
+            currentBoard.whiteKnightBoard = currentBoard.whiteKnightBoard & ~start;
+            currentBoard.whiteKnightBoard |= endMove;
+        }
+        else if((currentBoard.blackKnightBoard & start) != 0){
+            currentBoard.blackKnightBoard = currentBoard.blackKnightBoard & ~start;
+            currentBoard.blackKnightBoard |= endMove;
+        }
+        else if((currentBoard.whiteRookBoard & start) != 0){
+            currentBoard.whiteRookBoard = currentBoard.whiteRookBoard & ~start;
+            currentBoard.whiteRookBoard |= endMove;
+        }
+        else if((currentBoard.blackRookBoard & start) != 0){
+            currentBoard.blackRookBoard = currentBoard.blackRookBoard & ~start;
+            currentBoard.blackRookBoard |= endMove;
+        }
+        else if((currentBoard.whiteBishopBoard & start) != 0){
+            currentBoard.whiteBishopBoard = currentBoard.whiteBishopBoard & ~start;
+            currentBoard.whiteBishopBoard |= endMove;
+        }
+        else if((currentBoard.blackBishopBoard & start) != 0){
+            currentBoard.blackBishopBoard = currentBoard.blackBishopBoard & ~start;
+            currentBoard.blackBishopBoard |= endMove;
+        }
+        else if((currentBoard.whiteQueenBoard & start) != 0){
+            currentBoard.whiteQueenBoard = currentBoard.whiteQueenBoard & ~start;
+            currentBoard.whiteQueenBoard |= endMove;
+        }
+        else if((currentBoard.blackQueenBoard & start) != 0){
+            currentBoard.blackQueenBoard = currentBoard.blackQueenBoard & ~start;
+            currentBoard.blackQueenBoard |= endMove;
+        }
+        else if((currentBoard.whiteKingBoard & start) != 0){
+            currentBoard.whiteKingBoard = currentBoard.whiteKingBoard & ~start;
+            currentBoard.whiteKingBoard |= endMove;
+        }
+        else if((currentBoard.blackKingBoard & start) != 0){
+            currentBoard.blackKingBoard = currentBoard.blackKingBoard & ~start;
+            currentBoard.blackKingBoard |= endMove;
+        }
+        return currentBoard;
+    }
 }
 
 //Later on: if we want to speed up move generaton functions, make king and knight lookup instead of calculation

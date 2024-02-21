@@ -7,8 +7,8 @@ public class Board {
                     "--------" +
                     "--------" +
                     "--------" +
-                    "--------" +
-                    "--------" +
+                    "q--qq---" +
+                    "P---P---" +
                     "--------";
 
     //set the bitboards for each type
