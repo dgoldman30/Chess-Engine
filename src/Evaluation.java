@@ -22,7 +22,7 @@ public int evaluate(Long pawns, Long knights, Long rooks, Long bishops, Long que
 
 public Tuple choseMove(List<Tuple<Long, List<Long>>> moveList){
 
-    Tuple piece = moveList.get(randomGenerator.nextInt(moveList.size()));  //picks random piece
+    Tuple piece = moveList.get(randomGenerator.nextInt(moveList.size()));
 
     List<Long> moves = (List<Long>) piece.getMoves();  //get list of moves
 

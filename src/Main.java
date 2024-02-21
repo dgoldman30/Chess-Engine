@@ -12,7 +12,6 @@ public class Main {
         Evaluation evaluate = new Evaluation();
 
 
-
 //Generate random white move
         List<Tuple<Long, List<Long>>> moveList = move.generateWhiteMoves(chessBoard);     //generate all moves
 

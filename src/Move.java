@@ -15,6 +15,8 @@ public class Move {
 
         moveList.addAll(whitePawnMove(chessBoard.whitePawnBoard, chessBoard.whiteOccBoard, chessBoard.blackOccBoard));
         moveList.addAll(whiteKnightMove(chessBoard.whiteKnightBoard, chessBoard.whiteOccBoard));
+        moveList.addAll(whiteRookMove(chessBoard.whiteRookBoard,chessBoard.whiteOccBoard, chessBoard.blackOccBoard));
+        moveList.addAll(whiteBishopMove(chessBoard.whiteBishopBoard,chessBoard.whiteOccBoard, chessBoard.blackOccBoard));
 
         return moveList;
     }
@@ -196,22 +198,151 @@ public class Move {
     }
 
 
-    public long bishopMove(long bishopBoard, long occ) {
-        return bishopBoard;
+    // Define the function for calculating legal moves for a bishop
+    public List<Tuple<Long, List<Long>>> whiteBishopMove(Long bishops, Long whiteOcc, Long blackOcc) {
+        List<Tuple<Long, List<Long>>> finalMoves = new ArrayList<>();
+
+        // Iterate through each bishop individually
+        for (int i = 0; i < 64; i++) {
+            long bishopMask = 1L << i;
+            // Check if there's a white bishop at the current position
+            if ((bishops & bishopMask) != 0) {
+
+                List<Long> moveList = new ArrayList<>(); // Make move list for the individual piece
+
+                Tuple<Long, List<Long>> tuple = new Tuple<>(0L, moveList); // Initiate tuple for individual piece
+                tuple.setFirst(bishopMask); // Set starting board
+
+                // Calculate legal diagonal moves (up-left)
+                for (int j = i - 9; j >= 0 && j % 8 != 7; j -= 9) {
+                    long targetSquare = 1L << j;
+                    if ((targetSquare & whiteOcc) != 0 || (targetSquare & blackOcc) != 0) {
+                        if ((targetSquare & blackOcc) != 0) moveList.add(targetSquare); // Capture if black piece is present
+                        break;
+                    }
+                    moveList.add(targetSquare);
+                    if ((targetSquare & Board.FILE_A) != 0) break; // Break if the file A is reached
+                }
+
+                // Calculate legal diagonal moves (up-right)
+                for (int j = i - 7; j >= 0 && j % 8 != 0; j -= 7) {
+                    long targetSquare = 1L << j;
+                    if ((targetSquare & whiteOcc) != 0 || (targetSquare & blackOcc) != 0) {
+                        if ((targetSquare & blackOcc) != 0) moveList.add(targetSquare); // Capture if black piece is present
+                        break;
+                    }
+                    moveList.add(targetSquare);
+                    if ((targetSquare & Board.FILE_H) != 0) break; // Break if the file H is reached
+                }
+
+                // Calculate legal diagonal moves (down-left)
+                for (int j = i + 7; j < 64 && j % 8 != 7; j += 7) {
+                    long targetSquare = 1L << j;
+                    if ((targetSquare & whiteOcc) != 0 || (targetSquare & blackOcc) != 0) {
+                        if ((targetSquare & blackOcc) != 0) moveList.add(targetSquare); // Capture if black piece is present
+                        break;
+                    }
+                    moveList.add(targetSquare);
+                    if ((targetSquare & Board.FILE_A) != 0) break; // Break if the file A is reached
+                }
+
+                // Calculate legal diagonal moves (down-right)
+                for (int j = i + 9; j < 64 && j % 8 != 0; j += 9) {
+                    long targetSquare = 1L << j;
+                    if ((targetSquare & whiteOcc) != 0 || (targetSquare & blackOcc) != 0) {
+                        if ((targetSquare & blackOcc) != 0) moveList.add(targetSquare); // Capture if black piece is present
+                        break;
+                    }
+                    moveList.add(targetSquare);
+                    if ((targetSquare & Board.FILE_H) != 0) break; // Break if the file H is reached
+                }
+
+                tuple.setSecond(moveList); // Add moveList to individual piece's tuple
+                finalMoves.add(tuple); // Add tuple of individual piece to the list
+            }
+        }
+        return finalMoves;
     }
 
-    public long rookMove(long rookBoard, long occ) {
-        return 0L;
+    // Define the function for calculating legal moves for a rook
+    // Define the function for calculating legal moves for a rook
+    public List<Tuple<Long, List<Long>>> whiteRookMove(Long rooks, Long whiteOcc, Long blackOcc) {
+        List<Tuple<Long, List<Long>>> finalMoves = new ArrayList<>();
+
+        // Iterate through each rook individually
+        for (int i = 0; i < 64; i++) {
+            long rookMask = 1L << i;
+            // Check if there's a white rook at the current position
+            if ((rooks & rookMask) != 0) {
+
+                List<Long> moveList = new ArrayList<>(); // Make move list for the individual piece
+
+                Tuple<Long, List<Long>> tuple = new Tuple<>(0L, moveList); // Initiate tuple for individual piece
+                tuple.setFirst(rookMask); // Set starting board
+
+                // Calculate legal horizontal moves (left)
+                for (int j = i - 1; j / 8 == i / 8; j--) {
+                    long targetSquare = 1L << j;
+                    if ((targetSquare & whiteOcc) != 0 || (targetSquare & blackOcc) != 0) {
+                        if ((targetSquare & blackOcc) != 0) moveList.add(targetSquare); // Capture if black piece is present
+                        break;
+                    }
+                    moveList.add(targetSquare);
+                }
+
+                // Calculate legal horizontal moves (right)
+                for (int j = i + 1; j / 8 == i / 8; j++) {
+                    long targetSquare = 1L << j;
+                    if ((targetSquare & whiteOcc) != 0 || (targetSquare & blackOcc) != 0) {
+                        if ((targetSquare & blackOcc) != 0) moveList.add(targetSquare); // Capture if black piece is present
+                        break;
+                    }
+                    moveList.add(targetSquare);
+                }
+
+                // Calculate legal vertical moves (up)
+                for (int j = i - 8; j >= 0; j -= 8) {
+                    long targetSquare = 1L << j;
+                    if ((targetSquare & whiteOcc) != 0 || (targetSquare & blackOcc) != 0) {
+                        if ((targetSquare & blackOcc) != 0) moveList.add(targetSquare); // Capture if black piece is present
+                        break;
+                    }
+                    moveList.add(targetSquare);
+                }
+
+                // Calculate legal vertical moves (down)
+                for (int j = i + 8; j < 64; j += 8) {
+                    long targetSquare = 1L << j;
+                    if ((targetSquare & whiteOcc) != 0 || (targetSquare & blackOcc) != 0) {
+                        if ((targetSquare & blackOcc) != 0) moveList.add(targetSquare); // Capture if black piece is present
+                        break;
+                    }
+                    moveList.add(targetSquare);
+                }
+
+                tuple.setSecond(moveList); // Add moveList to individual piece's tuple
+                finalMoves.add(tuple); // Add tuple of individual piece to the list
+            }
+        }
+        return finalMoves;
     }
 
 
-    public long queenMove(long queenBoard, long occ) {
-        // Combine the moves of a rook and a bishop
-        long rookMoves = rookMove(queenBoard, occ);
-        long bishopMoves = bishopMove(queenBoard, occ);
 
-        // Combine the moves of the rook and bishop
-        return rookMoves | bishopMoves;
+    // Define the function for calculating legal moves for a queen
+    public List<Tuple<Long, List<Long>>> whiteQueenMove(Long queens, Long whiteOcc, Long blackOcc) {
+        List<Tuple<Long, List<Long>>> finalMoves = new ArrayList<>();
+
+        // Combine legal moves of rooks and bishops for white queen
+        List<Tuple<Long, List<Long>>> rookMoves = whiteRookMove(queens, whiteOcc, blackOcc);
+        List<Tuple<Long, List<Long>>> bishopMoves = whiteBishopMove(queens, whiteOcc, blackOcc);
+
+        // Add rook moves to the final moves list
+        finalMoves.addAll(rookMoves);
+        // Add bishop moves to the final moves list
+        finalMoves.addAll(bishopMoves);
+
+        return finalMoves;
     }
 
     public long whiteKingMove(long kingBoard, long whiteOcc) {
