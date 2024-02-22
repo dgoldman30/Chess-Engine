@@ -39,24 +39,24 @@ public class Board {
 
 
     // Bitmasks for each file
-    public static final long FILE_A = 0x0101010101010101L;
+    public static final long FILE_A = 0x0101010101010101L; // 1s on the left edge (white on bottom)
     public static final long FILE_B = FILE_A << 1;
     public static final long FILE_C = FILE_A << 2;
     public static final long FILE_D = FILE_A << 3;
     public static final long FILE_E = FILE_A << 4;
     public static final long FILE_F = FILE_A << 5;
     public static final long FILE_G = FILE_A << 6;
-    public static final long FILE_H = FILE_A << 7;
+    public static final long FILE_H = FILE_A << 7; // 1s on the right edge (white on bottom)
 
     // Bitmasks for each rank
-    public static final long RANK_1 = 0xFFL;
+    public static final long RANK_1 = 0xFFL; // 1s along the bottom (white)
     public static final long RANK_2 = RANK_1 << 8;
     public static final long RANK_3 = RANK_1 << 16;
     public static final long RANK_4 = RANK_1 << 24;
     public static final long RANK_5 = RANK_1 << 32;
     public static final long RANK_6 = RANK_1 << 40;
     public static final long RANK_7 = RANK_1 << 48;
-    public static final long RANK_8 = RANK_1 << 56;
+    public static final long RANK_8 = RANK_1 << 56; // 1s along the top (black)
 
     //all args constructor
     public Board(long whitePawnBoard, long whiteKnightBoard, long whiteRookBoard, long whiteBishopBoard, long whiteKingBoard, long whiteQueenBoard, long whiteOccBoard, long blackPawnBoard, long blackKnightBoard, long blackBishopBoard, long blackRookBoard, long blackQueenBoard, long blackKingBoard, long blackOccBoard) {

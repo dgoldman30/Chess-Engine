@@ -17,7 +17,7 @@ public class Main {
         chessBoard.blackKnightBoard = move.blackKnightMove(chessBoard.blackKnightBoard, chessBoard.blackOccBoard);
 
 //TEST Bishop MOVES
-        //chessBoard.whiteBishopBoard = move.bishopMove(chessBoard.whiteBishopBoard, chessBoard.occBoard);
+        chessBoard.whiteBishopBoard = move.whiteBishopMove(chessBoard.whiteBishopBoard, chessBoard.occBoard);
 
 //TEST Rook MOVES
         //chessBoard.whiteRookBoard = move.rookMove(chessBoard.whiteRookBoard, chessBoard.occBoard);
