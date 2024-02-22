@@ -122,6 +122,7 @@ public class Move {
         }
         return finalMoves;
     }
+
     public List<Tuple<Long, List<Long>>> whiteKnightMove(Long knights, Long whiteOcc){    //HAVING BOUND ISSUES. it still adds the out of bounds moves to the list, resulting in empty moves
 
         List<Tuple<Long, List<Long>>> finalMoves = new ArrayList<Tuple<Long, List<Long>>>();
@@ -201,9 +202,6 @@ public class Move {
     }
 
     // Define the function for calculating legal moves for a bishop
-    // potentially we could check how far the piece is from the edge and just continue with the shifting method?
-    // we would check for occupied spaces and check for the number of spaces from the edge to determine how it would move
-    // also want to check deep learning & the game of go to see if they do anything similar
     public List<Tuple<Long, List<Long>>> whiteBishopMove(Long bishops, Long whiteOcc, Long blackOcc) {
         List<Tuple<Long, List<Long>>> finalMoves = new ArrayList<>();
 

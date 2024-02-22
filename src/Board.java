@@ -39,14 +39,14 @@ public class Board {
 
 
     // Bitmasks for each file
-    public static final long FILE_A = 0x0101010101010101L; // 1s on the left edge (white on bottom)
+    public static final long FILE_A = 0x0101010101010101L; // 1s on the left edge (with white on bottom)
     public static final long FILE_B = FILE_A << 1;
     public static final long FILE_C = FILE_A << 2;
     public static final long FILE_D = FILE_A << 3;
     public static final long FILE_E = FILE_A << 4;
     public static final long FILE_F = FILE_A << 5;
     public static final long FILE_G = FILE_A << 6;
-    public static final long FILE_H = FILE_A << 7; // 1s on the right edge (white on bottom)
+    public static final long FILE_H = FILE_A << 7; // 1s on the right edge (with white on bottom)
 
     // Bitmasks for each rank
     public static final long RANK_1 = 0xFFL; // 1s along the bottom (white)
