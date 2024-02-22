@@ -9,7 +9,7 @@ public class Board {
                     "--------" +
                     "--------" +
                     "PPPPPPPP" +
-                    "RNBKQBNR";
+                    "RNBQKBNR";
 
     //set the bitboards for each type
 
@@ -56,7 +56,7 @@ public class Board {
     public static final long RANK_5 = RANK_1 << 32;
     public static final long RANK_6 = RANK_1 << 40;
     public static final long RANK_7 = RANK_1 << 48;
-    public static final long RANK_8 = RANK_1 << 56; // 1s along the top (black)
+    public static final long RANK_8 = RANK_1 << 56; //1s along the top (black)
 
     //all args constructor
     public Board(long whitePawnBoard, long whiteKnightBoard, long whiteRookBoard, long whiteBishopBoard, long whiteKingBoard, long whiteQueenBoard, long whiteOccBoard, long blackPawnBoard, long blackKnightBoard, long blackBishopBoard, long blackRookBoard, long blackQueenBoard, long blackKingBoard, long blackOccBoard) {

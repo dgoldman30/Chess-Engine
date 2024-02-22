@@ -5,10 +5,7 @@ import java.util.Random;
 
 public class Move {
 
-//list of all available moves
-    public List<Long> moves = new ArrayList<>();
     Random randomGenerator = new Random(); //for random move REMOVE LATER LOL
-
 
 
     //this will have different return statement later
@@ -42,6 +39,7 @@ public class Move {
     private List<Tuple<Long, List<Long>>> blackRookMove(long blackRookBoard, long blackOccBoard, long whiteOccBoard) {
         return null;
     }
+
 
     public List<Tuple<Long, List<Long>>> whitePawnMove(Long pawns, Long whiteOcc, Long blackOcc){
 
@@ -135,12 +133,13 @@ public class Move {
                 }
 
                 tuple.setSecond(moveList);
-                finalMoves.add(tuple);
+                if(!moveList.isEmpty()) {
+                    finalMoves.add(tuple);
+                }
             }
         }
         return finalMoves;
     }
-
     public List<Tuple<Long, List<Long>>> whiteKnightMove(Long knights, Long whiteOcc){    //HAVING BOUND ISSUES. it still adds the out of bounds moves to the list, resulting in empty moves
 
         List<Tuple<Long, List<Long>>> finalMoves = new ArrayList<Tuple<Long, List<Long>>>();
@@ -177,7 +176,9 @@ public class Move {
 
 
                 tuple.setSecond(moveList); //add moveList to individual pieces tuple
-                finalMoves.add(tuple); //add tuple of individual piece to list
+                if(!moveList.isEmpty()) {
+                    finalMoves.add(tuple);
+                } //add tuple of individual piece to list if list is not empty
             }
         }
         return finalMoves;
@@ -215,9 +216,6 @@ public class Move {
         return finalMoves;
     }
 
-    public long blackBishopMove(long bishopBoard, long blackOcc) {
-        return bishopBoard;
-    }
 
     // Define the function for calculating legal moves for a bishop
     public List<Tuple<Long, List<Long>>> whiteBishopMove(Long bishops, Long whiteOcc, Long blackOcc) {
@@ -279,13 +277,14 @@ public class Move {
                 }
 
                 tuple.setSecond(moveList); // Add moveList to individual piece's tuple
-                finalMoves.add(tuple); // Add tuple of individual piece to the list
+                if(!moveList.isEmpty()) {
+                    finalMoves.add(tuple);
+                } // Add tuple of individual piece to the list
             }
         }
         return finalMoves;
     }
 
-    // Define the function for calculating legal moves for a rook
     // Define the function for calculating legal moves for a rook
     public List<Tuple<Long, List<Long>>> whiteRookMove(Long rooks, Long whiteOcc, Long blackOcc) {
         List<Tuple<Long, List<Long>>> finalMoves = new ArrayList<>();
@@ -342,22 +341,21 @@ public class Move {
                 }
 
                 tuple.setSecond(moveList); // Add moveList to individual piece's tuple
-                finalMoves.add(tuple); // Add tuple of individual piece to the list
+                if(!moveList.isEmpty()) {
+                    finalMoves.add(tuple);
+                } // Add tuple of individual piece to the list
             }
         }
         return finalMoves;
     }
 
-    public long blackRookMove(long rookBoard, long blackOcc) {return 0L;}
-
-
     // Define the function for calculating legal moves for a queen
-    public List<Tuple<Long, List<Long>>> whiteQueenMove(Long queenBoard, Long whiteOcc, Long blackOcc) {
+    public List<Tuple<Long, List<Long>>> whiteQueenMove(Long queens, Long whiteOcc, Long blackOcc) {
         List<Tuple<Long, List<Long>>> finalMoves = new ArrayList<>();
 
         // Combine legal moves of rooks and bishops for white queen
-        List<Tuple<Long, List<Long>>> rookMoves = whiteRookMove(queenBoard, whiteOcc, blackOcc);
-        List<Tuple<Long, List<Long>>> bishopMoves = whiteBishopMove(queenBoard, whiteOcc, blackOcc);
+        List<Tuple<Long, List<Long>>> rookMoves = whiteRookMove(queens, whiteOcc, blackOcc);
+        List<Tuple<Long, List<Long>>> bishopMoves = whiteBishopMove(queens, whiteOcc, blackOcc);
 
         // Add rook moves to the final moves list
         finalMoves.addAll(rookMoves);
@@ -366,12 +364,6 @@ public class Move {
 
         return finalMoves;
     }
-
-    public List<Tuple<Long, List<Long>>> blackQueenMove(Long queenBoard, Long whiteOcc, Long blackOcc) {
-        List<Tuple<Long, List<Long>>> finalMoves = new ArrayList<>();
-        return finalMoves;
-    }
-
 
     public long whiteKingMove(long kingBoard, long whiteOcc) {
 
@@ -416,6 +408,8 @@ public class Move {
         }
         return false; //get rid of this once inputs are fixed above
     }
+
+
 
     public Board doMove(Board currentBoard, Tuple tuple){
         //this inputs the bitboard of the piece that is being moved and removes the starting piece
@@ -515,9 +509,24 @@ public class Move {
         }
         return currentBoard;
     }
+
+
+
+    public Tuple choseMove(List<Tuple<Long, List<Long>>> moveList){
+
+        Tuple piece = moveList.get(randomGenerator.nextInt(moveList.size()));
+
+        List<Long> moves = (List<Long>) piece.getMoves();  //get list of moves
+
+        Long endMove = moves.get(randomGenerator.nextInt(moves.size()));   //choses which move in the list of moves for the given piece to execute, will have to edit later just for testing logic in move generate function
+
+        piece.setSecond(endMove);
+        return piece;
+    }
 }
 
-//Later on: if we want to speed up move generation functions, make king and knight lookup instead of calculation
+
+//Later on: if we want to speed up move generaton functions, make king and knight lookup instead of calculation
 
 
 //use magic bitboard for sliding pieces like rook and bishop
