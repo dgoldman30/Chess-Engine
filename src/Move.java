@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Random;
 
@@ -7,6 +8,7 @@ public class Move {
 //list of all available moves
     public List<Long> moves = new ArrayList<>();
     Random randomGenerator = new Random(); //for random move REMOVE LATER LOL
+
 
 
     //this will have different return statement later
@@ -21,8 +23,24 @@ public class Move {
         return moveList;
     }
 
-    public void generateBlackMoves(Board chessBoard){
+    public List<Tuple<Long, List<Long>>> generateBlackMoves(Board chessBoard){
+        List<Tuple<Long, List<Long>>> moveList = new ArrayList<Tuple<Long, List<Long>>>();
 
+        moveList.addAll(blackPawnMove(chessBoard.blackPawnBoard, chessBoard.blackOccBoard, chessBoard.whiteOccBoard));
+        moveList.addAll(blackKnightMove(chessBoard.blackKnightBoard, chessBoard.blackOccBoard));
+        moveList.addAll(blackRookMove(chessBoard.blackRookBoard,chessBoard.blackOccBoard, chessBoard.whiteOccBoard));
+        moveList.addAll(blackBishopMove(chessBoard.blackBishopBoard,chessBoard.blackOccBoard, chessBoard.whiteOccBoard));
+
+        return moveList;
+
+    }
+
+    private List<Tuple<Long, List<Long>>> blackBishopMove(long blackBishopBoard, long blackOccBoard, long whiteOccBoard) {
+        return null;
+    }
+
+    private List<Tuple<Long, List<Long>>> blackRookMove(long blackRookBoard, long blackOccBoard, long whiteOccBoard) {
+        return null;
     }
 
     public List<Tuple<Long, List<Long>>> whitePawnMove(Long pawns, Long whiteOcc, Long blackOcc){
