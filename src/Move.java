@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Random;
 
@@ -32,6 +33,14 @@ public class Move {
 
         return moveList;
 
+    }
+
+    private List<Tuple<Long, List<Long>>> blackBishopMove(long blackBishopBoard, long blackOccBoard, long whiteOccBoard) {
+        return null;
+    }
+
+    private List<Tuple<Long, List<Long>>> blackRookMove(long blackRookBoard, long blackOccBoard, long whiteOccBoard) {
+        return null;
     }
 
 
