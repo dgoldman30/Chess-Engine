@@ -9,14 +9,12 @@ public class Main {
 
         Move move = new Move();
 
-        Evaluation evaluate = new Evaluation();
-
 
 //Generate random white move
         List<Tuple<Long, List<Long>>> moveList = move.generateWhiteMoves(chessBoard);     //generate all moves
 
 
-        Tuple piece = evaluate.choseMove(moveList); //select Piece and Move for piece
+        Tuple piece = move.choseMove(moveList); //select Piece and Move for piece
 
         chessBoard = move.doMove(chessBoard, piece);  //EXECUTES the chosen move for piece
 

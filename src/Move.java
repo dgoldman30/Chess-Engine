@@ -5,10 +5,7 @@ import java.util.Random;
 
 public class Move {
 
-//list of all available moves
-    public List<Long> moves = new ArrayList<>();
     Random randomGenerator = new Random(); //for random move REMOVE LATER LOL
-
 
 
     //this will have different return statement later
@@ -136,7 +133,9 @@ public class Move {
                 }
 
                 tuple.setSecond(moveList);
-                finalMoves.add(tuple);
+                if(!moveList.isEmpty()) {
+                    finalMoves.add(tuple);
+                }
             }
         }
         return finalMoves;
@@ -177,7 +176,9 @@ public class Move {
 
 
                 tuple.setSecond(moveList); //add moveList to individual pieces tuple
-                finalMoves.add(tuple); //add tuple of individual piece to list
+                if(!moveList.isEmpty()) {
+                    finalMoves.add(tuple);
+                } //add tuple of individual piece to list if list is not empty
             }
         }
         return finalMoves;
@@ -276,13 +277,14 @@ public class Move {
                 }
 
                 tuple.setSecond(moveList); // Add moveList to individual piece's tuple
-                finalMoves.add(tuple); // Add tuple of individual piece to the list
+                if(!moveList.isEmpty()) {
+                    finalMoves.add(tuple);
+                } // Add tuple of individual piece to the list
             }
         }
         return finalMoves;
     }
 
-    // Define the function for calculating legal moves for a rook
     // Define the function for calculating legal moves for a rook
     public List<Tuple<Long, List<Long>>> whiteRookMove(Long rooks, Long whiteOcc, Long blackOcc) {
         List<Tuple<Long, List<Long>>> finalMoves = new ArrayList<>();
@@ -339,13 +341,13 @@ public class Move {
                 }
 
                 tuple.setSecond(moveList); // Add moveList to individual piece's tuple
-                finalMoves.add(tuple); // Add tuple of individual piece to the list
+                if(!moveList.isEmpty()) {
+                    finalMoves.add(tuple);
+                } // Add tuple of individual piece to the list
             }
         }
         return finalMoves;
     }
-
-
 
     // Define the function for calculating legal moves for a queen
     public List<Tuple<Long, List<Long>>> whiteQueenMove(Long queens, Long whiteOcc, Long blackOcc) {
@@ -507,7 +509,22 @@ public class Move {
         }
         return currentBoard;
     }
+
+
+
+    public Tuple choseMove(List<Tuple<Long, List<Long>>> moveList){
+
+        Tuple piece = moveList.get(randomGenerator.nextInt(moveList.size()));
+
+        List<Long> moves = (List<Long>) piece.getMoves();  //get list of moves
+
+        Long endMove = moves.get(randomGenerator.nextInt(moves.size()));   //choses which move in the list of moves for the given piece to execute, will have to edit later just for testing logic in move generate function
+
+        piece.setSecond(endMove);
+        return piece;
+    }
 }
+
 
 //Later on: if we want to speed up move generaton functions, make king and knight lookup instead of calculation
 
