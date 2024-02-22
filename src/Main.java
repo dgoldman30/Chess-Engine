@@ -1,32 +1,29 @@
+import java.util.List;
+
 public class Main {
     public static void main(String[] args) {
 
         Board chessBoard = new Board();
 
-        //how would we determine the differences if two pawns move to the same square
-        chessBoard.stringToBitBoard();
+        chessBoard.stringToBitBoard();  //make bitboards out of board string
 
         Move move = new Move();
 
-//TEST PAWN MOVES
-        //chessBoard.whitePawnBoard = move.whitePawnMove(chessBoard.whitePawnBoard, chessBoard.whiteOccBoard, chessBoard.blackOccBoard);
-        //chessBoard.blackPawnBoard = move.blackPawnMove(chessBoard.blackPawnBoard, chessBoard.whiteOccBoard, chessBoard.blackOccBoard);
+        Evaluation evaluate = new Evaluation();
 
-//TEST Knight MOVES
-        chessBoard.whiteKnightBoard = move.whiteKnightMove(chessBoard.whiteKnightBoard, chessBoard.whiteOccBoard);
-        chessBoard.blackKnightBoard = move.blackKnightMove(chessBoard.blackKnightBoard, chessBoard.blackOccBoard);
+
 
 //TEST Bishop MOVES
-        chessBoard.whiteBishopBoard = move.whiteBishopMove(chessBoard.whiteBishopBoard, chessBoard.occBoard);
+        // chessBoard.whiteBishopBoard = move.whiteBishopMove(chessBoard.whiteBishopBoard, chessBoard.whiteOccBoard, chessBoard.blackOccBoard);
 
-//TEST Rook MOVES
-        //chessBoard.whiteRookBoard = move.rookMove(chessBoard.whiteRookBoard, chessBoard.occBoard);
+//Generate random white move
+        List<Tuple<Long, List<Long>>> moveList = move.generateWhiteMoves(chessBoard);     //generate all moves
 
-//TEST Queen MOVES
-        //chessBoard.whiteQueenBoard = move.queenMove(chessBoard.whiteQueenBoard, chessBoard.occBoard);
 
-//TEST King MOVES
-        //chessBoard.whiteKingBoard = move.kingMove(chessBoard.whiteKingBoard, chessBoard.occBoard);
+
+        Tuple piece = evaluate.choseMove(moveList); //select Piece and Move for piece
+
+        chessBoard = move.doMove(chessBoard, piece);  //EXECUTES the chosen move for piece
 
 
         //Print Board
