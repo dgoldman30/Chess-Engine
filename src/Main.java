@@ -26,11 +26,9 @@ public class Main {
 
 //Notes
 
-
-
 //TRAVERSING THE GAME TREE
 //do depth first search
 
 //DeBruijn sequences
 //used to find the board position of a bit
-//MSB-most signifigant bit LSB- least signifigant bit
+//MSB-most significant bit LSB- least significant bit
