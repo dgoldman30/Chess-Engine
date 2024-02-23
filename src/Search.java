@@ -17,7 +17,7 @@ public class Search {
             int score = min(newBoard, depth - 1, alpha, beta);
             if (score > bestScore) {
                 bestScore = score;
-                 bestMove = new Tuple(whiteMove.getStart(), whiteMove.getMoves());
+                bestMove = new Tuple(whiteMove.getStart(), whiteMove.getMoves());
             }
             alpha = Math.max(alpha, bestScore);
             if (beta <= alpha) {

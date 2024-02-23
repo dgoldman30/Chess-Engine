@@ -5,10 +5,9 @@ import java.util.Random;
 
 public class Move {
 
-    Random randomGenerator = new Random(); //for random move REMOVE LATER LOL
+    Random randomGenerator = new Random(); //for random move REMOVE LATER LOL***
 
-
-    //this will have different return statement later
+    //this will have different return statement later***
     public List<Tuple<Long, List<Long>>> generateWhiteMoves(Board chessBoard){
         List<Tuple<Long, List<Long>>> moveList = new ArrayList<Tuple<Long, List<Long>>>();
 
@@ -29,7 +28,6 @@ public class Move {
         moveList.addAll(blackBishopMove(chessBoard.blackBishopBoard,chessBoard.blackOccBoard, chessBoard.whiteOccBoard));
 
         return moveList;
-
     }
 
     private List<Tuple<Long, List<Long>>> blackBishopMove(long blackBishopBoard, long blackOccBoard, long whiteOccBoard) {
@@ -40,13 +38,12 @@ public class Move {
         return null;
     }
 
-
     public List<Tuple<Long, List<Long>>> whitePawnMove(Long pawns, Long whiteOcc, Long blackOcc){
 
         List<Tuple<Long, List<Long>>> finalMoves = new ArrayList<Tuple<Long, List<Long>>>();
 
         // Iterate through each pawn individually
-        for (int i = 0; i < 64; i++) {                  //pawn will never be able to get to first or last rank. room for improvement
+        for (int i = 0; i < 64; i++) {                  // pawn will never be able to get to first or last rank. room for improvement***
             long pawnMask = 1L << i;
 
 
@@ -88,7 +85,6 @@ public class Move {
                 }
             }
         }
-
         return finalMoves;
     }
 
@@ -97,11 +93,11 @@ public class Move {
         List<Tuple<Long, List<Long>>> finalMoves = new ArrayList<Tuple<Long, List<Long>>>();
 
         // Iterate through each pawn individually
-        for (int i = 0; i < 64; i++) {                  //pawn will never be able to get to first or last rank. room for improvement
+        for (int i = 0; i < 64; i++) {                  //pawn will never be able to get to first or last rank. room for improvement***
             long pawnMask = 1L << i;
 
 
-            // Check if there's a white pawn at the current position
+            // Check if there's a black pawn at the current position
             if ((pawns & pawnMask) != 0) {
 
                 List<Long> moveList = new ArrayList<>();
@@ -140,14 +136,14 @@ public class Move {
         }
         return finalMoves;
     }
-    public List<Tuple<Long, List<Long>>> whiteKnightMove(Long knights, Long whiteOcc){    //HAVING BOUND ISSUES. it still adds the out of bounds moves to the list, resulting in empty moves
+    public List<Tuple<Long, List<Long>>> whiteKnightMove(Long knights, Long whiteOcc){    //HAVING BOUND ISSUES. it still adds the out of bounds moves to the list, resulting in empty moves***
 
         List<Tuple<Long, List<Long>>> finalMoves = new ArrayList<Tuple<Long, List<Long>>>();
 
         // Iterate through each knight individually
         for (int i = 0; i < 64; i++) {
             long knightMask = 1L << i;
-            // Check if there's a black knight at the current position
+            // Check if there's a white knight at the current position
             if ((knights & knightMask) != 0) {
 
                 List<Long> moveList = new ArrayList<>(); //make movelist for the individual piece
@@ -240,7 +236,7 @@ public class Move {
                         break;
                     }
                     moveList.add(targetSquare);
-                    if ((targetSquare & Board.FILE_A) != 0) break; // Break if the file A is reached
+                    if ((targetSquare & Board.FILE_A) != 0) break; // Break if file A is reached
                 }
 
                 // Calculate legal diagonal moves (up-right)
@@ -251,7 +247,7 @@ public class Move {
                         break;
                     }
                     moveList.add(targetSquare);
-                    if ((targetSquare & Board.FILE_H) != 0) break; // Break if the file H is reached
+                    if ((targetSquare & Board.FILE_H) != 0) break; // Break if file H is reached
                 }
 
                 // Calculate legal diagonal moves (down-left)
@@ -262,7 +258,7 @@ public class Move {
                         break;
                     }
                     moveList.add(targetSquare);
-                    if ((targetSquare & Board.FILE_A) != 0) break; // Break if the file A is reached
+                    if ((targetSquare & Board.FILE_A) != 0) break; // Break if file A is reached
                 }
 
                 // Calculate legal diagonal moves (down-right)
@@ -273,7 +269,7 @@ public class Move {
                         break;
                     }
                     moveList.add(targetSquare);
-                    if ((targetSquare & Board.FILE_H) != 0) break; // Break if the file H is reached
+                    if ((targetSquare & Board.FILE_H) != 0) break; // Break if file H is reached
                 }
 
                 tuple.setSecond(moveList); // Add moveList to individual piece's tuple
@@ -409,8 +405,6 @@ public class Move {
         return false; //get rid of this once inputs are fixed above
     }
 
-
-
     public Board doMove(Board currentBoard, Tuple tuple){
         //this inputs the bitboard of the piece that is being moved and removes the starting piece
         Long start = (Long) tuple.getStart();
@@ -455,7 +449,6 @@ public class Move {
         else if((currentBoard.blackKingBoard & endMove) != 0){
             currentBoard.blackKingBoard = currentBoard.blackKingBoard & ~endMove;
         }
-
 
 //CLEAR START SQUARE, POPULATE END SQUARE
 // CASES TO REMOVE START PIECE AND ADD END PIECE TO CORRECT BOARD.
@@ -510,23 +503,18 @@ public class Move {
         return currentBoard;
     }
 
-
-
     public Tuple choseMove(List<Tuple<Long, List<Long>>> moveList){
 
         Tuple piece = moveList.get(randomGenerator.nextInt(moveList.size()));
 
         List<Long> moves = (List<Long>) piece.getMoves();  //get list of moves
 
-        Long endMove = moves.get(randomGenerator.nextInt(moves.size()));   //choses which move in the list of moves for the given piece to execute, will have to edit later just for testing logic in move generate function
+        Long endMove = moves.get(randomGenerator.nextInt(moves.size()));   //chooses which move in the list of moves for the given piece to execute, will have to edit later just for testing logic in move generate function***
 
         piece.setSecond(endMove);
         return piece;
     }
 }
 
-
-//Later on: if we want to speed up move generaton functions, make king and knight lookup instead of calculation
-
-
+//Later on: if we want to speed up move generation functions, make king and knight lookup instead of calculation
 //use magic bitboard for sliding pieces like rook and bishop
