@@ -6,34 +6,41 @@ public class Search {
 
     // Function to find the best move for white
     public Tuple<Long, Long> findBestMoveForWhite(Board chessBoard, int depth) {
-        int alpha = Integer.MIN_VALUE;
-        int beta = Integer.MAX_VALUE;
+
+        //sets best score to be the worst score possible
         int bestScore = Integer.MIN_VALUE;
+
+        //set bestMove to be empty
         Tuple<Long, Long> bestMove = null;
 
-        List<Tuple<Long, List<Long>>> whiteMoves;
-        whiteMoves = new Move().generateWhiteMoves(chessBoard);
+        // Generate all possible moves for white
+        List<Tuple<Long, List<Long>>> whiteMoves = new Move().generateWhiteMoves(chessBoard);
 
+        // Iterate through each possible move
         for (Tuple<Long, List<Long>> whiteMove : whiteMoves) {
             for (Long individualMove : whiteMove.getMoves()) {
+                // Make new tuple with individual move
                 Tuple<Long, Long> singleMoveTuple = new Tuple<>(whiteMove.getStart(), individualMove);
+                // Apply the move to a new board
                 Board newBoard = applyMove(chessBoard, singleMoveTuple);
+                // Evaluate the board
                 int score = min(newBoard, depth - 1);
-
-                if (score > bestScore) {
+                // Update bestScore if score is higher
+                if (score >= bestScore) {
                     bestScore = score;
                     bestMove = singleMoveTuple; // Update best move
                 }
             }
         }
-
         return bestMove;
     }
 
 
     // Helper function to apply a move to the board and return the resulting board
     private Board applyMove(Board board, Tuple<Long, Long> move) {
+        // Make a new copy of current board
         Board newBoard = new Board(board.whitePawnBoard, board.whiteKnightBoard, board.whiteRookBoard, board.whiteBishopBoard, board.whiteKingBoard, board.whiteQueenBoard, board.whiteOccBoard, board.blackPawnBoard, board.blackKnightBoard, board.blackBishopBoard, board.blackRookBoard, board.blackQueenBoard, board.blackKingBoard, board.blackOccBoard);
+        // Execute the move on the new board
         new Move().doMove(newBoard, move);
         return newBoard;
     }
@@ -42,41 +49,52 @@ public class Search {
         if (depth == 0 /* or game over */) {
             return evaluate.evaluateWhite(board);
         }
-
+        int maxScore = Integer.MIN_VALUE;
+        // Generate all white moves from board
         List<Tuple<Long, List<Long>>> whiteMoves = new Move().generateWhiteMoves(board);
 
-        int bestScore = Integer.MIN_VALUE;
-
+        // Iterate through each possible move
         for (Tuple<Long, List<Long>> whiteMove : whiteMoves) {
             for (Long individualMove : whiteMove.getMoves()) {
+                // Make new tuple with individual move
                 Tuple<Long, Long> singleMoveTuple = new Tuple<>(whiteMove.getStart(), individualMove);
+                // Apply the move to a new board
                 Board newBoard = applyMove(board, singleMoveTuple);
+                // Evaluate it
                 int score = min(newBoard, depth - 1);
-                bestScore = Math.max(bestScore, score);
+                // Update maxScore if score is larger
+                if (score >= maxScore){
+                    maxScore = score;
+                }
             }
         }
-
-        return bestScore;
+        return maxScore;
     }
 
     private int min(Board board, int depth) {
         if (depth == 0 /* or game over */) {
             return evaluate.evaluateBlack(board);
         }
-
+        int minScore = Integer.MAX_VALUE;
+        // Generate all black moves
         List<Tuple<Long, List<Long>>> blackMoves = new Move().generateBlackMoves(board);
 
-        int bestScore = Integer.MAX_VALUE;
-
+        // Iterate through each possible move
         for (Tuple<Long, List<Long>> blackMove : blackMoves) {
             for (Long individualMove : blackMove.getMoves()) {
+                // Make new tuple with individual move
                 Tuple<Long, Long> singleMoveTuple = new Tuple<>(blackMove.getStart(), individualMove);
+                // Apply the move to a new board
                 Board newBoard = applyMove(board, singleMoveTuple);
+                // Evaluate the position of next moves
                 int score = max(newBoard, depth - 1);
-                bestScore = Math.min(bestScore, score);
+                // Update bestScore if score is lower
+                if (score <= minScore){
+                    minScore = score;
+                }
             }
         }
-
-        return bestScore;
+        return minScore;
     }
 }
+

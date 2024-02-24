@@ -7,7 +7,7 @@ public class Board {
                     "--------" +
                     "--------" +
                     "--------" +
-                    "--p----r" +
+                    "--r--b--" +
                     "PPPPPPPP" +
                     "RNBQKBNR";
 
