@@ -2,12 +2,12 @@ public class Board {
 
     //UPPERCASE IS WHITE AND STARTS AT THE BOTTOM OF THIS STRING AND MOVES UP
     String str =
-                    "rkbkqbn-" +
-                    "pp-ppppp" +
+                    "rkbkqbnr" +
+                    "pppp-ppp" +
                     "--------" +
                     "--------" +
                     "--------" +
-                    "--r--b--" +
+                    "----p---" +
                     "PPPPPPPP" +
                     "RNBQKBNR";
 

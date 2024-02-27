@@ -1,5 +1,4 @@
 public class Evaluation {
-
     // Evaluation weights for different aspects of the game
     private static final int PAWN_VALUE = 100;
     private static final int KNIGHT_VALUE = 320;

@@ -2,6 +2,7 @@ import java.util.List;
 
 public class Search {
 
+    //CURRENTLY THE SEARCH FUNCTIONS JUST OUTPUTS THE FINAL MOVE IN THE LIST. THIS MEANS ITS VEIWING EVERY MOVE AS THE BEST MOVE
     Evaluation evaluate = new Evaluation();
 
     // Function to find the best move for white
@@ -63,7 +64,7 @@ public class Search {
                 // Evaluate it
                 int score = min(newBoard, depth - 1);
                 // Update maxScore if score is larger
-                if (score >= maxScore){
+                if (score > maxScore){
                     maxScore = score;
                 }
             }
@@ -89,7 +90,7 @@ public class Search {
                 // Evaluate the position of next moves
                 int score = max(newBoard, depth - 1);
                 // Update bestScore if score is lower
-                if (score <= minScore){
+                if (score < minScore){
                     minScore = score;
                 }
             }
@@ -97,4 +98,3 @@ public class Search {
         return minScore;
     }
 }
-
