@@ -5,6 +5,7 @@ public class Search {
     //CURRENTLY THE SEARCH FUNCTIONS JUST OUTPUTS THE FINAL MOVE IN THE LIST. THIS MEANS ITS VEIWING EVERY MOVE AS THE BEST MOVE
     Evaluation evaluate = new Evaluation();
 
+
     // Function to find the best move for white
     public Tuple<Long, Long> findBestMoveForWhite(Board chessBoard, int depth) {
 
@@ -25,11 +26,15 @@ public class Search {
                 // Apply the move to a new board
                 Board newBoard = applyMove(chessBoard, singleMoveTuple);
                 // Evaluate the board
-                int score = min(newBoard, depth - 1);
-                // Update bestScore if score is higher
-                if (score >= bestScore) {
+                int score = min(newBoard, depth - 1);    //not outputting best move
+                // Debug print statements
+                System.out.println("Move: " + "\n" + newBoard);
+                System.out.println("Score: " + score);
+
+                if (score > bestScore) {
                     bestScore = score;
-                    bestMove = singleMoveTuple; // Update best move
+                    bestMove = singleMoveTuple;
+                    System.out.println("Best Score Updated: " + bestScore);
                 }
             }
         }

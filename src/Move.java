@@ -14,6 +14,7 @@ public class Move {
         moveList.addAll(whiteKnightMove(chessBoard.whiteKnightBoard, chessBoard.whiteOccBoard));
         moveList.addAll(whiteRookMove(chessBoard.whiteRookBoard,chessBoard.whiteOccBoard, chessBoard.blackOccBoard));
         moveList.addAll(whiteBishopMove(chessBoard.whiteBishopBoard,chessBoard.whiteOccBoard, chessBoard.blackOccBoard));
+        moveList.addAll(whiteQueenMove(chessBoard.whiteQueenBoard, chessBoard.whiteOccBoard, chessBoard.blackOccBoard));
 
         return moveList;
     }
@@ -25,6 +26,7 @@ public class Move {
         moveList.addAll(blackKnightMove(chessBoard.blackKnightBoard, chessBoard.blackOccBoard));
         moveList.addAll(blackRookMove(chessBoard.blackRookBoard,chessBoard.blackOccBoard, chessBoard.whiteOccBoard));
         moveList.addAll(blackBishopMove(chessBoard.blackBishopBoard,chessBoard.blackOccBoard, chessBoard.whiteOccBoard));
+        moveList.addAll(blackQueenMove(chessBoard.blackQueenBoard, chessBoard.whiteOccBoard, chessBoard.blackOccBoard));
 
         return moveList;
     }
