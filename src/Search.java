@@ -10,7 +10,8 @@ public class Search {
     public Tuple<Long, Long> findBestMoveForWhite(Board chessBoard, int depth) {
 
         //sets best score to be the worst score possible
-        int bestScore = Integer.MIN_VALUE;
+        int bestScore = Integer.MAX_VALUE;
+        //int bestScore = 0;
 
         //set bestMove to be empty
         Tuple<Long, Long> bestMove = null;
@@ -31,7 +32,7 @@ public class Search {
                 System.out.println("Move: " + "\n" + newBoard);
                 System.out.println("Score: " + score);
 
-                if (score > bestScore) {
+                if (score < bestScore) {
                     bestScore = score;
                     bestMove = singleMoveTuple;
                     System.out.println("Best Score Updated: " + bestScore);
