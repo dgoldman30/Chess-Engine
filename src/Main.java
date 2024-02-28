@@ -19,7 +19,7 @@ public class Main {
         //chessBoard = move.doMove(chessBoard, piece);  //EXECUTES the chosen move for piece
 
 //ATTEMPTED SEARCH
-        Tuple<Long, Long> bestMove = search.findBestMoveForWhite(chessBoard,3);
+        Tuple<Long, Long> bestMove = search.findBestMoveForWhite(chessBoard,1);
         chessBoard = move.doMove(chessBoard, bestMove);
 
         //Print Board

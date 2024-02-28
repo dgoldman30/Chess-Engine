@@ -15,6 +15,7 @@ public class Move {
         moveList.addAll(whiteRookMove(chessBoard.whiteRookBoard,chessBoard.whiteOccBoard, chessBoard.blackOccBoard));
         moveList.addAll(whiteBishopMove(chessBoard.whiteBishopBoard,chessBoard.whiteOccBoard, chessBoard.blackOccBoard));
         moveList.addAll(whiteQueenMove(chessBoard.whiteQueenBoard, chessBoard.whiteOccBoard, chessBoard.blackOccBoard));
+        moveList.addAll(whiteKingMove(chessBoard.whiteKingBoard, chessBoard.whiteOccBoard));
 
         return moveList;
     }
@@ -27,6 +28,7 @@ public class Move {
         moveList.addAll(blackRookMove(chessBoard.blackRookBoard,chessBoard.blackOccBoard, chessBoard.whiteOccBoard));
         moveList.addAll(blackBishopMove(chessBoard.blackBishopBoard,chessBoard.blackOccBoard, chessBoard.whiteOccBoard));
         moveList.addAll(blackQueenMove(chessBoard.blackQueenBoard, chessBoard.whiteOccBoard, chessBoard.blackOccBoard));
+        moveList.addAll(blackKingMove(chessBoard.blackKingBoard, chessBoard.blackOccBoard));
 
         return moveList;
     }
@@ -483,7 +485,7 @@ public class Move {
     public List<Tuple<Long, List<Long>>> blackQueenMove(Long queens, Long whiteOcc, Long blackOcc) {
         List<Tuple<Long, List<Long>>> finalMoves = new ArrayList<>();
 
-        // Combine legal moves of rooks and bishops for white queen
+        // Combine legal moves of rooks and bishops for black queen
         List<Tuple<Long, List<Long>>> rookMoves = blackRookMove(queens, whiteOcc, blackOcc);
         List<Tuple<Long, List<Long>>> bishopMoves = blackBishopMove(queens, whiteOcc, blackOcc);
 
@@ -495,41 +497,131 @@ public class Move {
         return finalMoves;
     }
 
-    public long whiteKingMove(long kingBoard, long whiteOcc) {
+    public List<Tuple<Long, List<Long>>> whiteKingMove(long kingBoard, long whiteOcc) {
+        List<Tuple<Long, List<Long>>> finalMoves = new ArrayList<>();
 
-        //forward
-        Long singleMove = (kingBoard >> 8) & ~whiteOcc;
-        Long diagLeftMove = (kingBoard >> 7) & ~whiteOcc & ~Board.FILE_A;
-        Long diagrightMove = (kingBoard >> 9) & ~whiteOcc & ~Board.FILE_H;
+        // Iterate through to find the king
+        for (int i = 0; i < 64; i++) {
+            long kingMask = 1L << i;
+            // Check if the white king is at the current position
+            if ((kingBoard & kingMask) != 0) {
 
-        //back
-        Long backMove = (kingBoard << 8) & ~whiteOcc;
-        Long backLeftMove = (kingBoard << 7) & ~whiteOcc & ~Board.FILE_H;
-        Long backrightMove = (kingBoard << 9) & ~whiteOcc & ~Board.FILE_A;
+                List<Long> moveList = new ArrayList<>();
 
-        //inline
-        Long rightMove = (kingBoard >> 1) & ~whiteOcc & ~Board.FILE_H;
-        Long LeftMove = (kingBoard << 1) & ~whiteOcc & ~Board.FILE_A;
+                Tuple tuple = new Tuple(0L, moveList);
+                tuple.setFirst(kingMask);
 
-        return singleMove | diagLeftMove| diagrightMove| backMove | backLeftMove | backrightMove | rightMove | LeftMove;
+                // Move one square forward
+                Long forward = (kingBoard >> 8) & ~whiteOcc;
+                if (forward != 0) {
+                    moveList.add(forward);
+                }
+                // Move one square to the right
+                Long right = (kingBoard >> 1) & ~whiteOcc & ~Board.FILE_H;
+                if (right != 0) {
+                    moveList.add(right);
+                }
+                // Move one square to the left
+                Long left = (kingBoard << 1) & ~whiteOcc & ~Board.FILE_A;
+                if (left != 0) {
+                    moveList.add(left);
+                }
+                // Move one square back
+                Long back = (kingBoard << 8) & ~whiteOcc;
+                if (back != 0) {
+                    moveList.add(back);
+                }
+                // Move diagonally forward and left
+                Long forwardLeftMove = (kingBoard >> 7) & ~whiteOcc & ~Board.FILE_A;
+                if (forwardLeftMove != 0) {
+                    moveList.add(forwardLeftMove);
+                }
+                // Move diagonally forward and right
+                Long forwardRightMove = (kingBoard >> 9) & ~whiteOcc & ~Board.FILE_H;
+                if (forwardRightMove != 0) {
+                    moveList.add(forwardRightMove);
+                }
+                // Move diagonally back and left
+                Long backLeftMove = (kingBoard << 7) & ~whiteOcc & ~Board.FILE_H;
+                if (backLeftMove != 0) {
+                    moveList.add(backLeftMove);
+                }
+                // Move diagonally back and right
+                Long backRightMove = (kingBoard << 9) & ~whiteOcc & ~Board.FILE_A;
+                if (backRightMove != 0) {
+                    moveList.add(backRightMove);
+                }
+                tuple.setSecond(moveList);
+                if (!moveList.isEmpty()) {
+                    finalMoves.add(tuple);
+                }
+            }
+        }
+        return finalMoves;
     }
-    public long blackKingMove(long kingBoard, long blackOcc) {
 
-        //forward
-        Long singleMove = (kingBoard >> 8) & ~blackOcc;
-        Long diagLeftMove = (kingBoard >> 7) & ~blackOcc & ~Board.FILE_A;
-        Long diagrightMove = (kingBoard >> 9) & ~blackOcc & ~Board.FILE_H;
+    public List<Tuple<Long, List<Long>>> blackKingMove(long kingBoard, long blackOcc) {
 
-        //back
-        Long backMove = (kingBoard << 8) & ~blackOcc;
-        Long backLeftMove = (kingBoard << 7) & ~blackOcc & ~Board.FILE_H;
-        Long backrightMove = (kingBoard << 9) & ~blackOcc & ~Board.FILE_A;
+        List<Tuple<Long, List<Long>>> finalMoves = new ArrayList<>();
 
-        //inline
-        Long rightMove = (kingBoard >> 1) & ~blackOcc & ~Board.FILE_H;
-        Long LeftMove = (kingBoard << 1) & ~blackOcc & ~Board.FILE_A;
+        // Iterate through to find the king
+        for (int i = 0; i < 64; i++) {
+            long kingMask = 1L << i;
+            // Check if the black king is at the current position
+            if ((kingBoard & kingMask) != 0) {
 
-        return singleMove | diagLeftMove| diagrightMove| backMove | backLeftMove | backrightMove | rightMove | LeftMove;
+                List<Long> moveList = new ArrayList<>();
+
+                Tuple tuple = new Tuple(0L, moveList);
+                tuple.setFirst(kingMask);
+
+                // Move one square forward
+                Long forward = (kingBoard >> 8) & ~blackOcc;
+                if (forward != 0) {
+                    moveList.add(forward);
+                }
+                // Move one square to the right
+                Long right = (kingBoard >> 1) & ~blackOcc & ~Board.FILE_H;
+                if (right != 0) {
+                    moveList.add(right);
+                }
+                // Move one square to the left
+                Long left = (kingBoard << 1) & ~blackOcc & ~Board.FILE_A;
+                if (left != 0) {
+                    moveList.add(left);
+                }
+                // Move one square back
+                Long back = (kingBoard << 8) & ~blackOcc;
+                if (back != 0) {
+                    moveList.add(back);
+                }
+                // Move diagonally forward and left
+                Long forwardLeftMove = (kingBoard >> 7) & ~blackOcc & ~Board.FILE_A;
+                if (forwardLeftMove != 0) {
+                    moveList.add(forwardLeftMove);
+                }
+                // Move diagonally forward and right
+                Long forwardRightMove = (kingBoard >> 9) & ~blackOcc & ~Board.FILE_H;
+                if (forwardRightMove != 0) {
+                    moveList.add(forwardRightMove);
+                }
+                // Move diagonally back and left
+                Long backLeftMove = (kingBoard << 7) & ~blackOcc & ~Board.FILE_H;
+                if (backLeftMove != 0) {
+                    moveList.add(backLeftMove);
+                }
+                // Move diagonally back and right
+                Long backRightMove = (kingBoard << 9) & ~blackOcc & ~Board.FILE_A;
+                if (backRightMove != 0) {
+                    moveList.add(backRightMove);
+                }
+                tuple.setSecond(moveList);
+                if (!moveList.isEmpty()) {
+                    finalMoves.add(tuple);
+                }
+            }
+        }
+        return finalMoves;
     }
 
 //Tests to see if move will make own king in check
