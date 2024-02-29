@@ -1,15 +1,31 @@
 public class Board {
 
     //UPPERCASE IS WHITE AND STARTS AT THE BOTTOM OF THIS STRING AND MOVES UP
+
+    //Starting board
     String str =
+                    "rnbkqbnr" +
+                    "pppppppp" +
+                    "--------" +
+                    "--------" +
+                    "--------" +
+                    "--------" +
+                    "PPPPPPPP" +
+                    "RNBQKBNR";
+
+
+    /*   EMPTY BOARD
+     String str =
                     "--------" +
                     "--------" +
                     "--------" +
                     "--------" +
                     "--------" +
                     "--------" +
-                    "----K---" +
+                    "--------" +
                     "--------";
+
+     */
 
     //set the bitboards for each type
 

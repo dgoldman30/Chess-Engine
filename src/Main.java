@@ -12,14 +12,10 @@ public class Main {
 
 
 //Generate random white move THIS RANDOM GENERATOR STILL WORKS
-       //List<Tuple<Long, List<Long>>> moveList = move.generateWhiteMoves(chessBoard);     //generate all moves
-
-       //Tuple piece = move.choseMove(moveList); //select Piece and Move for piece
-
-        //chessBoard = move.doMove(chessBoard, piece);  //EXECUTES the chosen move for piece
+        //chessBoard = move.randomMove(chessBoard);
 
 //ATTEMPTED SEARCH
-        Tuple<Long, Long> bestMove = search.findBestMoveForWhite(chessBoard,1);
+        Tuple<Long, Long> bestMove = search.findBestMoveForWhite(chessBoard,5);
         chessBoard = move.doMove(chessBoard, bestMove);
 
         //Print Board

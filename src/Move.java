@@ -193,6 +193,18 @@ public class Move {
                 moveList.add((knightMask << 17) & ~blackOcc & ~Board.FILE_A);
                 tuple.setSecond(moveList); //add moveList to individual pieces tuple
                 finalMoves.add(tuple); //add tuple of individual piece to list
+
+                // Iterate through the list and remove elements with all 0's     THIS REMOVES THE MOVES THAT WERE REMOVED FOR BOUNDARIES
+                for (int X = moveList.size() - 1; X >= 0; X--) {
+                    Long value = moveList.get(X);
+                    if (value == 0L) {
+                        moveList.remove(X);
+                    }
+                }
+                tuple.setSecond(moveList); //add moveList to individual pieces tuple
+                if(!moveList.isEmpty()) {
+                    finalMoves.add(tuple);
+                } //add tuple of individual piece to list if list is not empty
             }
         }
         return finalMoves;
@@ -743,6 +755,15 @@ public class Move {
 
         piece.setSecond(endMove);
         return piece;
+    }
+
+    public Board randomMove(Board chessBoard){
+        List<Tuple<Long, List<Long>>> moveList = generateWhiteMoves(chessBoard);     //generate all moves
+
+        Tuple piece = choseMove(moveList); //select Piece and Move for piece
+
+        chessBoard = doMove(chessBoard, piece);  //EXECUTES the chosen move for piece
+        return chessBoard;
     }
 }
 
