@@ -11,11 +11,11 @@ public class Main {
         Search search = new Search();
 
 
-//Generate random white move THIS RANDOM GENERATOR STILL WORKS
+//Generate Random Move
         //chessBoard = move.randomMove(chessBoard);
 
-//ATTEMPTED SEARCH
-        Tuple<Long, Long> bestMove = search.findBestMoveForWhite(chessBoard,5);
+//MINIMAX
+        Tuple<Long, Long> bestMove = search.findBestMoveForWhite(chessBoard,4);
         chessBoard = move.doMove(chessBoard, bestMove);
 
         //Print Board
@@ -24,9 +24,6 @@ public class Main {
 }
 
 //Notes
-
-//TRAVERSING THE GAME TREE
-//do depth first search
 
 //DeBruijn sequences
 //used to find the board position of a bit

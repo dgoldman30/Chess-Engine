@@ -3,7 +3,7 @@ public class Board {
     //UPPERCASE IS WHITE AND STARTS AT THE BOTTOM OF THIS STRING AND MOVES UP
 
     //Starting board
-    String str =
+  /*   String str =
                     "rnbkqbnr" +
                     "pppppppp" +
                     "--------" +
@@ -11,7 +11,17 @@ public class Board {
                     "--------" +
                     "--------" +
                     "PPPPPPPP" +
-                    "RNBQKBNR";
+                    "RNBKQBNR";
+*/
+   String str =
+            "rnbkqbnr" +
+                    "pppppppp" +
+                    "--------" +
+                    "--------" +
+                    "--------" +
+                    "---r-n-n" +
+                    "PPPPPPPP" +
+                    "RNBKQBNR";
 
 
     /*   EMPTY BOARD

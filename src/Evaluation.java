@@ -8,85 +8,86 @@ public class Evaluation {
     private static final int KING_VALUE = 20000;
 
     public int evaluateWhite(Board board) {
-        int score = 0;
-
+        int whiteScore = 0;
+        int blackScore = 0;
         // Evaluate white pawns
-        score += PAWN_VALUE * Long.bitCount(board.whitePawnBoard);
+        whiteScore += PAWN_VALUE * Long.bitCount(board.whitePawnBoard);
 
         // Evaluate white knights
-        score += KNIGHT_VALUE * Long.bitCount(board.whiteKnightBoard);
+        whiteScore += KNIGHT_VALUE * Long.bitCount(board.whiteKnightBoard);
 
         // Evaluate white bishops
-        score += BISHOP_VALUE * Long.bitCount(board.whiteBishopBoard);
+        whiteScore += BISHOP_VALUE * Long.bitCount(board.whiteBishopBoard);
 
         // Evaluate white rooks
-        score += ROOK_VALUE * Long.bitCount(board.whiteRookBoard);
+        whiteScore += ROOK_VALUE * Long.bitCount(board.whiteRookBoard);
 
         // Evaluate white queens
-        score += QUEEN_VALUE * Long.bitCount(board.whiteQueenBoard);
+        whiteScore += QUEEN_VALUE * Long.bitCount(board.whiteQueenBoard);
 
         // Evaluate white king
-        score += KING_VALUE * Long.bitCount(board.whiteKingBoard);
+        whiteScore += KING_VALUE * Long.bitCount(board.whiteKingBoard);
 
         // Evaluate black pawns
-        score -= PAWN_VALUE * Long.bitCount(board.blackPawnBoard);
+        blackScore += PAWN_VALUE * Long.bitCount(board.blackPawnBoard);
 
         // Evaluate black knights
-        score -= KNIGHT_VALUE * Long.bitCount(board.blackKnightBoard);
+        blackScore += KNIGHT_VALUE * Long.bitCount(board.blackKnightBoard);
 
         // Evaluate black bishops
-        score -= BISHOP_VALUE * Long.bitCount(board.blackBishopBoard);
+        blackScore += BISHOP_VALUE * Long.bitCount(board.blackBishopBoard);
 
         // Evaluate black rooks
-        score -= ROOK_VALUE * Long.bitCount(board.blackRookBoard);
+        blackScore += ROOK_VALUE * Long.bitCount(board.blackRookBoard);
 
         // Evaluate black queens
-        score -= QUEEN_VALUE * Long.bitCount(board.blackQueenBoard);
+        blackScore += QUEEN_VALUE * Long.bitCount(board.blackQueenBoard);
 
         // Evaluate black king
-        score -= KING_VALUE * Long.bitCount(board.blackKingBoard);
+        blackScore += KING_VALUE * Long.bitCount(board.blackKingBoard);
 
-        return score;
+        return whiteScore - blackScore;
     }
 
     public int evaluateBlack(Board board) {
-        int score = 0;
-
-        // Evaluate black pawns
-        score += PAWN_VALUE * Long.bitCount(board.blackPawnBoard);
-
-        // Evaluate black knights
-        score += KNIGHT_VALUE * Long.bitCount(board.blackKnightBoard);
-
-        // Evaluate black bishops
-        score += BISHOP_VALUE * Long.bitCount(board.blackBishopBoard);
-
-        // Evaluate black rooks
-        score += ROOK_VALUE * Long.bitCount(board.blackRookBoard);
-
-        // Evaluate black queens
-        score += QUEEN_VALUE * Long.bitCount(board.blackQueenBoard);
-
-        // Evaluate black king
-        score += KING_VALUE * Long.bitCount(board.blackKingBoard);
+        int whiteScore = 0;
+        int blackScore = 0;
         // Evaluate white pawns
-        score -= PAWN_VALUE * Long.bitCount(board.whitePawnBoard);
+        whiteScore += PAWN_VALUE * Long.bitCount(board.whitePawnBoard);
 
         // Evaluate white knights
-        score -= KNIGHT_VALUE * Long.bitCount(board.whiteKnightBoard);
+        whiteScore += KNIGHT_VALUE * Long.bitCount(board.whiteKnightBoard);
 
         // Evaluate white bishops
-        score -= BISHOP_VALUE * Long.bitCount(board.whiteBishopBoard);
+        whiteScore += BISHOP_VALUE * Long.bitCount(board.whiteBishopBoard);
 
         // Evaluate white rooks
-        score -= ROOK_VALUE * Long.bitCount(board.whiteRookBoard);
+        whiteScore += ROOK_VALUE * Long.bitCount(board.whiteRookBoard);
 
         // Evaluate white queens
-        score -= QUEEN_VALUE * Long.bitCount(board.whiteQueenBoard);
+        whiteScore += QUEEN_VALUE * Long.bitCount(board.whiteQueenBoard);
 
         // Evaluate white king
-        score -= KING_VALUE * Long.bitCount(board.whiteKingBoard);
+        whiteScore += KING_VALUE * Long.bitCount(board.whiteKingBoard);
 
-        return score;
+        // Evaluate black pawns
+        blackScore += PAWN_VALUE * Long.bitCount(board.blackPawnBoard);
+
+        // Evaluate black knights
+        blackScore += KNIGHT_VALUE * Long.bitCount(board.blackKnightBoard);
+
+        // Evaluate black bishops
+        blackScore += BISHOP_VALUE * Long.bitCount(board.blackBishopBoard);
+
+        // Evaluate black rooks
+        blackScore += ROOK_VALUE * Long.bitCount(board.blackRookBoard);
+
+        // Evaluate black queens
+        blackScore += QUEEN_VALUE * Long.bitCount(board.blackQueenBoard);
+
+        // Evaluate black king
+        blackScore += KING_VALUE * Long.bitCount(board.blackKingBoard);
+
+        return blackScore - whiteScore;
     }
 }

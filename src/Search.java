@@ -11,7 +11,6 @@ public class Search {
 
         //sets best score to be the worst score possible
         int bestScore = Integer.MAX_VALUE;
-        //int bestScore = 0;
 
         //set bestMove to be empty
         Tuple<Long, Long> bestMove = null;
@@ -27,15 +26,15 @@ public class Search {
                 // Apply the move to a new board
                 Board newBoard = applyMove(chessBoard, singleMoveTuple);
                 // Evaluate the board
-                int score = min(newBoard, depth - 1);    //not outputting best move
+                int score = min(newBoard, depth);
                 // Debug print statements
-                System.out.println("Move: " + "\n" + newBoard);
-                System.out.println("Score: " + score);
+                //System.out.println("Move: " + "\n" + newBoard);
+                //System.out.println("Score: " + score);
 
                 if (score < bestScore) {
                     bestScore = score;
                     bestMove = singleMoveTuple;
-                    System.out.println("Best Score Updated: " + bestScore);
+                    //System.out.println("Best Score Updated: " + bestScore);
                 }
             }
         }
@@ -69,8 +68,12 @@ public class Search {
                 Board newBoard = applyMove(board, singleMoveTuple);
                 // Evaluate it
                 int score = min(newBoard, depth - 1);
+
+                //System.out.println("maxMove: " + "\n" + newBoard);
+                //System.out.println("maxScore: " + score);
                 // Update maxScore if score is larger
                 if (score > maxScore){
+                    //System.out.println("Best Score Updated: " + maxScore);
                     maxScore = score;
                 }
             }
@@ -95,8 +98,11 @@ public class Search {
                 Board newBoard = applyMove(board, singleMoveTuple);
                 // Evaluate the position of next moves
                 int score = max(newBoard, depth - 1);
+                //System.out.println("minMove: " + "\n" + newBoard);
+                //System.out.println("minScore: " + score);
                 // Update bestScore if score is lower
                 if (score < minScore){
+                    //System.out.println("Best Score Updated: " + minScore);
                     minScore = score;
                 }
             }
