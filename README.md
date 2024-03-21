@@ -9,7 +9,7 @@ This is a simple Java-based Chess AI that uses a basic minimax algorithm with al
 3. Navigate to the directory containing the source code.
 4. Compile the Java files:
     ```
-    javac *.java
+    javac Main.java
     ```
 5. Run the program:
     ```
