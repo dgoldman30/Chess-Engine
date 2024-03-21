@@ -6,7 +6,7 @@ This is a simple Java-based Chess AI that uses a basic minimax algorithm with al
 
 1. Ensure you have Java installed on your system.
 2. Clone or download this repository to your local machine.
-3. Navigate to the directory containing the source code (`Chess-Engine/src').
+3. Navigate to the directory containing the source code (`Chess-Engine/src`).
 4. Compile the Java files:
     ```
     javac Main.java
