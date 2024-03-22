@@ -13,7 +13,7 @@ public class Board {
                     "PPPPPPPP" +
                     "RNBKQBNR";
 */
-   String str =
+   /*String str =
             "rnbkqbnr" +
                     "pppppppp" +
                     "--------" +
@@ -23,19 +23,19 @@ public class Board {
                     "PPPPPPPP" +
                     "RNBKQBNR";
 
-
-    /*   EMPTY BOARD
+*/
+       //EMPTY BOARD
      String str =
                     "--------" +
                     "--------" +
-                    "--------" +
-                    "--------" +
-                    "--------" +
+                    "--b-----" +
+                    "---P--p-" +
+                    "-----Q--" +
                     "--------" +
                     "--------" +
                     "--------";
 
-     */
+
 
     //set the bitboards for each type
 

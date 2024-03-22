@@ -1,5 +1,3 @@
-import java.util.List;
-
 public class Main {
     public static void main(String[] args) {
 
@@ -15,8 +13,12 @@ public class Main {
         //chessBoard = move.randomMove(chessBoard);
 
 //MINIMAX
-        Tuple<Long, Long> bestMove = search.findBestMoveForWhite(chessBoard,4);
-        chessBoard = move.doMove(chessBoard, bestMove);
+        //Tuple<Long, Long> bestMove = search.findBestMoveForWhite(chessBoard,4);
+        //chessBoard = move.doMove(chessBoard, bestMove);
+
+        //TRY TWO
+        miniMax miniMax = new miniMax();
+        miniMax.search(chessBoard, 4, true);
 
         //Print Board
         System.out.println(chessBoard);

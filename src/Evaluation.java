@@ -46,7 +46,8 @@ public class Evaluation {
         // Evaluate black king
         blackScore += KING_VALUE * Long.bitCount(board.blackKingBoard);
 
-        return whiteScore - blackScore;
+       // return whiteScore - blackScore;
+        return whiteScore;
     }
 
     public int evaluateBlack(Board board) {
@@ -88,6 +89,7 @@ public class Evaluation {
         // Evaluate black king
         blackScore += KING_VALUE * Long.bitCount(board.blackKingBoard);
 
-        return blackScore - whiteScore;
+        //return blackScore - whiteScore;
+        return blackScore;
     }
 }

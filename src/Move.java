@@ -1,10 +1,10 @@
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 
 public class Move {
 
     Random randomGenerator = new Random(); //for random move REMOVE LATER LOL***
+
+    Stack<Tuple<Tuple<Long, Long>, String>> madeMoves = new Stack<>();
 
     //this will have different return statement later***
     public List<Tuple<Long, List<Long>>> generateWhiteMoves(Board chessBoard){
@@ -636,60 +636,70 @@ public class Move {
         return finalMoves;
     }
 
-//Tests to see if move will make own king in check
-    public boolean inCheck(Long kingBoard, Boolean isWhite){
-        //split generate al moves into black vs white and & it to the king board to see if kings in check
-        if(isWhite){
-            //return kingBoard & generateBlackMoves();
-        } else{
-            //return kingBoard & generateWhiteMoves();
-        }
-        return false; //get rid of this once inputs are fixed above
-    }
-
     public Board doMove(Board currentBoard, Tuple tuple){
         //this inputs the bitboard of the piece that is being moved and removes the starting piece
         Long start = (Long) tuple.getStart();
-
         Long endMove = (Long) tuple.getMoves();
+
+        //piece type of captured piece
+        String capturedPiece = "NA";
 
 //CLEAR END SQUARE FIRST
         //find type of piece on end square to capture
         if((currentBoard.whitePawnBoard & endMove) != 0){
-            currentBoard.whitePawnBoard = currentBoard.whitePawnBoard & ~endMove; //remove captured piece
+            //remove captured piece
+            currentBoard.whitePawnBoard = currentBoard.whitePawnBoard & ~endMove;
+
+            //captured piece data
+            capturedPiece = "WP";
         }
         else if((currentBoard.blackPawnBoard & endMove) != 0){
             currentBoard.blackPawnBoard = currentBoard.blackPawnBoard & ~endMove;
+
+            //captured piece data
+            capturedPiece = "BP";
         }
         else if((currentBoard.whiteQueenBoard & endMove) != 0){
             currentBoard.whiteQueenBoard = currentBoard.whiteQueenBoard & ~endMove;
+            capturedPiece = "WQ";
         }
         else if((currentBoard.blackQueenBoard & endMove) != 0){
             currentBoard.blackQueenBoard = currentBoard.blackQueenBoard & ~endMove;
+            capturedPiece = "BQ";
         }
         else if((currentBoard.whiteKnightBoard & endMove) != 0){
             currentBoard.whiteKnightBoard = currentBoard.whiteKnightBoard & ~endMove;
+            capturedPiece = "WN";
         }
         else if((currentBoard.blackKnightBoard & endMove) != 0){
             currentBoard.blackKnightBoard = currentBoard.blackKnightBoard & ~endMove;
+            capturedPiece = "BN";
         }
         else if((currentBoard.whiteRookBoard & endMove) != 0){
             currentBoard.whiteRookBoard = currentBoard.whiteRookBoard & ~endMove;
+            capturedPiece = "WR";
         }
         else if((currentBoard.blackRookBoard & endMove) != 0){
             currentBoard.blackRookBoard = currentBoard.blackRookBoard & ~endMove;
+            capturedPiece = "BR";
         }
         else if((currentBoard.whiteBishopBoard & endMove) != 0){
             currentBoard.whiteBishopBoard = currentBoard.whiteBishopBoard & ~endMove;
+            capturedPiece = "WB";
         }
         else if((currentBoard.blackBishopBoard & endMove) != 0){
             currentBoard.blackBishopBoard = currentBoard.blackBishopBoard & ~endMove;
+
+            //captured piece data
+            capturedPiece = "BB";
         }
         else if((currentBoard.whiteKingBoard & endMove) != 0){
             currentBoard.whiteKingBoard = currentBoard.whiteKingBoard & ~endMove;
+            capturedPiece = "WK";
         }
         else if((currentBoard.blackKingBoard & endMove) != 0){
             currentBoard.blackKingBoard = currentBoard.blackKingBoard & ~endMove;
+            capturedPiece = "BK";
         }
 
 //CLEAR START SQUARE, POPULATE END SQUARE
@@ -742,9 +752,126 @@ public class Move {
             currentBoard.blackKingBoard = currentBoard.blackKingBoard & ~start;
             currentBoard.blackKingBoard |= endMove;
         }
+
+        //add move to moves list
+        Tuple<Tuple<Long, Long>, String> finalTuple = new Tuple<>(tuple, capturedPiece);
+
+        madeMoves.push(finalTuple);
         return currentBoard;
     }
 
+    public void undoMove(Board currentBoard) {
+
+        //Get move information
+        if (!madeMoves.isEmpty()) {
+            Tuple<Tuple<Long, Long>, String> moveInfo = madeMoves.pop();
+
+            //get moved piece tuple
+            Tuple<Long, Long> lastMove = moveInfo.getStart();
+
+            Long endPosition = lastMove.getMoves();
+            Long startPosition = lastMove.getStart();
+
+
+            // Identifying the moving piece and moving it back
+            if ((currentBoard.whitePawnBoard & endPosition) != 0) {
+                currentBoard.whitePawnBoard &= ~endPosition;
+                currentBoard.whitePawnBoard |= startPosition;
+            } else if ((currentBoard.blackPawnBoard & endPosition) != 0) {
+                currentBoard.blackPawnBoard &= ~endPosition;
+                currentBoard.blackPawnBoard |= startPosition;
+            } else if ((currentBoard.whiteKnightBoard & endPosition) != 0) {
+                currentBoard.whiteKnightBoard &= ~endPosition;
+                currentBoard.whiteKnightBoard |= startPosition;
+            } else if ((currentBoard.blackKnightBoard & endPosition) != 0) {
+                currentBoard.blackKnightBoard &= ~endPosition;
+                currentBoard.blackKnightBoard |= startPosition;
+            } else if ((currentBoard.whiteBishopBoard & endPosition) != 0) {
+                currentBoard.whiteBishopBoard &= ~endPosition;
+                currentBoard.whiteBishopBoard |= startPosition;
+            } else if ((currentBoard.blackBishopBoard & endPosition) != 0) {
+                currentBoard.blackBishopBoard &= ~endPosition;
+                currentBoard.blackBishopBoard |= startPosition;
+            } else if ((currentBoard.whiteRookBoard & endPosition) != 0) {
+                currentBoard.whiteRookBoard &= ~endPosition;
+                currentBoard.whiteRookBoard |= startPosition;
+            } else if ((currentBoard.blackRookBoard & endPosition) != 0) {
+                currentBoard.blackRookBoard &= ~endPosition;
+                currentBoard.blackRookBoard |= startPosition;
+            } else if ((currentBoard.whiteQueenBoard & endPosition) != 0) {
+                currentBoard.whiteQueenBoard &= ~endPosition;
+                currentBoard.whiteQueenBoard |= startPosition;
+            } else if ((currentBoard.blackQueenBoard & endPosition) != 0) {
+                currentBoard.blackQueenBoard &= ~endPosition;
+                currentBoard.blackQueenBoard |= startPosition;
+            } else if ((currentBoard.whiteKingBoard & endPosition) != 0) {
+                currentBoard.whiteKingBoard &= ~endPosition;
+                currentBoard.whiteKingBoard |= startPosition;
+            } else if ((currentBoard.blackKingBoard & endPosition) != 0) {
+                currentBoard.blackKingBoard &= ~endPosition;
+                currentBoard.blackKingBoard |= startPosition;
+            }
+
+            //NEED TO ADD BACK CAPTURED PIECE
+            String pieceType = moveInfo.getMoves();
+
+            if (!Objects.equals(pieceType, "NA")) {
+                if (Objects.equals(pieceType, "WP")) {
+                    currentBoard.whitePawnBoard |= endPosition;
+                } else if (Objects.equals(pieceType, "BP")) {
+                    currentBoard.blackPawnBoard |= endPosition;
+                } else if (Objects.equals(pieceType, "WN")) {
+
+                    currentBoard.whiteKnightBoard |= endPosition;
+                } else if (Objects.equals(pieceType, "BN")) {
+
+                    currentBoard.blackKnightBoard |= endPosition;
+                } else if (Objects.equals(pieceType, "WB")) {
+
+                    currentBoard.whiteBishopBoard |= endPosition;
+                } else if (Objects.equals(pieceType, "BB")) {
+                    currentBoard.blackBishopBoard |= endPosition;
+                } else if (Objects.equals(pieceType, "WR")) {
+                    currentBoard.whiteRookBoard |= endPosition;
+                } else if (Objects.equals(pieceType, "BR")) {
+                    currentBoard.blackRookBoard |= endPosition;
+                } else if (Objects.equals(pieceType, "WQ")) {
+                    currentBoard.whiteQueenBoard |= endPosition;
+                } else if (Objects.equals(pieceType, "BQ")) {
+                    currentBoard.blackQueenBoard |= endPosition;
+                } else if (Objects.equals(pieceType, "WK")) {
+                    currentBoard.whiteKingBoard |= endPosition;
+                } else if (Objects.equals(pieceType, "BK")) {
+                    currentBoard.blackKingBoard |= endPosition;
+                }
+
+            }
+
+
+            // Update occupancy boards
+            currentBoard.whiteOccBoard = currentBoard.whitePawnBoard | currentBoard.whiteKnightBoard |
+                    currentBoard.whiteBishopBoard | currentBoard.whiteRookBoard |
+                    currentBoard.whiteQueenBoard | currentBoard.whiteKingBoard;
+
+            currentBoard.blackOccBoard = currentBoard.blackPawnBoard | currentBoard.blackKnightBoard |
+                    currentBoard.blackBishopBoard | currentBoard.blackRookBoard |
+                    currentBoard.blackQueenBoard | currentBoard.blackKingBoard;
+
+            // Update the overall occupancy board
+            currentBoard.occBoard = currentBoard.whiteOccBoard | currentBoard.blackOccBoard;
+        }
+    }
+
+    //Tests to see if move will make own king in check
+    public boolean inCheck(Long kingBoard, Boolean isWhite){
+        //split generate al moves into black vs white and & it to the king board to see if kings in check
+        if(isWhite){
+            //return kingBoard & generateBlackMoves();
+        } else{
+            //return kingBoard & generateWhiteMoves();
+        }
+        return false; //get rid of this once inputs are fixed above
+    }
     public Tuple choseMove(List<Tuple<Long, List<Long>>> moveList){
 
         Tuple piece = moveList.get(randomGenerator.nextInt(moveList.size()));
