@@ -12,11 +12,7 @@ public class Main {
 //Generate Random Move
         //chessBoard = move.randomMove(chessBoard);
 
-//MINIMAX
-        //Tuple<Long, Long> bestMove = search.findBestMoveForWhite(chessBoard,4);
-        //chessBoard = move.doMove(chessBoard, bestMove);
-
-        //TRY TWO
+        //MiniMax
         miniMax miniMax = new miniMax();
         miniMax.search(chessBoard, 4, true);
 

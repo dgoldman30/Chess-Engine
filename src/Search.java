@@ -83,7 +83,8 @@ public class Search {
 
     private int min(Board board, int depth) {
         if (depth == 0 /* or game over */) {
-            return evaluate.evaluateBlack(board);
+            //return evaluate.evaluateBlack(board);
+            return evaluate.evaluateWhite(board);
         }
         int minScore = Integer.MAX_VALUE;
         // Generate all black moves

@@ -14,12 +14,12 @@ public class Board {
                     "RNBKQBNR";
 */
    String str =
-            "rnbkqbnr" +
+            "r-bkqb--" +
                     "pppppppp" +
                     "--------" +
                     "--------" +
                     "--------" +
-                    "---r-n-n" +
+                    "---q-n--" +
                     "PPPPPPPP" +
                     "RNBKQBNR";
 

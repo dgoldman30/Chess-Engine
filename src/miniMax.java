@@ -6,7 +6,7 @@ public class miniMax {
 
     public void search(Board chessBoard, int depth, boolean isWhite) {
 
-        int bestScore = Integer.MAX_VALUE;          //set bestMove to be empty, this is the return value
+        int bestScore = Integer.MIN_VALUE;          //set bestMove to be empty, this is the return value
         Tuple<Long, Long> bestMove = null;
         List<Tuple<Long, List<Long>>> moveList = isWhite ? Move.generateWhiteMoves(chessBoard) : Move.generateBlackMoves(chessBoard);
 
@@ -32,9 +32,11 @@ public class miniMax {
 
 
                 int score = min(chessBoard, depth, isWhite);
-                if (score < bestScore) {
+                System.out.println(score);
+                if (score > bestScore) {
                     bestScore = score;
                     bestMove = singleMoveTuple;
+                    System.out.println("Best Score" + bestScore);
                 }
                 Move.undoMove(chessBoard);
             }
@@ -45,7 +47,8 @@ public class miniMax {
 
     public int min(Board chessBoard, int depth, boolean isWhite) {
         if (depth == 0) {
-            int score = isWhite ? evaluate.evaluateBlack(chessBoard) : evaluate.evaluateWhite(chessBoard);
+            //int score = isWhite ? evaluate.evaluateBlack(chessBoard) : evaluate.evaluateWhite(chessBoard);
+            int score = evaluate.evaluateWhite(chessBoard);
             //System.out.println(score);
             return score;
         } else {
@@ -81,12 +84,14 @@ public class miniMax {
 
     public int max(Board chessBoard, int depth, boolean isWhite) {
         if (depth == 0) {
-            int score = isWhite ? evaluate.evaluateWhite(chessBoard) : evaluate.evaluateBlack(chessBoard);
+            //int score = isWhite ? evaluate.evaluateWhite(chessBoard) : evaluate.evaluateBlack(chessBoard);
             //System.out.println(score);
+
+            int score = evaluate.evaluateWhite(chessBoard);
             return score;
         } else {
             //set the best score to be highest number possible
-            int bestScore = Integer.MIN_VALUE;
+            int bestScore = Integer.MAX_VALUE;
             //find all new possible moves for other turn
             List<Tuple<Long, List<Long>>> moveList = isWhite ? Move.generateWhiteMoves(chessBoard) : Move.generateBlackMoves(chessBoard);
             //iterate through move list
@@ -105,7 +110,7 @@ public class miniMax {
                     //System.out.println("Three: " + "\n" + chessBoard);
 
                     int score = min(chessBoard, depth - 1, isWhite);
-                    if (score > bestScore) {
+                    if (score < bestScore) {
                         bestScore = score;
                     }
                     Move.undoMove(chessBoard);
