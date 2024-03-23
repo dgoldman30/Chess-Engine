@@ -32,7 +32,7 @@ public class miniMax {
                 Move.doMove(chessBoard, singleMoveTuple);
 
 
-                System.out.println("one: " + "\n" + chessBoard);
+                System.out.println("one:" + "\n" + chessBoard);
 
 
                 int score = min(chessBoard, depth, isWhite);

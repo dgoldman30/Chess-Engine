@@ -19,12 +19,12 @@ public class Main {
                         "PPPPPPPP" +
                         "RNBKQBNR";
         final String activeBoard =
-                        "r-bkqb--" +
+                        "rnbk-b-r" +
                         "pppppppp" +
                         "--------" +
                         "--------" +
                         "--------" +
-                        "---q-n--" +
+                        "--q-n---" +
                         "PPPPPPPP" +
                         "RNBKQBNR";
        //EMPTY BOARD
@@ -38,7 +38,7 @@ public class Main {
                     "--------" +
                     "--------";
 
-    chessBoard.stringToBitBoard(regBoard);  //make bitboards out of board string
+    chessBoard.stringToBitBoard(activeBoard);  //make bitboards out of board string
 
 
 //Generate Random Move
@@ -46,7 +46,7 @@ public class Main {
 
         //MiniMax
         miniMax miniMax = new miniMax();
-        miniMax.search(chessBoard, 4, true);
+        miniMax.search(chessBoard, 2, true);
 
         //Print Board
         System.out.println(chessBoard);

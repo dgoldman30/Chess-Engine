@@ -236,6 +236,7 @@ public class Move {
                     }
                     moveList.add(targetSquare);
                     if ((targetSquare & Board.FILE_A) != 0) break; // Break if file A is reached
+                    if ((targetSquare & Board.RANK_8) != 0) break; // Break if rank 8 is reached
                 }
 
                 // Calculate legal diagonal moves (up-right)
@@ -247,6 +248,7 @@ public class Move {
                     }
                     moveList.add(targetSquare);
                     if ((targetSquare & Board.FILE_H) != 0) break; // Break if file H is reached
+                    if ((targetSquare & Board.RANK_8) != 0) break; // Break if rank 8 is reached
                 }
 
                 // Calculate legal diagonal moves (down-left)
@@ -258,6 +260,7 @@ public class Move {
                     }
                     moveList.add(targetSquare);
                     if ((targetSquare & Board.FILE_A) != 0) break; // Break if file A is reached
+                    if ((targetSquare & Board.RANK_1) != 0) break; // Break if rank 1 is reached
                 }
 
                 // Calculate legal diagonal moves (down-right)
@@ -269,6 +272,7 @@ public class Move {
                     }
                     moveList.add(targetSquare);
                     if ((targetSquare & Board.FILE_H) != 0) break; // Break if file H is reached
+                    if ((targetSquare & Board.RANK_1) != 0) break; // Break if rank 1 is reached
                 }
 
                 tuple.setSecond(moveList); // Add moveList to individual piece's tuple
@@ -304,6 +308,7 @@ public class Move {
                     }
                     moveList.add(targetSquare);
                     if ((targetSquare & Board.FILE_A) != 0) break; // Break if file A is reached
+                    if ((targetSquare & Board.RANK_8) != 0) break; // Break if rank 8 is reached
                 }
 
                 // Calculate legal diagonal moves (up-right)
@@ -315,6 +320,7 @@ public class Move {
                     }
                     moveList.add(targetSquare);
                     if ((targetSquare & Board.FILE_H) != 0) break; // Break if file H is reached
+                    if ((targetSquare & Board.RANK_8) != 0) break; // Break if rank 8 is reached
                 }
 
                 // Calculate legal diagonal moves (down-left)
@@ -326,6 +332,7 @@ public class Move {
                     }
                     moveList.add(targetSquare);
                     if ((targetSquare & Board.FILE_A) != 0) break; // Break if file A is reached
+                    if ((targetSquare & Board.RANK_1) != 0) break; // Break if rank 1 is reached
                 }
 
                 // Calculate legal diagonal moves (down-right)
@@ -337,6 +344,7 @@ public class Move {
                     }
                     moveList.add(targetSquare);
                     if ((targetSquare & Board.FILE_H) != 0) break; // Break if file H is reached
+                    if ((targetSquare & Board.RANK_1) != 0) break; // Break if rank 1 is reached
                 }
 
                 tuple.setSecond(moveList); // Add moveList to individual piece's tuple
@@ -372,6 +380,7 @@ public class Move {
                         break;
                     }
                     moveList.add(targetSquare);
+                    if ((targetSquare & Board.FILE_A) != 0) break; // Break if file A is reached
                 }
 
                 // Calculate legal horizontal moves (right)
@@ -382,6 +391,7 @@ public class Move {
                         break;
                     }
                     moveList.add(targetSquare);
+                    if ((targetSquare & Board.FILE_H) != 0) break; // Break if file H is reached
                 }
 
                 // Calculate legal vertical moves (up)
@@ -392,6 +402,7 @@ public class Move {
                         break;
                     }
                     moveList.add(targetSquare);
+                    if ((targetSquare & Board.RANK_8) != 0) break; // Break if rank 8 is reached
                 }
 
                 // Calculate legal vertical moves (down)
@@ -402,6 +413,7 @@ public class Move {
                         break;
                     }
                     moveList.add(targetSquare);
+                    if ((targetSquare & Board.RANK_1) != 0) break; // Break if rank 1 is reached
                 }
 
                 tuple.setSecond(moveList); // Add moveList to individual piece's tuple
@@ -436,6 +448,7 @@ public class Move {
                         break;
                     }
                     moveList.add(targetSquare);
+                    if ((targetSquare & Board.FILE_A) != 0) break; // Break if file A is reached
                 }
 
                 // Calculate legal horizontal moves (right)
@@ -446,6 +459,7 @@ public class Move {
                         break;
                     }
                     moveList.add(targetSquare);
+                    if ((targetSquare & Board.FILE_H) != 0) break; // Break if file H is reached
                 }
 
                 // Calculate legal vertical moves (up)
@@ -456,6 +470,7 @@ public class Move {
                         break;
                     }
                     moveList.add(targetSquare);
+                    if ((targetSquare & Board.RANK_8) != 0) break; // Break if rank 8 is reached
                 }
 
                 // Calculate legal vertical moves (down)
@@ -466,6 +481,7 @@ public class Move {
                         break;
                     }
                     moveList.add(targetSquare);
+                    if ((targetSquare & Board.RANK_1) != 0) break; // Break if rank 1 is reached
                 }
 
                 tuple.setSecond(moveList); // Add moveList to individual piece's tuple
@@ -524,7 +540,7 @@ public class Move {
                 tuple.setFirst(kingMask);
 
                 // Move one square forward
-                Long forward = (kingBoard >> 8) & ~whiteOcc;
+                Long forward = (kingBoard >> 8) & ~whiteOcc & ~Board.RANK_8;
                 if (forward != 0) {
                     moveList.add(forward);
                 }
@@ -539,27 +555,27 @@ public class Move {
                     moveList.add(left);
                 }
                 // Move one square back
-                Long back = (kingBoard << 8) & ~whiteOcc;
+                Long back = (kingBoard << 8) & ~whiteOcc & ~Board.RANK_1;
                 if (back != 0) {
                     moveList.add(back);
                 }
                 // Move diagonally forward and left
-                Long forwardLeftMove = (kingBoard >> 7) & ~whiteOcc & ~Board.FILE_A;
+                Long forwardLeftMove = (kingBoard >> 7) & ~whiteOcc & ~Board.FILE_A & ~Board.RANK_8;
                 if (forwardLeftMove != 0) {
                     moveList.add(forwardLeftMove);
                 }
                 // Move diagonally forward and right
-                Long forwardRightMove = (kingBoard >> 9) & ~whiteOcc & ~Board.FILE_H;
+                Long forwardRightMove = (kingBoard >> 9) & ~whiteOcc & ~Board.FILE_H & ~Board.RANK_8;
                 if (forwardRightMove != 0) {
                     moveList.add(forwardRightMove);
                 }
                 // Move diagonally back and left
-                Long backLeftMove = (kingBoard << 7) & ~whiteOcc & ~Board.FILE_H;
+                Long backLeftMove = (kingBoard << 7) & ~whiteOcc & ~Board.FILE_H & ~Board.RANK_1;
                 if (backLeftMove != 0) {
                     moveList.add(backLeftMove);
                 }
                 // Move diagonally back and right
-                Long backRightMove = (kingBoard << 9) & ~whiteOcc & ~Board.FILE_A;
+                Long backRightMove = (kingBoard << 9) & ~whiteOcc & ~Board.FILE_A & ~Board.RANK_1;
                 if (backRightMove != 0) {
                     moveList.add(backRightMove);
                 }
@@ -588,7 +604,7 @@ public class Move {
                 tuple.setFirst(kingMask);
 
                 // Move one square forward
-                Long forward = (kingBoard >> 8) & ~blackOcc;
+                Long forward = (kingBoard >> 8) & ~blackOcc & ~Board.RANK_8;
                 if (forward != 0) {
                     moveList.add(forward);
                 }
@@ -603,27 +619,27 @@ public class Move {
                     moveList.add(left);
                 }
                 // Move one square back
-                Long back = (kingBoard << 8) & ~blackOcc;
+                Long back = (kingBoard << 8) & ~blackOcc & ~Board.RANK_1;
                 if (back != 0) {
                     moveList.add(back);
                 }
                 // Move diagonally forward and left
-                Long forwardLeftMove = (kingBoard >> 7) & ~blackOcc & ~Board.FILE_A;
+                Long forwardLeftMove = (kingBoard >> 7) & ~blackOcc & ~Board.FILE_A & ~Board.RANK_8;
                 if (forwardLeftMove != 0) {
                     moveList.add(forwardLeftMove);
                 }
                 // Move diagonally forward and right
-                Long forwardRightMove = (kingBoard >> 9) & ~blackOcc & ~Board.FILE_H;
+                Long forwardRightMove = (kingBoard >> 9) & ~blackOcc & ~Board.FILE_H & ~Board.RANK_8;
                 if (forwardRightMove != 0) {
                     moveList.add(forwardRightMove);
                 }
                 // Move diagonally back and left
-                Long backLeftMove = (kingBoard << 7) & ~blackOcc & ~Board.FILE_H;
+                Long backLeftMove = (kingBoard << 7) & ~blackOcc & ~Board.FILE_H & ~Board.RANK_1;
                 if (backLeftMove != 0) {
                     moveList.add(backLeftMove);
                 }
                 // Move diagonally back and right
-                Long backRightMove = (kingBoard << 9) & ~blackOcc & ~Board.FILE_A;
+                Long backRightMove = (kingBoard << 9) & ~blackOcc & ~Board.FILE_A & ~Board.RANK_1;
                 if (backRightMove != 0) {
                     moveList.add(backRightMove);
                 }

@@ -94,29 +94,29 @@ public class Board {
                 char piece = '-';//empty square
 
                 //place piece if bitboard is occupied for the given piece
-                if ((whitePawnBoard & squareMask) != 0) {
+                if ((blackPawnBoard & squareMask) != 0) {
                     piece = '♙';
-                } else if ((whiteKnightBoard & squareMask) != 0) {
-                    piece = '♘';
-                } else if ((whiteBishopBoard & squareMask) != 0) {
-                    piece = '♗';
-                } else if ((whiteRookBoard & squareMask) != 0) {
-                    piece = '♖';
-                } else if ((whiteQueenBoard & squareMask) != 0) {
-                    piece = '♕';
-                } else if ((whiteKingBoard & squareMask) != 0) {
-                    piece = '♔';
-                }else if ((blackPawnBoard & squareMask) != 0) {
-                    piece = '♟';
                 } else if ((blackKnightBoard & squareMask) != 0) {
-                    piece = '♞';
+                    piece = '♘';
                 } else if ((blackBishopBoard & squareMask) != 0) {
-                    piece = '♝';
+                    piece = '♗';
                 } else if ((blackRookBoard & squareMask) != 0) {
-                    piece = '♜';
+                    piece = '♖';
                 } else if ((blackQueenBoard & squareMask) != 0) {
-                    piece = '♛';
+                    piece = '♕';
                 } else if ((blackKingBoard & squareMask) != 0) {
+                    piece = '♔';
+                }else if ((whitePawnBoard & squareMask) != 0) {
+                    piece = '♟';
+                } else if ((whiteKnightBoard & squareMask) != 0) {
+                    piece = '♞';
+                } else if ((whiteBishopBoard & squareMask) != 0) {
+                    piece = '♝';
+                } else if ((whiteRookBoard & squareMask) != 0) {
+                    piece = '♜';
+                } else if ((whiteQueenBoard & squareMask) != 0) {
+                    piece = '♛';
+                } else if ((whiteKingBoard & squareMask) != 0) {
                     piece = '♚';
                 }
                 ret += piece + " ";
