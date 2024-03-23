@@ -126,29 +126,29 @@ public class Board {
 
                 //place piece if bitboard is occupied for the given piece
                 if ((whitePawnBoard & squareMask) != 0) {
-                    piece = 'P';
+                    piece = '♙';
                 } else if ((whiteKnightBoard & squareMask) != 0) {
-                    piece = 'N';
+                    piece = '♘';
                 } else if ((whiteBishopBoard & squareMask) != 0) {
-                    piece = 'B';
+                    piece = '♗';
                 } else if ((whiteRookBoard & squareMask) != 0) {
-                    piece = 'R';
+                    piece = '♖';
                 } else if ((whiteQueenBoard & squareMask) != 0) {
-                    piece = 'Q';
+                    piece = '♕';
                 } else if ((whiteKingBoard & squareMask) != 0) {
-                    piece = 'K';
+                    piece = '♔';
                 }else if ((blackPawnBoard & squareMask) != 0) {
-                    piece = 'p';
+                    piece = '♟';
                 } else if ((blackKnightBoard & squareMask) != 0) {
-                    piece = 'n';
+                    piece = '♞';
                 } else if ((blackBishopBoard & squareMask) != 0) {
-                    piece = 'b';
+                    piece = '♝';
                 } else if ((blackRookBoard & squareMask) != 0) {
-                    piece = 'r';
+                    piece = '♜';
                 } else if ((blackQueenBoard & squareMask) != 0) {
-                    piece = 'q';
+                    piece = '♛';
                 } else if ((blackKingBoard & squareMask) != 0) {
-                    piece = 'k';
+                    piece = '♚';
                 }
                 ret += piece + " ";
             }
