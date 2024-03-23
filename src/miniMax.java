@@ -1,3 +1,4 @@
+import java.util.Collections;
 import java.util.List;
 
 public class miniMax {
@@ -10,6 +11,7 @@ public class miniMax {
         Tuple<Long, Long> bestMove = null;
         List<Tuple<Long, List<Long>>> moveList = isWhite ? Move.generateWhiteMoves(chessBoard) : Move.generateBlackMoves(chessBoard);
 
+        Collections.shuffle(moveList);
         //iterate through move list
         for (int i = 0; i < moveList.size(); i++) {
 
@@ -19,6 +21,8 @@ public class miniMax {
             //get the pieces moves
             List<Long> pieceMoves = piece.getMoves();
 
+            //Randomize piece selection
+            Collections.shuffle(pieceMoves);
             //iterate through the pieces moves
             for (int z = 0; z < pieceMoves.size(); z++) {
 
