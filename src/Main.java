@@ -1,3 +1,6 @@
+import java.time.Duration;
+import java.time.Instant;
+
 public class Main {
     public static void main(String[] args) {
 
@@ -46,10 +49,12 @@ public class Main {
 
         //MiniMax
         miniMax miniMax = new miniMax();
+        Instant inst1 = Instant.now();
         miniMax.search(chessBoard, 4, true);
-
         //Print Board
         System.out.println(chessBoard);
+        Instant inst2 = Instant.now();
+        System.out.println("Elapsed Time: " + Duration.between(inst1, inst2).toString());
     }
 }
 
