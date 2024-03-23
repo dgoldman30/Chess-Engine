@@ -50,9 +50,13 @@ public class Main {
         //MiniMax
         miniMax miniMax = new miniMax();
         Instant inst1 = Instant.now();
-        miniMax.search(chessBoard, 4, true);
         //Print Board
-        System.out.println(chessBoard);
+        for (int i = 0; i < 5; i++) {
+            miniMax.search(chessBoard, 6, true);
+            System.out.println("Black move: \n" + chessBoard);
+            miniMax.search(chessBoard,6, false);
+            System.out.println("White move: \n" + chessBoard);
+        }
         Instant inst2 = Instant.now();
         System.out.println("Elapsed Time: " + Duration.between(inst1, inst2).toString());
     }

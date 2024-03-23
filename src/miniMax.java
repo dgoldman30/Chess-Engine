@@ -34,20 +34,20 @@ public class miniMax {
                 Move.doMove(chessBoard, singleMoveTuple);
 
 
-                System.out.println("one: " + "\n" + chessBoard);
+//                System.out.println("one: " + "\n" + chessBoard);
 
 
                 int score = min(chessBoard, depth, alpha, beta, isWhite);
-                System.out.println(score);
+//                System.out.println(score);
                 if (score > bestScore) {
                     bestScore = score;
                     bestMove = singleMoveTuple;
-                    System.out.println("Best Score" + bestScore);
+//                    System.out.println("Best Score" + bestScore);
                 }
                 alpha = Math.max(alpha, bestScore);
                 Move.undoMove(chessBoard);
                 if (beta <= alpha) {
-                    System.out.println("pruned in search");
+//                    System.out.println("pruned in search");
                     break;
                 }
             }
@@ -87,7 +87,7 @@ public class miniMax {
                     beta = Math.min(beta, bestScore);
                     Move.undoMove(chessBoard);
                     if (beta <= alpha) {
-                        System.out.println("pruned in min");
+                        //System.out.println("pruned in min");
                         return bestScore;
                     }
                 }
@@ -128,7 +128,7 @@ public class miniMax {
                     alpha = Math.max(alpha, bestScore);
                     Move.undoMove(chessBoard);
                     if (beta <= alpha) {
-                        System.out.println("pruned in max");
+                        //System.out.println("pruned in max");
                         return bestScore;
                     }
                 }
