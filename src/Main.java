@@ -7,8 +7,7 @@ public class Main {
         Board chessBoard = new Board();
 
 
-        //Move move = new Move(); unused ATM
-        //Search search = new Search();
+        Move move = new Move();
 
         //UPPERCASE IS WHITE AND STARTS AT THE BOTTOM OF THIS STRING AND MOVES UP
         //Starting board
@@ -22,26 +21,26 @@ public class Main {
                         "PPPPPPPP" +
                         "RNBKQBNR";
         final String activeBoard =
-                        "r-bkqb--" +
-                        "pppppppp" +
-                        "--------" +
-                        "--------" +
-                        "--------" +
-                        "---q-n--" +
-                        "PPPPPPPP" +
-                        "RNBKQBNR";
+                        "r-bkq--r" +
+                        "p-----bp" +
+                        "np----p-" +
+                        "--p--p--" +
+                        "--Ppp---" +
+                        "NP-PP-PN" +
+                        "PB---P-P" +
+                        "R--KQB-R";
        //EMPTY BOARD
     final String emptyBoard =
                     "--------" +
                     "--------" +
                     "--------" +
-                    "--------" +
-                    "--------" +
-                    "--------" +
+                    "----n-q-" +
+                    "-----P--" +
+                    "---Q----" +
                     "--------" +
                     "--------";
 
-    chessBoard.stringToBitBoard(regBoard);  //make bitboards out of board string
+    chessBoard.stringToBitBoard(activeBoard);  //make bitboards out of board string
 
 
 //Generate Random Move
@@ -50,12 +49,15 @@ public class Main {
         //MiniMax
         miniMax miniMax = new miniMax();
         Instant inst1 = Instant.now();
+
+        //miniMax.search(chessBoard, 6, true);
+        //System.out.println("White move: \n" + chessBoard);
         //Print Board
         for (int i = 0; i < 5; i++) {
-            miniMax.search(chessBoard, 6, true);
-            System.out.println("Black move: \n" + chessBoard);
-            miniMax.search(chessBoard,6, false);
+            miniMax.search(chessBoard, 4, true);
             System.out.println("White move: \n" + chessBoard);
+            chessBoard = move.randomBlackMove(chessBoard);
+            System.out.println("Black move: \n" + chessBoard);
         }
         Instant inst2 = Instant.now();
         System.out.println("Elapsed Time: " + Duration.between(inst1, inst2).toString());

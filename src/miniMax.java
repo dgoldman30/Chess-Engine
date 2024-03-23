@@ -11,9 +11,11 @@ public class miniMax {
         Tuple<Long, Long> bestMove = null;
         int alpha = Integer.MIN_VALUE;
         int beta = Integer.MAX_VALUE;
+
+        //populate moveList with the correct color of moves
         List<Tuple<Long, List<Long>>> moveList = isWhite ? Move.generateWhiteMoves(chessBoard) : Move.generateBlackMoves(chessBoard);
 
-        Collections.shuffle(moveList);
+        //Collections.shuffle(moveList);
         //iterate through move list
         for (int i = 0; i < moveList.size(); i++) {
 
@@ -24,7 +26,8 @@ public class miniMax {
             List<Long> pieceMoves = piece.getMoves();
 
             //Randomize piece selection
-            Collections.shuffle(pieceMoves);
+            //Collections.shuffle(pieceMoves);
+
             //iterate through the pieces moves
             for (int z = 0; z < pieceMoves.size(); z++) {
 
@@ -105,7 +108,7 @@ public class miniMax {
             return score;
         } else {
             //set the best score to be highest number possible
-            int bestScore = Integer.MAX_VALUE;
+            int bestScore = Integer.MIN_VALUE;
             //find all new possible moves for other turn
             List<Tuple<Long, List<Long>>> moveList = isWhite ? Move.generateWhiteMoves(chessBoard) : Move.generateBlackMoves(chessBoard);
             //iterate through move list
