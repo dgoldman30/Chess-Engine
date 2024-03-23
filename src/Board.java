@@ -1,39 +1,8 @@
 public class Board {
 
-    //UPPERCASE IS WHITE AND STARTS AT THE BOTTOM OF THIS STRING AND MOVES UP
 
-    //Starting board
-  /*   String str =
-                    "rnbkqbnr" +
-                    "pppppppp" +
-                    "--------" +
-                    "--------" +
-                    "--------" +
-                    "--------" +
-                    "PPPPPPPP" +
-                    "RNBKQBNR";
-*/
-   String str =
-                    "r-bkqb--" +
-                    "pppppppp" +
-                    "--------" +
-                    "--------" +
-                    "--------" +
-                    "---q-n--" +
-                    "PPPPPPPP" +
-                    "RNBKQBNR";
 
- /*      //EMPTY BOARD
-     String str =
-                    "--------" +
-                    "--------" +
-                    "--b-----" +
-                    "---P--p-" +
-                    "-----Q--" +
-                    "--------" +
-                    "--------" +
-                    "--------";
-*/
+
 
 
     //set the bitboards for each type
@@ -159,7 +128,7 @@ public class Board {
     }
 
     //CHANGES BOARD STRING INTO BITBOARDS
-    public void stringToBitBoard(){
+    public void stringToBitBoard(String str){
 
         Long bitBoard = 0000000000000000000000000000000000000000000000000000000000000001L;
         //need to shift the 1 to the place of the char and then add it to the bitBoard for the individual piece.

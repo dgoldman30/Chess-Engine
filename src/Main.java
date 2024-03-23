@@ -3,10 +3,42 @@ public class Main {
 
         Board chessBoard = new Board();
 
-        chessBoard.stringToBitBoard();  //make bitboards out of board string
 
-        Move move = new Move();
-        Search search = new Search();
+        //Move move = new Move(); unused ATM
+        //Search search = new Search();
+
+        //UPPERCASE IS WHITE AND STARTS AT THE BOTTOM OF THIS STRING AND MOVES UP
+        //Starting board
+        final String regBoard =
+                        "rnbkqbnr" +
+                        "pppppppp" +
+                        "--------" +
+                        "--------" +
+                        "--------" +
+                        "--------" +
+                        "PPPPPPPP" +
+                        "RNBKQBNR";
+        final String activeBoard =
+                        "r-bkqb--" +
+                        "pppppppp" +
+                        "--------" +
+                        "--------" +
+                        "--------" +
+                        "---q-n--" +
+                        "PPPPPPPP" +
+                        "RNBKQBNR";
+       //EMPTY BOARD
+    final String emptyBoard =
+                    "--------" +
+                    "--------" +
+                    "--------" +
+                    "--------" +
+                    "--------" +
+                    "--------" +
+                    "--------" +
+                    "--------";
+
+    chessBoard.stringToBitBoard(regBoard);  //make bitboards out of board string
 
 
 //Generate Random Move
