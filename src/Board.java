@@ -14,7 +14,7 @@ public class Board {
                     "RNBKQBNR";
 */
    String str =
-            "r-bkqb--" +
+                    "r-bkqb--" +
                     "pppppppp" +
                     "--------" +
                     "--------" +
