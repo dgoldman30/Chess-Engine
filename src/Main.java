@@ -21,7 +21,6 @@ public class Main {
                         "PPPPPPPP" +
                         "RNBKQBNR";
         final String activeBoard =
-
                         "r-bkq--r" +
                         "p-----bp" +
                         "np----p-" +

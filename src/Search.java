@@ -5,7 +5,6 @@ public class Search {
     //CURRENTLY THE SEARCH FUNCTIONS JUST OUTPUTS THE FINAL MOVE IN THE LIST. THIS MEANS ITS VEIWING EVERY MOVE AS THE BEST MOVE
     Evaluation evaluate = new Evaluation();
 
-
     // Function to find the best move for white
     public Tuple<Long, Long> findBestMoveForWhite(Board chessBoard, int depth) {
 
@@ -40,7 +39,6 @@ public class Search {
         }
         return bestMove;
     }
-
 
     // Helper function to apply a move to the board and return the resulting board
     private Board applyMove(Board board, Tuple<Long, Long> move) {

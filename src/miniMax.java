@@ -1,4 +1,3 @@
-import java.util.Collections;
 import java.util.List;
 
 public class miniMax {
@@ -36,18 +35,14 @@ public class miniMax {
                 //apply the move
                 Move.doMove(chessBoard, singleMoveTuple);
 
-
-
 //                System.out.println("one: " + "\n" + chessBoard);
-
-
 
                 int score = min(chessBoard, depth, alpha, beta, isWhite);
 //                System.out.println(score);
                 if (score > bestScore) {
                     bestScore = score;
                     bestMove = singleMoveTuple;
-//                    System.out.println("Best Score" + bestScore);
+//                    System.out.println("Best Score: " + bestScore);
                 }
                 alpha = Math.max(alpha, bestScore);
                 Move.undoMove(chessBoard);
@@ -142,4 +137,3 @@ public class miniMax {
         }
     }
 }
-

@@ -1,10 +1,4 @@
 public class Board {
-
-
-
-
-
-
     //set the bitboards for each type
 
     //white
@@ -25,11 +19,10 @@ public class Board {
     public long blackRookBoard;
     public long blackQueenBoard;
     public long blackKingBoard;
+
     public long blackOccBoard;
 
-
     public long occBoard = blackOccBoard | whiteOccBoard;
-
 
 
     // Bitmasks for each file
@@ -128,12 +121,13 @@ public class Board {
     }
 
     //CHANGES BOARD STRING INTO BITBOARDS
+    // needs to be changed to ASCII instead of letters?
     public void stringToBitBoard(String str){
 
         Long bitBoard = 0000000000000000000000000000000000000000000000000000000000000001L;
         //need to shift the 1 to the place of the char and then add it to the bitBoard for the individual piece.
 
-        for(int i=0; i < str.length(); i++){
+        for(int i = 0; i < str.length(); i++){
             switch (str.charAt(i)) {
                 case '-':
                     break;
@@ -187,7 +181,5 @@ public class Board {
                     break;
             }
         }
-
     }
-
 }
