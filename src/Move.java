@@ -2,6 +2,12 @@ import java.util.*;
 
 public class Move {
 
+    // current move errors:
+    // rooks wrap around the board (fixed?)
+    // white pawns capture one square forward
+    // black pawns capture other black pieces
+    // black queen captures other black pieces
+
     Random randomGenerator = new Random(); //for random move REMOVE LATER LOL***
 
     Stack<Tuple<Tuple<Long, Long>, String>> madeMoves = new Stack<>();
@@ -93,7 +99,7 @@ public class Move {
 
                 List<Long> moveList = new ArrayList<>();
 
-                Tuple tuple = new Tuple(0L ,moveList);
+                Tuple tuple = new Tuple(0L, moveList);
                 tuple.setFirst(pawnMask);
 
                 // Total occupied squares on the board
@@ -307,8 +313,8 @@ public class Move {
                         break;
                     }
                     moveList.add(targetSquare);
-                    if ((targetSquare & Board.FILE_A) != 0) break; // Break if file A is reached
-                    if ((targetSquare & Board.RANK_8) != 0) break; // Break if rank 8 is reached
+                    if ((targetSquare & Board.FILE_H) != 0) break; // Break if file H is reached
+                    if ((targetSquare & Board.RANK_1) != 0) break; // Break if rank 1 is reached
                 }
 
                 // Calculate legal diagonal moves (up-right)
@@ -319,8 +325,8 @@ public class Move {
                         break;
                     }
                     moveList.add(targetSquare);
-                    if ((targetSquare & Board.FILE_H) != 0) break; // Break if file H is reached
-                    if ((targetSquare & Board.RANK_8) != 0) break; // Break if rank 8 is reached
+                    if ((targetSquare & Board.FILE_A) != 0) break; // Break if file A is reached
+                    if ((targetSquare & Board.RANK_1) != 0) break; // Break if rank 1 is reached
                 }
 
                 // Calculate legal diagonal moves (down-left)
@@ -331,8 +337,8 @@ public class Move {
                         break;
                     }
                     moveList.add(targetSquare);
-                    if ((targetSquare & Board.FILE_A) != 0) break; // Break if file A is reached
-                    if ((targetSquare & Board.RANK_1) != 0) break; // Break if rank 1 is reached
+                    if ((targetSquare & Board.FILE_H) != 0) break; // Break if file H is reached
+                    if ((targetSquare & Board.RANK_8) != 0) break; // Break if rank 8 is reached
                 }
 
                 // Calculate legal diagonal moves (down-right)
@@ -343,8 +349,8 @@ public class Move {
                         break;
                     }
                     moveList.add(targetSquare);
-                    if ((targetSquare & Board.FILE_H) != 0) break; // Break if file H is reached
-                    if ((targetSquare & Board.RANK_1) != 0) break; // Break if rank 1 is reached
+                    if ((targetSquare & Board.FILE_A) != 0) break; // Break if file A is reached
+                    if ((targetSquare & Board.RANK_8) != 0) break; // Break if rank 8 is reached
                 }
 
                 tuple.setSecond(moveList); // Add moveList to individual piece's tuple
@@ -375,45 +381,45 @@ public class Move {
                 // Calculate legal horizontal moves (left)
                 for (int j = i - 1; j / 8 == i / 8; j--) {
                     targetSquare = 1L << j;
+                    if ((targetSquare & Board.FILE_A) != 0) break; // Break if file A is reached
                     if ((targetSquare & whiteOcc) != 0 || (targetSquare & blackOcc) != 0) {
                         if ((targetSquare & blackOcc) != 0) moveList.add(targetSquare); // Capture if black piece is present
                         break;
                     }
                     moveList.add(targetSquare);
-                    if ((targetSquare & Board.FILE_A) != 0) break; // Break if file A is reached
                 }
 
                 // Calculate legal horizontal moves (right)
                 for (int j = i + 1; j / 8 == i / 8; j++) {
                     targetSquare = 1L << j;
+                    if ((targetSquare & Board.FILE_H) != 0) break; // Break if file H is reached
                     if ((targetSquare & whiteOcc) != 0 || (targetSquare & blackOcc) != 0) {
                         if ((targetSquare & blackOcc) != 0) moveList.add(targetSquare); // Capture if black piece is present
                         break;
                     }
                     moveList.add(targetSquare);
-                    if ((targetSquare & Board.FILE_H) != 0) break; // Break if file H is reached
                 }
 
                 // Calculate legal vertical moves (up)
                 for (int j = i - 8; j >= 0; j -= 8) {
                     targetSquare = 1L << j;
+                    if ((targetSquare & Board.RANK_8) != 0) break; // Break if rank 8 is reached
                     if ((targetSquare & whiteOcc) != 0 || (targetSquare & blackOcc) != 0) {
                         if ((targetSquare & blackOcc) != 0) moveList.add(targetSquare); // Capture if black piece is present
                         break;
                     }
                     moveList.add(targetSquare);
-                    if ((targetSquare & Board.RANK_8) != 0) break; // Break if rank 8 is reached
                 }
 
                 // Calculate legal vertical moves (down)
                 for (int j = i + 8; j < 64; j += 8) {
                     targetSquare = 1L << j;
+                    if ((targetSquare & Board.RANK_1) != 0) break; // Break if rank 1 is reached
                     if ((targetSquare & whiteOcc) != 0 || (targetSquare & blackOcc) != 0) {
                         if ((targetSquare & blackOcc) != 0) moveList.add(targetSquare); // Capture if black piece is present
                         break;
                     }
                     moveList.add(targetSquare);
-                    if ((targetSquare & Board.RANK_1) != 0) break; // Break if rank 1 is reached
                 }
 
                 tuple.setSecond(moveList); // Add moveList to individual piece's tuple
@@ -443,45 +449,45 @@ public class Move {
                 // Calculate legal horizontal moves (left)
                 for (int j = i - 1; j / 8 == i / 8; j--) {
                     targetSquare = 1L << j;
+                    if ((targetSquare & Board.FILE_H) != 0) break; // Break if file H is reached
                     if ((targetSquare & whiteOcc) != 0 || (targetSquare & blackOcc) != 0) {
                         if ((targetSquare & whiteOcc) != 0) moveList.add(targetSquare); // Capture if white piece is present
                         break;
                     }
                     moveList.add(targetSquare);
-                    if ((targetSquare & Board.FILE_A) != 0) break; // Break if file A is reached
                 }
 
                 // Calculate legal horizontal moves (right)
                 for (int j = i + 1; j / 8 == i / 8; j++) {
                     targetSquare = 1L << j;
+                    if ((targetSquare & Board.FILE_A) != 0) break; // Break if file A is reached
                     if ((targetSquare & whiteOcc) != 0 || (targetSquare & blackOcc) != 0) {
                         if ((targetSquare & whiteOcc) != 0) moveList.add(targetSquare); // Capture if white piece is present
                         break;
                     }
                     moveList.add(targetSquare);
-                    if ((targetSquare & Board.FILE_H) != 0) break; // Break if file H is reached
                 }
 
                 // Calculate legal vertical moves (up)
                 for (int j = i - 8; j >= 0; j -= 8) {
                     targetSquare = 1L << j;
+                    if ((targetSquare & Board.RANK_1) != 0) break; // Break if rank 1 is reached
                     if ((targetSquare & whiteOcc) != 0 || (targetSquare & blackOcc) != 0) {
                         if ((targetSquare & whiteOcc) != 0) moveList.add(targetSquare); // Capture if white piece is present
                         break;
                     }
                     moveList.add(targetSquare);
-                    if ((targetSquare & Board.RANK_8) != 0) break; // Break if rank 8 is reached
                 }
 
                 // Calculate legal vertical moves (down)
                 for (int j = i + 8; j < 64; j += 8) {
                     targetSquare = 1L << j;
+                    if ((targetSquare & Board.RANK_8) != 0) break; // Break if rank 8 is reached
                     if ((targetSquare & whiteOcc) != 0 || (targetSquare & blackOcc) != 0) {
                         if ((targetSquare & whiteOcc) != 0) moveList.add(targetSquare); // Capture if white piece is present
                         break;
                     }
                     moveList.add(targetSquare);
-                    if ((targetSquare & Board.RANK_1) != 0) break; // Break if rank 1 is reached
                 }
 
                 tuple.setSecond(moveList); // Add moveList to individual piece's tuple

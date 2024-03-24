@@ -79,7 +79,7 @@ public class Board {
     @Override
     public String toString() {
         String ret = "";
-        for (int rank = 7; rank >= 0; rank--) {
+        for (int rank = 0; rank < 8; rank++) {
             for (int file = 0; file < 8; file++) {
                 int square = rank * 8 + file;
                 long squareMask = 1L << square;
@@ -121,7 +121,6 @@ public class Board {
     }
 
     //CHANGES BOARD STRING INTO BITBOARDS
-    // needs to be changed to ASCII instead of letters?
     public void stringToBitBoard(String str){
 
         Long bitBoard = 0000000000000000000000000000000000000000000000000000000000000001L;

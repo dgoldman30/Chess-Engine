@@ -21,14 +21,14 @@ public class Main {
                         "PPPPPPPP" +
                         "RNBKQBNR";
         final String activeBoard =
-                        "r-bkq--r" +
-                        "p-----bp" +
-                        "np----p-" +
-                        "--p--p--" +
-                        "--Ppp---" +
-                        "NP-PP-PN" +
-                        "PB---P-P" +
-                        "R--KQB-R";
+                        "--------" +
+                        "--------" +
+                        "--------" +
+                        "---r-r--" +
+                        "--------" +
+                        "------R-" +
+                        "-R------" +
+                        "--------";
        //EMPTY BOARD
     final String emptyBoard =
                     "--------" +
@@ -40,7 +40,7 @@ public class Main {
                     "--------" +
                     "--------";
 
-    chessBoard.stringToBitBoard(activeBoard);  //make bitboards out of board string
+    chessBoard.stringToBitBoard(regBoard);  //make bitboards out of board string
 
 
 //Generate Random Move
