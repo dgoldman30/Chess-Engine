@@ -40,7 +40,7 @@ public class Main {
                     "--------" +
                     "--------";
 
-    chessBoard.stringToBitBoard(regBoard);  //make bitboards out of board string
+    chessBoard.stringToBitBoard(emptyBoard);  //make bitboards out of board string
 
 
 //Generate Random Move

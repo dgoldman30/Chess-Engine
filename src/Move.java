@@ -5,8 +5,7 @@ public class Move {
     // current move errors:
     // rooks wrap around the board (fixed?)
     // white pawns capture one square forward
-    // black pawns capture other black pieces
-    // black queen captures other black pieces
+    // black queen and pawns captures other black pieces (Fixed by TC, occboards were reversed in parameters for move functions)
 
     Random randomGenerator = new Random(); //for random move REMOVE LATER LOL***
 
@@ -29,7 +28,7 @@ public class Move {
     public List<Tuple<Long, List<Long>>> generateBlackMoves(Board chessBoard){
         List<Tuple<Long, List<Long>>> moveList = new ArrayList<>();
 
-        moveList.addAll(blackPawnMove(chessBoard.blackPawnBoard, chessBoard.blackOccBoard, chessBoard.whiteOccBoard));
+        moveList.addAll(blackPawnMove(chessBoard.blackPawnBoard, chessBoard.whiteOccBoard, chessBoard.blackOccBoard));
         moveList.addAll(blackKnightMove(chessBoard.blackKnightBoard, chessBoard.blackOccBoard));
         moveList.addAll(blackRookMove(chessBoard.blackRookBoard,chessBoard.blackOccBoard, chessBoard.whiteOccBoard));
         moveList.addAll(blackBishopMove(chessBoard.blackBishopBoard,chessBoard.blackOccBoard, chessBoard.whiteOccBoard));
@@ -520,8 +519,8 @@ public class Move {
         List<Tuple<Long, List<Long>>> finalMoves = new ArrayList<>();
 
         // Combine legal moves of rooks and bishops for black queen
-        List<Tuple<Long, List<Long>>> rookMoves = blackRookMove(queens, whiteOcc, blackOcc);
-        List<Tuple<Long, List<Long>>> bishopMoves = blackBishopMove(queens, whiteOcc, blackOcc);
+        List<Tuple<Long, List<Long>>> rookMoves = blackRookMove(queens, blackOcc, whiteOcc);
+        List<Tuple<Long, List<Long>>> bishopMoves = blackBishopMove(queens, blackOcc, whiteOcc);
 
         // Add rook moves to the final moves list
         finalMoves.addAll(rookMoves);
