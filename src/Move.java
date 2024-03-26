@@ -4,14 +4,14 @@ public class Move {
 
     // current move errors:
     // rooks wrap around the board (fixed?)
-    // white pawns capture one square forward
+    // white pawns capture one square forward (Fixed?)
     // black queen and pawns captures other black pieces (Fixed by TC, occboards were reversed in parameters for move functions)
 
     Random randomGenerator = new Random(); //for random move REMOVE LATER LOL***
 
     Stack<Tuple<Tuple<Long, Long>, String>> madeMoves = new Stack<>();
 
-    //this will have different return statement later***
+
     public List<Tuple<Long, List<Long>>> generateWhiteMoves(Board chessBoard){
         List<Tuple<Long, List<Long>>> moveList = new ArrayList<>();
 
@@ -877,6 +877,8 @@ public class Move {
         }
         return false; //get rid of this once inputs are fixed above
     }
+
+    //This is used only for making a random move
     public Tuple choseMove(List<Tuple<Long, List<Long>>> moveList){
 
         Tuple piece = moveList.get(randomGenerator.nextInt(moveList.size()));

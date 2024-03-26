@@ -65,15 +65,7 @@ public class Board {
 
     //empty constructor
     public Board() {
-        //initialize an empty board
-        //whitePawnBoard = 0L;
-        //whiteKnightBoard = 0L;
-        //whiteRookBoard = 0L;
-        //whiteBishopBoard = 0L;
-        //whiteKingBoard = 0L;
-        //whiteQueenBoard = 0L;
-        //whiteOccBoard = 0l;
-        //occBoard = 0L;
+
     }
 
     @Override
@@ -99,7 +91,7 @@ public class Board {
                     piece = '♕';
                 } else if ((blackKingBoard & squareMask) != 0) {
                     piece = '♔';
-                }else if ((whitePawnBoard & squareMask) != 0) {
+                } else if ((whitePawnBoard & squareMask) != 0) {
                     piece = '♟';
                 } else if ((whiteKnightBoard & squareMask) != 0) {
                     piece = '♞';
@@ -121,12 +113,12 @@ public class Board {
     }
 
     //CHANGES BOARD STRING INTO BITBOARDS
-    public void stringToBitBoard(String str){
+    public void stringToBitBoard(String str) {
 
         Long bitBoard = 0000000000000000000000000000000000000000000000000000000000000001L;
         //need to shift the 1 to the place of the char and then add it to the bitBoard for the individual piece.
 
-        for(int i = 0; i < str.length(); i++){
+        for (int i = 0; i < str.length(); i++) {
             switch (str.charAt(i)) {
                 case '-':
                     break;
