@@ -658,126 +658,110 @@ public class Move {
     }
 
     public Board doMove(Board currentBoard, Tuple tuple){
-        //this inputs the bitboard of the piece that is being moved and removes the starting piece
-        Long start = (Long) tuple.getStart();
-        Long endMove = (Long) tuple.getMoves();
 
-        //piece type of captured piece
-        String capturedPiece = "NA";
+        if(tuple != null) { //make sure theres available move
+
+            //this inputs the bitboard of the piece that is being moved and removes the starting piece
+            Long start = (Long) tuple.getStart();
+            Long endMove = (Long) tuple.getMoves();
+
+            //piece type of captured piece
+            String capturedPiece = "NA";
 
 //CLEAR END SQUARE FIRST
-        //find type of piece on end square to capture
-        if((currentBoard.whitePawnBoard & endMove) != 0){
-            //remove captured piece
-            currentBoard.whitePawnBoard = currentBoard.whitePawnBoard & ~endMove;
+            //find type of piece on end square to capture
+            if ((currentBoard.whitePawnBoard & endMove) != 0) {
+                //remove captured piece
+                currentBoard.whitePawnBoard = currentBoard.whitePawnBoard & ~endMove;
 
-            //captured piece data
-            capturedPiece = "WP";
-        }
-        else if((currentBoard.blackPawnBoard & endMove) != 0){
-            currentBoard.blackPawnBoard = currentBoard.blackPawnBoard & ~endMove;
+                //captured piece data
+                capturedPiece = "WP";
+            } else if ((currentBoard.blackPawnBoard & endMove) != 0) {
+                currentBoard.blackPawnBoard = currentBoard.blackPawnBoard & ~endMove;
 
-            //captured piece data
-            capturedPiece = "BP";
-        }
-        else if((currentBoard.whiteQueenBoard & endMove) != 0){
-            currentBoard.whiteQueenBoard = currentBoard.whiteQueenBoard & ~endMove;
-            capturedPiece = "WQ";
-        }
-        else if((currentBoard.blackQueenBoard & endMove) != 0){
-            currentBoard.blackQueenBoard = currentBoard.blackQueenBoard & ~endMove;
-            capturedPiece = "BQ";
-        }
-        else if((currentBoard.whiteKnightBoard & endMove) != 0){
-            currentBoard.whiteKnightBoard = currentBoard.whiteKnightBoard & ~endMove;
-            capturedPiece = "WN";
-        }
-        else if((currentBoard.blackKnightBoard & endMove) != 0){
-            currentBoard.blackKnightBoard = currentBoard.blackKnightBoard & ~endMove;
-            capturedPiece = "BN";
-        }
-        else if((currentBoard.whiteRookBoard & endMove) != 0){
-            currentBoard.whiteRookBoard = currentBoard.whiteRookBoard & ~endMove;
-            capturedPiece = "WR";
-        }
-        else if((currentBoard.blackRookBoard & endMove) != 0){
-            currentBoard.blackRookBoard = currentBoard.blackRookBoard & ~endMove;
-            capturedPiece = "BR";
-        }
-        else if((currentBoard.whiteBishopBoard & endMove) != 0){
-            currentBoard.whiteBishopBoard = currentBoard.whiteBishopBoard & ~endMove;
-            capturedPiece = "WB";
-        }
-        else if((currentBoard.blackBishopBoard & endMove) != 0){
-            currentBoard.blackBishopBoard = currentBoard.blackBishopBoard & ~endMove;
+                //captured piece data
+                capturedPiece = "BP";
+            } else if ((currentBoard.whiteQueenBoard & endMove) != 0) {
+                currentBoard.whiteQueenBoard = currentBoard.whiteQueenBoard & ~endMove;
+                capturedPiece = "WQ";
+            } else if ((currentBoard.blackQueenBoard & endMove) != 0) {
+                currentBoard.blackQueenBoard = currentBoard.blackQueenBoard & ~endMove;
+                capturedPiece = "BQ";
+            } else if ((currentBoard.whiteKnightBoard & endMove) != 0) {
+                currentBoard.whiteKnightBoard = currentBoard.whiteKnightBoard & ~endMove;
+                capturedPiece = "WN";
+            } else if ((currentBoard.blackKnightBoard & endMove) != 0) {
+                currentBoard.blackKnightBoard = currentBoard.blackKnightBoard & ~endMove;
+                capturedPiece = "BN";
+            } else if ((currentBoard.whiteRookBoard & endMove) != 0) {
+                currentBoard.whiteRookBoard = currentBoard.whiteRookBoard & ~endMove;
+                capturedPiece = "WR";
+            } else if ((currentBoard.blackRookBoard & endMove) != 0) {
+                currentBoard.blackRookBoard = currentBoard.blackRookBoard & ~endMove;
+                capturedPiece = "BR";
+            } else if ((currentBoard.whiteBishopBoard & endMove) != 0) {
+                currentBoard.whiteBishopBoard = currentBoard.whiteBishopBoard & ~endMove;
+                capturedPiece = "WB";
+            } else if ((currentBoard.blackBishopBoard & endMove) != 0) {
+                currentBoard.blackBishopBoard = currentBoard.blackBishopBoard & ~endMove;
 
-            //captured piece data
-            capturedPiece = "BB";
-        }
-        else if((currentBoard.whiteKingBoard & endMove) != 0){
-            currentBoard.whiteKingBoard = currentBoard.whiteKingBoard & ~endMove;
-            capturedPiece = "WK";
-        }
-        else if((currentBoard.blackKingBoard & endMove) != 0){
-            currentBoard.blackKingBoard = currentBoard.blackKingBoard & ~endMove;
-            capturedPiece = "BK";
-        }
+                //captured piece data
+                capturedPiece = "BB";
+            } else if ((currentBoard.whiteKingBoard & endMove) != 0) {
+                currentBoard.whiteKingBoard = currentBoard.whiteKingBoard & ~endMove;
+                capturedPiece = "WK";
+            } else if ((currentBoard.blackKingBoard & endMove) != 0) {
+                currentBoard.blackKingBoard = currentBoard.blackKingBoard & ~endMove;
+                capturedPiece = "BK";
+            }
 
 //CLEAR START SQUARE, POPULATE END SQUARE
 // CASES TO REMOVE START PIECE AND ADD END PIECE TO CORRECT BOARD.
-        if((currentBoard.whitePawnBoard & start) != 0){
-            currentBoard.whitePawnBoard = currentBoard.whitePawnBoard & ~start;   //REMOVES THE STARTING SQUARE PIECE
-            currentBoard.whitePawnBoard |= endMove;                               //ADDS ENDMOVE TO CORRECT BITBOARD
-        }
-        else if((currentBoard.blackPawnBoard & start) != 0){
-            currentBoard.blackPawnBoard = currentBoard.blackPawnBoard & ~start;
-            currentBoard.blackPawnBoard |= endMove;
-        }
-        else if((currentBoard.whiteKnightBoard & start) != 0){
-            currentBoard.whiteKnightBoard = currentBoard.whiteKnightBoard & ~start;
-            currentBoard.whiteKnightBoard |= endMove;
-        }
-        else if((currentBoard.blackKnightBoard & start) != 0){
-            currentBoard.blackKnightBoard = currentBoard.blackKnightBoard & ~start;
-            currentBoard.blackKnightBoard |= endMove;
-        }
-        else if((currentBoard.whiteRookBoard & start) != 0){
-            currentBoard.whiteRookBoard = currentBoard.whiteRookBoard & ~start;
-            currentBoard.whiteRookBoard |= endMove;
-        }
-        else if((currentBoard.blackRookBoard & start) != 0){
-            currentBoard.blackRookBoard = currentBoard.blackRookBoard & ~start;
-            currentBoard.blackRookBoard |= endMove;
-        }
-        else if((currentBoard.whiteBishopBoard & start) != 0){
-            currentBoard.whiteBishopBoard = currentBoard.whiteBishopBoard & ~start;
-            currentBoard.whiteBishopBoard |= endMove;
-        }
-        else if((currentBoard.blackBishopBoard & start) != 0){
-            currentBoard.blackBishopBoard = currentBoard.blackBishopBoard & ~start;
-            currentBoard.blackBishopBoard |= endMove;
-        }
-        else if((currentBoard.whiteQueenBoard & start) != 0){
-            currentBoard.whiteQueenBoard = currentBoard.whiteQueenBoard & ~start;
-            currentBoard.whiteQueenBoard |= endMove;
-        }
-        else if((currentBoard.blackQueenBoard & start) != 0){
-            currentBoard.blackQueenBoard = currentBoard.blackQueenBoard & ~start;
-            currentBoard.blackQueenBoard |= endMove;
-        }
-        else if((currentBoard.whiteKingBoard & start) != 0){
-            currentBoard.whiteKingBoard = currentBoard.whiteKingBoard & ~start;
-            currentBoard.whiteKingBoard |= endMove;
-        }
-        else if((currentBoard.blackKingBoard & start) != 0){
-            currentBoard.blackKingBoard = currentBoard.blackKingBoard & ~start;
-            currentBoard.blackKingBoard |= endMove;
-        }
+            if ((currentBoard.whitePawnBoard & start) != 0) {
+                currentBoard.whitePawnBoard = currentBoard.whitePawnBoard & ~start;   //REMOVES THE STARTING SQUARE PIECE
+                currentBoard.whitePawnBoard |= endMove;                               //ADDS ENDMOVE TO CORRECT BITBOARD
+            } else if ((currentBoard.blackPawnBoard & start) != 0) {
+                currentBoard.blackPawnBoard = currentBoard.blackPawnBoard & ~start;
+                currentBoard.blackPawnBoard |= endMove;
+            } else if ((currentBoard.whiteKnightBoard & start) != 0) {
+                currentBoard.whiteKnightBoard = currentBoard.whiteKnightBoard & ~start;
+                currentBoard.whiteKnightBoard |= endMove;
+            } else if ((currentBoard.blackKnightBoard & start) != 0) {
+                currentBoard.blackKnightBoard = currentBoard.blackKnightBoard & ~start;
+                currentBoard.blackKnightBoard |= endMove;
+            } else if ((currentBoard.whiteRookBoard & start) != 0) {
+                currentBoard.whiteRookBoard = currentBoard.whiteRookBoard & ~start;
+                currentBoard.whiteRookBoard |= endMove;
+            } else if ((currentBoard.blackRookBoard & start) != 0) {
+                currentBoard.blackRookBoard = currentBoard.blackRookBoard & ~start;
+                currentBoard.blackRookBoard |= endMove;
+            } else if ((currentBoard.whiteBishopBoard & start) != 0) {
+                currentBoard.whiteBishopBoard = currentBoard.whiteBishopBoard & ~start;
+                currentBoard.whiteBishopBoard |= endMove;
+            } else if ((currentBoard.blackBishopBoard & start) != 0) {
+                currentBoard.blackBishopBoard = currentBoard.blackBishopBoard & ~start;
+                currentBoard.blackBishopBoard |= endMove;
+            } else if ((currentBoard.whiteQueenBoard & start) != 0) {
+                currentBoard.whiteQueenBoard = currentBoard.whiteQueenBoard & ~start;
+                currentBoard.whiteQueenBoard |= endMove;
+            } else if ((currentBoard.blackQueenBoard & start) != 0) {
+                currentBoard.blackQueenBoard = currentBoard.blackQueenBoard & ~start;
+                currentBoard.blackQueenBoard |= endMove;
+            } else if ((currentBoard.whiteKingBoard & start) != 0) {
+                currentBoard.whiteKingBoard = currentBoard.whiteKingBoard & ~start;
+                currentBoard.whiteKingBoard |= endMove;
+            } else if ((currentBoard.blackKingBoard & start) != 0) {
+                currentBoard.blackKingBoard = currentBoard.blackKingBoard & ~start;
+                currentBoard.blackKingBoard |= endMove;
+            }
 
-        //add move to moves list
-        Tuple<Tuple<Long, Long>, String> finalTuple = new Tuple<>(tuple, capturedPiece);
+            //add move to moves list
+            Tuple<Tuple<Long, Long>, String> finalTuple = new Tuple<>(tuple, capturedPiece);
 
-        madeMoves.push(finalTuple);
+            madeMoves.push(finalTuple);
+        }else{
+            System.out.println("no available moves");
+        }
         return currentBoard;
     }
 

@@ -24,13 +24,13 @@ public class Main {
                         "--------" +
                         "--------" +
                         "--------" +
-                        "---r-r--" +
+                        "---q----" +
+                        "---P----" +
                         "--------" +
-                        "------R-" +
-                        "-R------" +
+                        "--------" +
                         "--------";
-       //EMPTY BOARD
-    final String emptyBoard =
+       //On this board, the pawn should take the knight instead of the queen, saving its own queen
+    final String testBoard =
                     "--------" +
                     "--------" +
                     "--------" +
@@ -39,8 +39,17 @@ public class Main {
                     "---Q----" +
                     "--------" +
                     "--------";
+        final String emptyBoard =
+                "--------" +
+                        "--------" +
+                        "--------" +
+                        "--------" +
+                        "--------" +
+                        "--------" +
+                        "--------" +
+                        "--------";
 
-    chessBoard.stringToBitBoard(emptyBoard);  //make bitboards out of board string
+    chessBoard.stringToBitBoard(activeBoard);  //make bitboards out of board string
 
 
 //Generate Random Move
@@ -51,15 +60,15 @@ public class Main {
 
         Instant inst1 = Instant.now();
 
-        //miniMax.search(chessBoard, 6, true);
-        //System.out.println("White move: \n" + chessBoard);
+        miniMax.search(chessBoard, 2, true);
+        System.out.println("White move: \n" + chessBoard);
         //Print Board
-        for (int i = 0; i < 5; i++) {
+        /*for (int i = 0; i < 2; i++) {
             miniMax.search(chessBoard, 4, true);
             System.out.println("White move: \n" + chessBoard);
             chessBoard = move.randomBlackMove(chessBoard);
             System.out.println("Black move: \n" + chessBoard);
-        }
+        }*/
         Instant inst2 = Instant.now();
         System.out.println("Elapsed Time: " + Duration.between(inst1, inst2).toString());
     }

@@ -23,4 +23,3 @@ public class Tuple<Start, Moves> {
         this.second = second;
     }
 }
-
