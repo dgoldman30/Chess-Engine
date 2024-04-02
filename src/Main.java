@@ -40,8 +40,8 @@ public class Main {
                     "---Q----" +
                     "--------" +
                     "--------";
-        final String emptyBoard =
-                "--------" +
+    final String emptyBoard =
+                        "--------" +
                         "--------" +
                         "--------" +
                         "--------" +
@@ -50,7 +50,7 @@ public class Main {
                         "--------" +
                         "--------";
 
-    chessBoard.stringToBitBoard(testBoard);  //make bitboards out of board string
+    chessBoard.stringToBitBoard(regBoard);  //make bitboards out of board string
 
 
 
@@ -59,16 +59,16 @@ public class Main {
 
 
         Instant inst1 = Instant.now();                          //start tracking time
-        miniMax.search(chessBoard, 2, true);
-        System.out.println("White move: \n" + chessBoard);
+        //miniMax.search(chessBoard, 6, true);      //miniMax doesnt work for black due to reversal of max and min and alpha and beta.
+        //System.out.println("White move: \n" + chessBoard);
 
         //i = number of turns (i < 1 = one move for white and black)
-        /*for (int i = 0; i < 2; i++) {
-            miniMax.search(chessBoard, 4, true);
+        for (int i = 0; i < 2; i++) {
+            miniMax.search(chessBoard, 6, true);
             System.out.println("White move: \n" + chessBoard);
             chessBoard = move.randomBlackMove(chessBoard);
             System.out.println("Black move: \n" + chessBoard);
-        }*/
+        }
         Instant inst2 = Instant.now();                          //end tracking time
         System.out.println("Elapsed Time: " + Duration.between(inst1, inst2).toString());//print time
     }

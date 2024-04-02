@@ -52,7 +52,6 @@ public class miniMax {
                 }
             }
         }
-        //CURRENT ISSUE IS THAT BESTMOVE IS NULL
         Move.doMove(chessBoard, bestMove);
     }
 

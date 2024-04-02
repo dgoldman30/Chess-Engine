@@ -9,7 +9,9 @@ public class Move {
 
     Random randomGenerator = new Random(); //for random move REMOVE LATER LOL***
 
-    Stack<Tuple<Tuple<Long, Long>, String>> madeMoves = new Stack<>();
+
+    //madeMoves represents a Stack(Move((startPosition, endPosition), Captured Piece type)). Used for undoMove to keep track of past moves
+    Stack<Tuple<Tuple<Long, Long>, String>> madeMoves = new Stack<>();    //make tuple constructor for third element String, twice as efficient
 
 
     public List<Tuple<Long, List<Long>>> generateWhiteMoves(Board chessBoard){
@@ -867,17 +869,6 @@ public class Move {
         }
     }
 
-    //Tests to see if move will make own king in check
-    public boolean inCheck(Long kingBoard, Boolean isWhite){
-        //split generate al moves into black vs white and & it to the king board to see if kings in check
-        if(isWhite){
-            //return kingBoard & generateBlackMoves();
-        } else{
-            //return kingBoard & generateWhiteMoves();
-        }
-        return false; //get rid of this once inputs are fixed above
-    }
-
     //This is used only for making a random move
     public Tuple choseMove(List<Tuple<Long, List<Long>>> moveList){
 
@@ -908,6 +899,45 @@ public class Move {
         chessBoard = doMove(chessBoard, piece);  //EXECUTES the chosen move for piece
         return chessBoard;
     }
+
+
+
+    //inCheck testing
+    public boolean inCheck(Board chessBoard){  //Logic is to start with the king position, and shift it to the squares that it can be attcacked from for each piece type.
+        // Bit masks to avoid wraparound
+        long notAFile = 0xFEFEFEFEFEFEFEFEL; // ~0x0101010101010101L
+        long notHFile = 0x7F7F7F7F7F7F7F7FL; // ~0x8080808080808080L
+        long notABFile = 0xFCFCFCFCFCFCFCFCL; // ~0x0303030303030303L
+        long notGHFile = 0x3F3F3F3F3F3F3F3FL; // ~0xC0C0C0C0C0C0C0C0L
+
+
+        Long kingPos = chessBoard.whiteKingBoard;
+
+        //Knights
+        Long knightPos = chessBoard.blackKnightBoard;
+        //Pawns
+        Long pawnAttacks;
+        pawnAttacks = ((kingPos >>> 7) & notHFile) | ((kingPos >>> 9) & notAFile);
+
+        if( //knights
+                ((kingPos << 17 & knightPos) != 0)||
+                ((kingPos << 15 & notHFile & knightPos) != 0) ||
+                ((kingPos << 10 & notGHFile & knightPos) != 0) ||
+                ((kingPos << 6 & notABFile & knightPos) != 0) ||
+                ((kingPos >>> 17 & notHFile & knightPos) != 0) ||
+                ((kingPos >>> 15 & notAFile & knightPos) != 0) ||
+                ((kingPos >>> 10 & notABFile & knightPos) != 0) ||
+                ((kingPos >>> 6 & notGHFile & knightPos) != 0)){
+            return true;
+        }else if ((pawnAttacks & chessBoard.blackPawnBoard) != 0){   ////PAWNS
+            return true;
+        }
+
+
+        //if there are no inCheck moves, return false
+        return false;
+    }
+
 }
 
 //Later on: if we want to speed up move generation functions, make king and knight lookup instead of calculation

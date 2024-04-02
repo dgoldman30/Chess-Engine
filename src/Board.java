@@ -65,7 +65,6 @@ public class Board {
 
     //empty constructor
     public Board() {
-
     }
 
     @Override

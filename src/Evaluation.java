@@ -93,3 +93,7 @@ public class Evaluation {
         //return blackScore;
     }*/
 }
+
+
+//piece square table notes
+//
