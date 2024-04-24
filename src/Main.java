@@ -59,7 +59,7 @@ public class Main {
 
 
         Instant inst1 = Instant.now();                          //start tracking time
-        miniMax.search(chessBoard, 2, true);
+       miniMax.search(chessBoard, 6, true);
         System.out.println("White move: \n" + chessBoard);
 
         //i = number of turns (i < 1 = one move for white and black)

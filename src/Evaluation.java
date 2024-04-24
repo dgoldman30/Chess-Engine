@@ -150,7 +150,7 @@ public class Evaluation {
             100, 100, 100, 100, 100, 100, 100, 100,
     };
 
-
+    //could probably just pass is white to decide if we remove white from black or black from white:
     public int evaluateWhite(Board board) {
         int whiteScore = 0;
         int blackScore = 0;
@@ -173,6 +173,29 @@ public class Evaluation {
 
         return whiteScore - blackScore;
     }
+    public int evaluateBlack(Board board) {
+        int whiteScore = 0;
+        int blackScore = 0;
+
+        // Evaluate white pieces
+        whiteScore += evaluatePiece(board.whitePawnBoard, PAWN_TABLE);
+        whiteScore += evaluatePiece(board.whiteKnightBoard, KNIGHT_TABLE);
+        whiteScore += evaluatePiece(board.whiteBishopBoard, BISHOP_TABLE);
+        whiteScore += evaluatePiece(board.whiteRookBoard, ROOK_TABLE);
+        whiteScore += evaluatePiece(board.whiteQueenBoard, QUEEN_TABLE);
+        whiteScore += evaluatePiece(board.whiteKingBoard, KING_TABLE_MID);  // Assuming mid-game
+
+        // Evaluate black pieces
+        blackScore += evaluatePiece(board.blackPawnBoard, PAWN_TABLE_BLACK);
+        blackScore += evaluatePiece(board.blackKnightBoard, KNIGHT_TABLE_BLACK);
+        blackScore += evaluatePiece(board.blackBishopBoard, BISHOP_TABLE_BLACK);
+        blackScore += evaluatePiece(board.blackRookBoard, ROOK_TABLE_BLACK);
+        blackScore += evaluatePiece(board.blackQueenBoard, QUEEN_TABLE_BLACK);
+        blackScore += evaluatePiece(board.blackKingBoard, KING_TABLE_MID_BLACK);  // Assuming mid-game
+
+        return blackScore - whiteScore;
+    }
+
 
     private int evaluatePiece(long bitboard, int[] table) {
         int score = 0;

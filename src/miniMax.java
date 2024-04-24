@@ -1,6 +1,6 @@
 import java.util.List;
 
-public class miniMax {
+/* public class miniMax {
     Move Move = new Move();
     Evaluation evaluate = new Evaluation();
 
@@ -134,5 +134,209 @@ public class miniMax {
             }
             return bestScore;
         }
+    }
+public class miniMax {
+    Move move = new Move(); // Use Java naming convention: variables start with a lowercase letter
+    Evaluation evaluate = new Evaluation();
+
+    public void search(Board chessBoard, int depth, boolean isWhite) {
+        int bestScore = isWhite ? Integer.MIN_VALUE : Integer.MAX_VALUE;
+        Tuple<Long, Long> bestMove = null;
+
+        int alpha = Integer.MIN_VALUE;
+        int beta = Integer.MAX_VALUE;
+
+        List<Tuple<Long, List<Long>>> moveList = isWhite ? move.generateWhiteMoves(chessBoard) : move.generateBlackMoves(chessBoard);
+
+        for (Tuple<Long, List<Long>> piece : moveList) {
+            List<Long> pieceMoves = piece.getMoves();
+
+            for (Long end : pieceMoves) {
+                Tuple<Long, Long> singleMoveTuple = new Tuple<>(piece.getStart(), end);
+                move.doMove(chessBoard, singleMoveTuple);
+
+                int score = isWhite ? min(chessBoard, depth - 1, alpha, beta, false) : max(chessBoard, depth - 1, alpha, beta, false);
+
+                if (isWhite && score > bestScore || !isWhite && score < bestScore) {
+                    bestScore = score;
+                    bestMove = singleMoveTuple;
+                }
+
+                move.undoMove(chessBoard);
+                if (isWhite) {
+                    alpha = Math.max(alpha, bestScore);
+                } else {
+                    beta = Math.min(beta, bestScore);
+                }
+
+                if (beta <= alpha) {
+                    break;
+                }
+            }
+        }
+        move.doMove(chessBoard, bestMove);
+    }
+
+    private int min(Board chessBoard, int depth, int alpha, int beta, boolean isWhite) {
+        if (depth == 0) {
+            return evaluatePosition(chessBoard, isWhite);
+        }
+        int bestScore = Integer.MAX_VALUE;
+
+        List<Tuple<Long, List<Long>>> moveList = move.generateWhiteMoves(chessBoard);
+        for (Tuple<Long, List<Long>> piece : moveList) {
+            for (Long end : piece.getMoves()) {
+                Tuple<Long, Long> singleMoveTuple = new Tuple<>(piece.getStart(), end);
+                move.doMove(chessBoard, singleMoveTuple);
+
+                int score = max(chessBoard, depth - 1, alpha, beta, false);
+                bestScore = Math.min(bestScore, score);
+                beta = Math.min(beta, bestScore);
+
+                move.undoMove(chessBoard);
+
+                if (beta <= alpha) {
+                    return bestScore;
+                }
+            }
+        }
+        return bestScore;
+    }
+
+    private int max(Board chessBoard, int depth, int alpha, int beta, boolean isWhite) {
+        if (depth == 0) {
+            return evaluatePosition(chessBoard, isWhite);
+        }
+        int bestScore = Integer.MIN_VALUE;
+
+        List<Tuple<Long, List<Long>>> moveList = move.generateBlackMoves(chessBoard);
+        for (Tuple<Long, List<Long>> piece : moveList) {
+            for (Long end : piece.getMoves()) {
+                Tuple<Long, Long> singleMoveTuple = new Tuple<>(piece.getStart(), end);
+                move.doMove(chessBoard, singleMoveTuple);
+
+                int score = min(chessBoard, depth - 1, alpha, beta, true);
+                bestScore = Math.max(bestScore, score);
+                alpha = Math.max(alpha, bestScore);
+
+                move.undoMove(chessBoard);
+
+                if (beta <= alpha) {
+                    return bestScore;
+                }
+            }
+        }
+        return bestScore;
+    }
+
+    private int evaluatePosition(Board chessBoard, boolean isWhite) {
+        // Evaluate position for white or black based on the 'isWhite' flag
+        return isWhite ? evaluate.evaluateWhite(chessBoard) :
+                evaluate.evaluateBlack(chessBoard);
+    }
+}
+ */
+
+import java.util.List;
+
+public class miniMax {
+    Move move = new Move();  // Use Java naming convention: variables start with a lowercase letter
+    Evaluation evaluate = new Evaluation();
+
+    public void search(Board chessBoard, int depth, boolean isWhite) {
+        int bestScore = isWhite ? Integer.MIN_VALUE : Integer.MAX_VALUE;
+        Tuple<Long, Long> bestMove = null;
+
+        int alpha = Integer.MIN_VALUE;
+        int beta = Integer.MAX_VALUE;
+
+        List<Tuple<Long, List<Long>>> moveList = isWhite ? move.generateWhiteMoves(chessBoard) : move.generateBlackMoves(chessBoard);
+
+        for (Tuple<Long, List<Long>> piece : moveList) {
+            List<Long> pieceMoves = piece.getMoves();
+
+            for (Long end : pieceMoves) {
+                Tuple<Long, Long> singleMoveTuple = new Tuple<>(piece.getStart(), end);
+                move.doMove(chessBoard, singleMoveTuple);
+
+                int score = isWhite ? min(chessBoard, depth - 1, alpha, beta, !isWhite) : max(chessBoard, depth - 1, alpha, beta, !isWhite);
+
+                if (isWhite && score > bestScore || !isWhite && score < bestScore) {
+                    bestScore = score;
+                    bestMove = singleMoveTuple;
+                }
+
+                move.undoMove(chessBoard);
+                if (isWhite) {
+                    alpha = Math.max(alpha, bestScore);
+                } else {
+                    beta = Math.min(beta, bestScore);
+                }
+
+                if (beta <= alpha) {
+                    break;
+                }
+            }
+        }
+        if (bestMove != null) {
+            move.doMove(chessBoard, bestMove);
+        }
+    }
+
+    private int min(Board chessBoard, int depth, int alpha, int beta, boolean isWhite) {
+        if (depth == 0) {
+            return evaluatePosition(chessBoard, isWhite);
+        }
+        int bestScore = Integer.MAX_VALUE;
+
+        List<Tuple<Long, List<Long>>> moveList = move.generateWhiteMoves(chessBoard);
+        for (Tuple<Long, List<Long>> piece : moveList) {
+            for (Long end : piece.getMoves()) {
+                Tuple<Long, Long> singleMoveTuple = new Tuple<>(piece.getStart(), end);
+                move.doMove(chessBoard, singleMoveTuple);
+
+                int score = max(chessBoard, depth - 1, alpha, beta, !isWhite);
+                bestScore = Math.min(bestScore, score);
+                beta = Math.min(beta, bestScore);
+
+                move.undoMove(chessBoard);
+
+                if (beta <= alpha) {
+                    return bestScore;
+                }
+            }
+        }
+        return bestScore;
+    }
+
+    private int max(Board chessBoard, int depth, int alpha, int beta, boolean isWhite) {
+        if (depth == 0) {
+            return evaluatePosition(chessBoard, isWhite);
+        }
+        int bestScore = Integer.MIN_VALUE;
+
+        List<Tuple<Long, List<Long>>> moveList = move.generateBlackMoves(chessBoard);
+        for (Tuple<Long, List<Long>> piece : moveList) {
+            for (Long end : piece.getMoves()) {
+                Tuple<Long, Long> singleMoveTuple = new Tuple<>(piece.getStart(), end);
+                move.doMove(chessBoard, singleMoveTuple);
+
+                int score = min(chessBoard, depth - 1, alpha, beta, !isWhite);
+                bestScore = Math.max(bestScore, score);
+                alpha = Math.max(alpha, bestScore);
+
+                move.undoMove(chessBoard);
+
+                if (beta <= alpha) {
+                    return bestScore;
+                }
+            }
+        }
+        return bestScore;
+    }
+
+    private int evaluatePosition(Board chessBoard, boolean isWhite) {
+        // Evaluate position for white or black based on the 'isWhite' flag
+        return isWhite ? evaluate.evaluateWhite(chessBoard) : evaluate.evaluateBlack(chessBoard);
     }
 }
