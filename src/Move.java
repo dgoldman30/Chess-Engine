@@ -1012,7 +1012,6 @@ public class Move {
     public Tuple choseMove(List<Tuple<Long, List<Long>>> moveList){
 
         Tuple piece = moveList.get(randomGenerator.nextInt(moveList.size()));
-
         List<Long> moves = (List<Long>) piece.getMoves();  //get list of moves
 
         Long endMove = moves.get(randomGenerator.nextInt(moves.size()));   //chooses which move in the list of moves for the given piece to execute, will have to edit later just for testing logic in move generate function***
