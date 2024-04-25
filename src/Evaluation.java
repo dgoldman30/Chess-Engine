@@ -150,8 +150,11 @@ public class Evaluation {
             100, 100, 100, 100, 100, 100, 100, 100,
     };
 
+    public int evaluate(Board board, int turn) {
+        return turn * evaluatePSQ(board);
+    }
 
-    public int evaluateWhite(Board board) {
+    public int evaluatePSQ(Board board) {
         int whiteScore = 0;
         int blackScore = 0;
 

@@ -1,76 +1,45 @@
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class miniMax {
     Move Move = new Move();
     Evaluation evaluate = new Evaluation();
 
-    public void search(Board chessBoard, int depth, boolean isWhite) {
+    // add the best move at each depth to the bestScores map
+    Map<Integer, Tuple<Long, Long>> bestScores = new HashMap<>();
+    // same as above for the qui search
+    //HashMap<Integer, Tuple<Long, Long>> bestQuiScores = new HashMap<>();
 
-        int bestScore = Integer.MIN_VALUE;          //set bestMove to be empty, this is the return value
-        Tuple<Long, Long> bestMove = null;
+    public void computeMove(Board chessBoard, int depth, boolean isWhite) {
+
+        Tuple<Long, Long> bestMove;
         int alpha = Integer.MIN_VALUE;
         int beta = Integer.MAX_VALUE;
 
-        //populate moveList with the correct color of moves
-        List<Tuple<Long, List<Long>>> moveList = isWhite ? Move.generateWhiteMoves(chessBoard) : Move.generateBlackMoves(chessBoard);
+        int bestMoveScore = max(chessBoard, depth, alpha, beta, isWhite);
+        //int capScore = quiSearch(chessBoard, alpha, beta, isWhite);
 
-        //Collections.shuffle(moveList);
-        //iterate through move list
-        for (int i = 0; i < moveList.size(); i++) {
-
-            //get each piece
-            Tuple<Long, List<Long>> piece = moveList.get(i);
-
-            //get the pieces moves
-            List<Long> pieceMoves = piece.getMoves();
-
-            //Randomize piece selection
-            //Collections.shuffle(pieceMoves);
-
-            //iterate through the pieces moves
-            for (int z = 0; z < pieceMoves.size(); z++) {
-
-                //construct the move with the starting position of the piece and the current(i) end move
-                Tuple<Long, Long> singleMoveTuple = new Tuple<>(piece.getStart(), pieceMoves.get(z));
-                //apply the move
-                Move.doMove(chessBoard, singleMoveTuple);
-
-//                System.out.println("one: " + "\n" + chessBoard);
-
-                int score = min(chessBoard, depth, alpha, beta, isWhite);
-//                System.out.println(score);
-                if (score > bestScore) {
-                    bestScore = score;
-                    bestMove = singleMoveTuple;
-//                    System.out.println("Best Score: " + bestScore);
-                }
-                alpha = Math.max(alpha, bestScore);
-                Move.undoMove(chessBoard);
-                if (beta <= alpha) {
-//                    System.out.println("pruned in search");
-                    break;
-                }
-            }
-        }
+        //if (capScore > bestMoveScore) bestMove = bestQuiScores.get(capScore);
+        //else bestMove = bestScores.get(bestMoveScore);
+        bestMove = bestScores.get(bestMoveScore);
         Move.doMove(chessBoard, bestMove);
     }
 
     public int min(Board chessBoard, int depth, int alpha, int beta, boolean isWhite) {
         if (depth == 0) {
-            //int score = isWhite ? evaluate.evaluateBlack(chessBoard) : evaluate.evaluateWhite(chessBoard);
-            int score = evaluate.evaluateWhite(chessBoard);
-            //System.out.println(score);
+            int score = isWhite ? evaluate.evaluate(chessBoard, 1) : evaluate.evaluate(chessBoard, -1);
             return score;
         } else {
-            //set the best score to be highest number possible
-            int bestScore = Integer.MAX_VALUE;
-            //find all new possible moves for other turn
-            List<Tuple<Long, List<Long>>> moveList = isWhite ? Move.generateBlackMoves(chessBoard) : Move.generateWhiteMoves(chessBoard);
+            //set the best score to be min number possible
+            int bestScore = Integer.MIN_VALUE;
+            //find all new possible moves for player to move
+            List<Tuple<Long, List<Long>>> moveList = isWhite ? Move.generateWhiteMoves(chessBoard) : Move.generateBlackMoves(chessBoard);
             //iterate through move list
             for (int i = 0; i < moveList.size(); i++) {
-                //get each piece
+                //get each piece, grabs each tuple
                 Tuple<Long, List<Long>> piece = moveList.get(i);
-                // get the pieces moves
+                // get the possible moves for that piece from the cur position
                 List<Long> pieceMoves = piece.getMoves();
                 //iterate through the pieces moves
                 for (int z = 0; z < pieceMoves.size(); z++) {
@@ -78,40 +47,34 @@ public class miniMax {
                     Tuple<Long, Long> singleMoveTuple = new Tuple<>(piece.getStart(), pieceMoves.get(z));
                     //apply the move
                     Move.doMove(chessBoard, singleMoveTuple);
-
-                    //System.out.println("two: " + "\n" + chessBoard);
-
-                    int score = max(chessBoard, depth - 1, alpha, beta, isWhite);
-                    bestScore = Math.min(bestScore, score);
-                    beta = Math.min(beta, bestScore);
+                    int childScore = max(chessBoard, depth - 1, alpha, beta, !isWhite);
                     Move.undoMove(chessBoard);
-                    if (beta <= alpha) {
-                        //System.out.println("pruned in min");
-                        return bestScore;
+                    if(childScore < beta) {
+                        beta = childScore;
+                        if (beta <= alpha) {
+                            break;
+                        }
                     }
                 }
             }
-            return bestScore;
+            return beta;
         }
     }
 
     public int max(Board chessBoard, int depth, int alpha, int beta, boolean isWhite) {
         if (depth == 0) {
-            //int score = isWhite ? evaluate.evaluateWhite(chessBoard) : evaluate.evaluateBlack(chessBoard);
-            //System.out.println(score);
-
-            int score = evaluate.evaluateWhite(chessBoard);
+            int score = isWhite ? evaluate.evaluate(chessBoard, 1) : evaluate.evaluate(chessBoard, -1);
             return score;
         } else {
-            //set the best score to be highest number possible
+            //set the best score to be min number possible
             int bestScore = Integer.MIN_VALUE;
-            //find all new possible moves for other turn
+            //find all new possible moves for player to move
             List<Tuple<Long, List<Long>>> moveList = isWhite ? Move.generateWhiteMoves(chessBoard) : Move.generateBlackMoves(chessBoard);
             //iterate through move list
             for (int i = 0; i < moveList.size(); i++) {
-                //get each piece
+                //get each piece, grabs each tuple
                 Tuple<Long, List<Long>> piece = moveList.get(i);
-                //get the pieces moves
+                // get the possible moves for that piece from the cur position
                 List<Long> pieceMoves = piece.getMoves();
                 //iterate through the pieces moves
                 for (int z = 0; z < pieceMoves.size(); z++) {
@@ -119,20 +82,50 @@ public class miniMax {
                     Tuple<Long, Long> singleMoveTuple = new Tuple<>(piece.getStart(), pieceMoves.get(z));
                     //apply the move
                     Move.doMove(chessBoard, singleMoveTuple);
-
-                    //System.out.println("Three: " + "\n" + chessBoard);
-
-                    int score = min(chessBoard, depth - 1, alpha, beta, isWhite);
-                    bestScore = Math.max(bestScore, score);
-                    alpha = Math.max(alpha, bestScore);
+                    int childScore = min(chessBoard, depth - 1, alpha, beta, !isWhite);
                     Move.undoMove(chessBoard);
-                    if (beta <= alpha) {
-                        //System.out.println("pruned in max");
-                        return bestScore;
+                    if(childScore > alpha) {
+                        alpha = childScore;
+                        bestScore = childScore;
+                        bestScores.put(bestScore, singleMoveTuple);
+                        if (beta <= alpha) {
+                            break;
+                        }
                     }
                 }
             }
-            return bestScore;
+            return depth == 0 ? bestScore : alpha;
         }
     }
+
+    /*public int quiSearch(Board chessBoard, int alpha, int beta, boolean isWhite){
+        int standPat = isWhite ? evaluate.evaluate(chessBoard, 1) : evaluate.evaluate(chessBoard, -1);
+        List<Tuple<Long, List<Long>>> moveList = isWhite ? Move.generateWhiteMoves(chessBoard) : Move.generateBlackMoves(chessBoard);
+        List<Tuple<Long, List<Long>>> captures = Move.captureMoves(moveList, chessBoard, isWhite);
+        if (standPat >= beta) {
+            return beta;
+        }
+        else if(alpha < beta){
+            alpha = standPat;
+        }
+
+        for(int i = 0; i < captures.size(); i++){
+            Tuple<Long, List<Long>> piece = captures.get(i);
+            List<Long> pieceMoves = piece.getMoves();
+            for(long mv : pieceMoves){
+                Tuple<Long, Long> singleMoveTuple = new Tuple<>(piece.getStart(), mv);
+                Move.doMove(chessBoard, singleMoveTuple);
+                int score = -quiSearch(chessBoard, -beta, -alpha, !isWhite);
+                Move.undoMove(chessBoard);
+
+                if(score >= beta)
+                    return beta;
+                else if (score > alpha)
+                    alpha = score;
+                    bestQuiScores.put(score, singleMoveTuple);
+            }
+        }
+        return alpha;
+    }*/
+
 }
