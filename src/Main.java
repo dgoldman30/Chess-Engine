@@ -33,7 +33,7 @@ public class Main {
        //On this board, the pawn should take the knight instead of the queen, saving its own queen
     final String testBoard =
             //   H G F E D C B A
-                    "--------" + // 8
+                    "-------p" + // 8
                     "--------" + // 7
                     "--------" + // 6
                     "--------" + // 5
@@ -51,7 +51,7 @@ public class Main {
                         "--------" +
                         "--------";
 
-    chessBoard.stringToBitBoard(regBoard);  //make bitboards out of board string
+    chessBoard.stringToBitBoard(testBoard);  //make bitboards out of board string
 
 
 
