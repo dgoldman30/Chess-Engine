@@ -32,14 +32,15 @@ public class Main {
                         "--------";
        //On this board, the pawn should take the knight instead of the queen, saving its own queen
     final String testBoard =
-                    "--------" +
-                    "--------" +
-                    "--------" +
-                    "----n-q-" +
-                    "-----P--" +
-                    "---Q----" +
-                    "--------" +
-                    "--------";
+            //   H G F E D C B A
+                    "--------" + // 8
+                    "--------" + // 7
+                    "--------" + // 6
+                    "--------" + // 5
+                    "--------" + // 4
+                    "--------" + // 3
+                    "--------" + // 2
+                    "B-------"; // 1
         final String emptyBoard =
                 "--------" +
                         "--------" +
