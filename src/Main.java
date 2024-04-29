@@ -33,7 +33,7 @@ public class Main {
        //On this board, the pawn should take the knight instead of the queen, saving its own queen
     final String testBoard =
             //   H G F E D C B A
-                    "-------p" + // 8
+                    "-------k" + // 8
                     "--------" + // 7
                     "--------" + // 6
                     "--------" + // 5
@@ -51,7 +51,7 @@ public class Main {
                         "--------" +
                         "--------";
 
-    chessBoard.stringToBitBoard(testBoard);  //make bitboards out of board string
+    chessBoard.stringToBitBoard(regBoard);  //make bitboards out of board string
 
 
 
@@ -65,11 +65,19 @@ public class Main {
 
         //i = number of turns (i < 1 = one move for white and black)
         for (int i = 0; i < 20; i++) {
-            miniMax.computeMove(chessBoard, 2, true);
-            System.out.println("White move: \n" + chessBoard);
-            miniMax.computeMove(chessBoard, 4, false);
-            System.out.println("Black move: \n" + chessBoard);
+            Tuple<Long, Long> whiteMove = miniMax.computeMove(chessBoard, 4, true);
+            move.doMove(chessBoard, whiteMove);
+            System.out.println("White move:\n" + chessBoard);
+            Tuple<Long,Long> blackMove = miniMax.computeMove(chessBoard, 2, false);
+            move.doMove(chessBoard, blackMove);
+            System.out.println("Black move:\n" + chessBoard);
         }
+
+//        Board cBoard = new Board(32l, (1l << 5));
+//        System.out.println("cBoard = \n" + cBoard);
+//        if(move.inCheck(chessBoard, false))
+//            System.out.println("incheck");
+//        else System.out.println("not");
         Instant inst2 = Instant.now();                          //end tracking time
         System.out.println("Elapsed Time: " + Duration.between(inst1, inst2).toString());//print time
     }

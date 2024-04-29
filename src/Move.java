@@ -152,10 +152,10 @@ public class Move {
                 Tuple tuple = new Tuple(0L, moveList); //initiate tuple for individual piece
                 tuple.setFirst(knightMask);   //set starting board
 
-                moveList.add((knightMask >> 6) & ~whiteOcc & ~(Board.FILE_A | Board.FILE_B)); //& will check the end position
-                moveList.add((knightMask >> 10) & ~whiteOcc & ~(Board.FILE_G | Board.FILE_H));
-                moveList.add((knightMask >> 15) & ~whiteOcc & ~Board.FILE_A);
-                moveList.add((knightMask >> 17) & ~whiteOcc & ~Board.FILE_H);
+                moveList.add((knightMask >>> 6) & ~whiteOcc & ~(Board.FILE_A | Board.FILE_B)); //& will check the end position
+                moveList.add((knightMask >>> 10) & ~whiteOcc & ~(Board.FILE_G | Board.FILE_H));
+                moveList.add((knightMask >>> 15) & ~whiteOcc & ~Board.FILE_A);
+                moveList.add((knightMask >>> 17) & ~whiteOcc & ~Board.FILE_H);
 
                 moveList.add((knightMask << 6) & ~whiteOcc & ~(Board.FILE_G | Board.FILE_H));
                 moveList.add((knightMask << 10) & ~whiteOcc & ~(Board.FILE_A | Board.FILE_B));
@@ -193,10 +193,10 @@ public class Move {
                 Tuple tuple = new Tuple(0L, moveList); //initiate tuple for individual piece
                 tuple.setFirst(knightMask);   //set starting board
 
-                moveList.add((knightMask >> 6) & ~blackOcc & ~(Board.FILE_A | Board.FILE_B)); //& will check the end position
-                moveList.add((knightMask >> 10) & ~blackOcc & ~(Board.FILE_G | Board.FILE_H));
-                moveList.add((knightMask >> 15) & ~blackOcc & ~Board.FILE_A);
-                moveList.add((knightMask >> 17) & ~blackOcc & ~Board.FILE_H);
+                moveList.add((knightMask >>> 6) & ~blackOcc & ~(Board.FILE_A | Board.FILE_B)); //& will check the end position
+                moveList.add((knightMask >>> 10) & ~blackOcc & ~(Board.FILE_G | Board.FILE_H));
+                moveList.add((knightMask >>> 15) & ~blackOcc & ~Board.FILE_A);
+                moveList.add((knightMask >>> 17) & ~blackOcc & ~Board.FILE_H);
 
                 moveList.add((knightMask << 6) & ~blackOcc & ~(Board.FILE_G | Board.FILE_H));
                 moveList.add((knightMask << 10) & ~blackOcc & ~(Board.FILE_A | Board.FILE_B));
@@ -1101,39 +1101,47 @@ public class Move {
 
 
     //inCheck testing
-    public boolean inCheck(Board chessBoard){  //Logic is to start with the king position, and shift it to the squares that it can be attcacked from for each piece type.
-        // Bit masks to avoid wraparound
-        long notAFile = 0xFEFEFEFEFEFEFEFEL; // ~0x0101010101010101L
-        long notHFile = 0x7F7F7F7F7F7F7F7FL; // ~0x8080808080808080L
-        long notABFile = 0xFCFCFCFCFCFCFCFCL; // ~0x0303030303030303L
-        long notGHFile = 0x3F3F3F3F3F3F3F3FL; // ~0xC0C0C0C0C0C0C0C0L
+    public boolean inCheck(Board chessBoard, boolean isWhite){  //Logic is to start with the king position, and shift it to the squares that it can be attcacked from for each piece type
+        long kingBoard = isWhite ? chessBoard.whiteKingBoard : chessBoard.blackKingBoard;
+        int kingPos = SIZE - Long.numberOfLeadingZeros(kingBoard);
+        long oppOccBoard = isWhite ? chessBoard.blackOccBoard : chessBoard.whiteOccBoard;
+        long[] pawnAttacks = isWhite ? chessBoard.blackPawnAttacks : chessBoard.whitePawnAttacks;
+        long[] knightAttacks = chessBoard.knightAttacks;
+        long[] bishopAttacks = chessBoard.bishopAttacks;
 
+        System.out.println(kingBoard);
+        System.out.println("king pos = " + kingPos);
+        System.out.println(oppOccBoard);
 
-        Long kingPos = chessBoard.whiteKingBoard;
+        if (( oppOccBoard & pawnAttacks[kingPos - 1]) != 0
+                || (oppOccBoard & knightAttacks[kingPos - 1]) != 0
+                || ((oppOccBoard & bishopAttacks[kingPos - 1]) != 0))
+            return true;
+        else return false;
 
         //Knights
-        Long knightPos = chessBoard.blackKnightBoard;
-        //Pawns
-        Long pawnAttacks;
-        pawnAttacks = ((kingPos >>> 7) & notHFile) | ((kingPos >>> 9) & notAFile);
-
-        if( //knights
-                ((kingPos << 17 & knightPos) != 0)||
-                ((kingPos << 15 & notHFile & knightPos) != 0) ||
-                ((kingPos << 10 & notGHFile & knightPos) != 0) ||
-                ((kingPos << 6 & notABFile & knightPos) != 0) ||
-                ((kingPos >>> 17 & notHFile & knightPos) != 0) ||
-                ((kingPos >>> 15 & notAFile & knightPos) != 0) ||
-                ((kingPos >>> 10 & notABFile & knightPos) != 0) ||
-                ((kingPos >>> 6 & notGHFile & knightPos) != 0)){
-            return true;
-        }else if ((pawnAttacks & chessBoard.blackPawnBoard) != 0){   ////PAWNS
-            return true;
-        }
-
-
-        //if there are no inCheck moves, return false
-        return false;
+//        Long knightPos = chessBoard.blackKnightBoard;
+//        //Pawns
+//        Long pawnAttacks;
+//        pawnAttacks = ((kingPos >>> 7) & notHFile) | ((kingPos >>> 9) & notAFile);
+//
+//        if( //knights
+//                ((kingPos << 17 & knightPos) != 0)||
+//                ((kingPos << 15 & notHFile & knightPos) != 0) ||
+//                ((kingPos << 10 & notGHFile & knightPos) != 0) ||
+//                ((kingPos << 6 & notABFile & knightPos) != 0) ||
+//                ((kingPos >>> 17 & notHFile & knightPos) != 0) ||
+//                ((kingPos >>> 15 & notAFile & knightPos) != 0) ||
+//                ((kingPos >>> 10 & notABFile & knightPos) != 0) ||
+//                ((kingPos >>> 6 & notGHFile & knightPos) != 0)){
+//            return true;
+//        }else if ((pawnAttacks & chessBoard.blackPawnBoard) != 0){   ////PAWNS
+//            return true;
+//        }
+//
+//
+//        //if there are no inCheck moves, return false
+//        return false;
     }
 
 }

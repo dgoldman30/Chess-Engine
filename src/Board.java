@@ -24,6 +24,12 @@ public class Board {
 
     public long occBoard = blackOccBoard | whiteOccBoard;
 
+    // attack bitboards
+    protected long[] whitePawnAttacks;
+    protected long[] blackPawnAttacks;
+    protected long[] knightAttacks;
+
+    protected long[] bishopAttacks;
 
     // Bitmasks for each file
     // NOTICE: this is alphabetically backwards! FILE_A is the file to the far right and FILE_H is the file to the far left
@@ -51,7 +57,9 @@ public class Board {
     public static final long[] ranks = {RANK_8, RANK_7, RANK_6, RANK_5, RANK_4, RANK_3, RANK_2, RANK_1};
 
     //all args constructor
-    public Board(long whitePawnBoard, long whiteKnightBoard, long whiteRookBoard, long whiteBishopBoard, long whiteKingBoard, long whiteQueenBoard, long whiteOccBoard, long blackPawnBoard, long blackKnightBoard, long blackBishopBoard, long blackRookBoard, long blackQueenBoard, long blackKingBoard, long blackOccBoard) {
+    public Board(long whitePawnBoard, long whiteKnightBoard, long whiteRookBoard, long whiteBishopBoard, long whiteKingBoard,
+                 long whiteQueenBoard, long whiteOccBoard, long blackPawnBoard, long blackKnightBoard, long blackBishopBoard,
+                 long blackRookBoard, long blackQueenBoard, long blackKingBoard, long blackOccBoard){
         this.whitePawnBoard = whitePawnBoard;
         this.whiteKnightBoard = whiteKnightBoard;
         this.whiteRookBoard = whiteRookBoard;
@@ -66,11 +74,99 @@ public class Board {
         this.blackQueenBoard = blackQueenBoard;
         this.blackKingBoard = blackKingBoard;
         this.blackOccBoard = blackOccBoard;
+        this.whitePawnAttacks = pawnWhiteAttackBitboards();
+        this.blackPawnAttacks = blackPawnAttackBitboards();
+        this.knightAttacks = knightAttackBitboards();
     }
 
     //empty constructor
     public Board() {
+        this.whitePawnAttacks = pawnWhiteAttackBitboards();
+        this.blackPawnAttacks = blackPawnAttackBitboards();
+        this.knightAttacks = knightAttackBitboards();
+        this.bishopAttacks = bishopAttackBitboards();
     }
+
+    public Board(long blackKingBoard, long whitePawnBoard){
+        this.blackKingBoard = blackKingBoard;
+        this.whitePawnBoard = whitePawnBoard;
+    }
+
+    protected long[] pawnWhiteAttackBitboards(){
+        long[] pawnAttacks = new long[64];
+
+        for(int square = 0; square < 64; square++){
+            long pawn = 1L << square;
+            long attacks = (pawn << 7) & ~FILE_A;
+            attacks |= (pawn << 9) & ~FILE_H;
+            pawnAttacks[square] = attacks;
+        }
+
+        return pawnAttacks;
+    }
+
+    protected long[] blackPawnAttackBitboards(){
+        long[] pawnAttacks = new long[64];
+
+        for(int square = 0; square < 64; square++){
+            long pawn = 1L << square;
+            long attacks = (pawn >>> 9) & ~FILE_A;
+            attacks |= (pawn >>> 7) & ~FILE_H;
+            pawnAttacks[square] = attacks;
+        }
+
+        return pawnAttacks;
+    }
+
+    protected long[] knightAttackBitboards(){
+        long[] knightAttacks = new long[64];
+
+        for(int square = 0; square < 64; square++){
+            long knight = 1L << square;
+            long attacks = 0;
+            attacks |= (knight << 17) & ~FILE_A & ~FILE_B;
+            attacks |= (knight << 15) & ~FILE_H & ~FILE_G;
+            attacks |= (knight << 10) & ~FILE_A & ~FILE_B & ~FILE_C;
+            attacks |= (knight << 6) & ~FILE_H & ~FILE_G & ~FILE_F;
+            attacks |= (knight >>> 6) & ~FILE_A & ~FILE_B & ~FILE_C;
+            attacks |= (knight >>> 10) & ~FILE_H & ~FILE_G & ~FILE_F;
+            attacks |= (knight >>> 15) & ~FILE_A & ~FILE_B;
+            attacks |= (knight >>> 17) & ~FILE_H & ~FILE_G;
+            knightAttacks[square] = attacks;
+        }
+        return knightAttacks;
+    }
+
+    protected long generateBishopAttacks(int square){
+        long bishop = 1l << square;
+        long attacks = 0l;
+
+        for(int i = 1; i <= 7; i++){
+            long northEast = (bishop << (i * 8 + i)) & ~FILE_A;
+            long northWest = (bishop << (i * 8 - i)) & ~FILE_H;
+            long southEast = (bishop >>> (i * 8 - i)) & ~FILE_H;
+            long southWest = (bishop >>> (i * 8 + i)) & ~FILE_A;
+
+            attacks |= northEast | northWest | southWest | southEast;
+
+            if((attacks & occBoard) != 0)
+                break;
+        }
+
+        return attacks;
+    }
+
+    protected long[] bishopAttackBitboards() {
+        long[] bishopAttacks = new long[64];
+
+        for(int square = 0; square < 64; square++){
+            long attacks = generateBishopAttacks(square);
+            bishopAttacks[square] = attacks;
+        }
+
+        return bishopAttacks;
+    }
+
 
     @Override
     public String toString() {

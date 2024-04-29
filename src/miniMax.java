@@ -11,7 +11,7 @@ public class miniMax {
     // same as above for the qui search
     //HashMap<Integer, Tuple<Long, Long>> bestQuiScores = new HashMap<>();
 
-    public void computeMove(Board chessBoard, int depth, boolean isWhite) {
+    public Tuple<Long, Long> computeMove(Board chessBoard, int depth, boolean isWhite) {
 
         Tuple<Long, Long> bestMove;
         int alpha = Integer.MIN_VALUE;
@@ -23,7 +23,7 @@ public class miniMax {
         //if (capScore > bestMoveScore) bestMove = bestQuiScores.get(capScore);
         //else bestMove = bestScores.get(bestMoveScore);
         bestMove = bestScores.get(bestMoveScore);
-        Move.doMove(chessBoard, bestMove);
+        return bestMove;
     }
 
     public int min(Board chessBoard, int depth, int alpha, int beta, boolean isWhite) {
