@@ -794,22 +794,20 @@ public class Move {
         return piece;
     }
 
-    public Board randomBlackMove(Board chessBoard){
+    public Tuple randomBlackMove(Board chessBoard){
         List<Tuple<Long, List<Long>>> moveList = generateBlackMoves(chessBoard);     //generate all moves
 
         Tuple piece = choseMove(moveList); //select Piece and Move for piece
 
-        chessBoard = doMove(chessBoard, piece);  //EXECUTES the chosen move for piece
-        return chessBoard;
+        return piece;
     }
 
-    public Board randomWhiteMove(Board chessBoard){
+    public Tuple randomWhiteMove(Board chessBoard){
         List<Tuple<Long, List<Long>>> moveList = generateWhiteMoves(chessBoard);     //generate all moves
 
         Tuple piece = choseMove(moveList); //select Piece and Move for piece
 
-        chessBoard = doMove(chessBoard, piece);  //EXECUTES the chosen move for piece
-        return chessBoard;
+        return piece;
     }
 
 

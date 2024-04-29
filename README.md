@@ -15,14 +15,70 @@ This is a simple Java-based Chess AI that uses a basic minimax algorithm with al
     ```
     java Main
     ```
-Alternatively, open the project in IntelliJ and run the project. 
+Alternatively, open the project in IntelliJ and run the project.
+
+## Setting up the game
+
+1. input the board state in any of the given string.
+   
+```  
+final String STRING_NAME_HERE =
+"rnbkqbnr" +
+"pppppppp" +
+"--------" +
+"--------" +
+"--------" +
+"--------" +
+"PPPPPPPP" +
+"RNBKQBNR"; 
+```
+This is an example of the string for the starting board state of a game.
+2. Update stringToBitBoard's input to the string you just made
+```
+chessBoard.stringToBitBoard(STRING_NAME_HERE);
+```
+3. To run a single move, make sure the following code labeled INDIVIDUAL MOVE is uncommented
+```   
+miniMax.computeMove(chessBoard, 6, true);
+System.out.println("White move: \n" + chessBoard);
+```
+and make the next block of code labeled MULTIPLE MOVES is commented out.
+```
+ //MULTIPLE MOVE
+        int moves = 20;
+        int whiteDepth = 4;
+        int blackDepth = 2;
+
+        for (int i = 0; i < moves; i++) {
+            Tuple<Long, Long> whiteMove = miniMax.computeMove(chessBoard, whiteDepth, true);
+            //move.randomWhiteMove(chessBoard);
+            
+            move.doMove(chessBoard, whiteMove);
+            System.out.println("White move:\n" + chessBoard);
+            Tuple<Long,Long> blackMove = miniMax.computeMove(chessBoard, blackDepth, false);
+            //move.randomBlackMove(chessBoard);
+            
+            move.doMove(chessBoard, blackMove);
+            System.out.println("Black move:\n" + chessBoard);
+        }
+```
+To run multiple moves, set the integer Moves the number of moves(White then black is one move), and set whiteDepth and blackDepth to the desired depths.
+
+To run a random move instead of utilizing the minimax, comment out
+```
+Tuple<Long, Long> whiteMove = miniMax.computeMove(chessBoard, whiteDepth, true);
+```
+for black or white(or both) and uncomment the next line
+```
+move.randomWhiteMove(chessBoard);
+```
 ## Board Representation
 
-The board is represented using a bitboard approach. Each piece type (pawn, knight, bishop, rook, queen, king) for both white and black has its own bitboard.
+The board is represented using a bitboard approach. Each piece type (pawn, knight, bishop, rook, queen, king) for both white and black has its own bitboard. Creating a board state is done in the main class through strings. These strings represent white pieces with uppercase and black pieces with lowercase. Board.stringToBitboard() then turns this string into the bitboards.
 
 ## Interpreting Output
 
-The program outputs the final move for white based on the current board position and the specified search depth.
+The program outputs the best next possible move for the given board state.
 
 ## Changing Depth of Search
 
@@ -67,7 +123,5 @@ public class Evaluation {
 ```
 ### TODO: ✓
 - [ ] `undoMove` function to improve efficiency of `Search` class
-- [ ] Remove hard-coded components of `Search` class, reuse `min` and `max` functions
-- [ ] Alpha-beta pruning
 - [ ] Implement more difficult Chess rules (en passant, castling, promotion, etc.)
 - [ ] Improve UI (Potentially leave text-based model)

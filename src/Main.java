@@ -51,33 +51,33 @@ public class Main {
                         "--------" +
                         "--------";
 
-    chessBoard.stringToBitBoard(regBoard);  //make bitboards out of board string
-
-
-
-//Generate Random Move
-        //chessBoard = move.randomMove(chessBoard);
+    chessBoard.stringToBitBoard(testBoard);  //make bitboards out of board string
 
 
         Instant inst1 = Instant.now();                          //start tracking time
+
+        //INDIVIDUAL MOVE
 //        miniMax.computeMove(chessBoard, 6, true);
 //        System.out.println("White move: \n" + chessBoard);
 
-        //i = number of turns (i < 1 = one move for white and black)
-        for (int i = 0; i < 20; i++) {
-            Tuple<Long, Long> whiteMove = miniMax.computeMove(chessBoard, 4, true);
+
+        //MULTIPLE MOVE
+        int moves = 20;
+        int whiteDepth = 4;
+        int blackDepth = 2;
+
+        for (int i = 0; i < moves; i++) {
+            Tuple<Long, Long> whiteMove = miniMax.computeMove(chessBoard, whiteDepth, true);
+            //move.randomWhiteMove(chessBoard);
+
             move.doMove(chessBoard, whiteMove);
             System.out.println("White move:\n" + chessBoard);
-            Tuple<Long,Long> blackMove = miniMax.computeMove(chessBoard, 2, false);
+            Tuple<Long,Long> blackMove = miniMax.computeMove(chessBoard, blackDepth, false);
+            //move.randomBlackMove(chessBoard);
+
             move.doMove(chessBoard, blackMove);
             System.out.println("Black move:\n" + chessBoard);
         }
-
-//        Board cBoard = new Board(32l, (1l << 5));
-//        System.out.println("cBoard = \n" + cBoard);
-//        if(move.inCheck(chessBoard, false))
-//            System.out.println("incheck");
-//        else System.out.println("not");
         Instant inst2 = Instant.now();                          //end tracking time
         System.out.println("Elapsed Time: " + Duration.between(inst1, inst2).toString());//print time
     }
