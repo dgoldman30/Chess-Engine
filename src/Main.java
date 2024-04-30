@@ -1,5 +1,7 @@
 import java.time.Duration;
 import java.time.Instant;
+import java.util.InputMismatchException;
+import java.util.Scanner;
 
 public class Main {
     public static void main(String[] args) {
@@ -13,7 +15,7 @@ public class Main {
         //UPPERCASE IS WHITE AND STARTS AT THE BOTTOM OF THIS STRING AND MOVES UP
 
         final String regBoard =
-                        "rnbkqbnr" +
+                "rnbkqbnr" +
                         "pppppppp" +
                         "--------" +
                         "--------" +
@@ -22,7 +24,7 @@ public class Main {
                         "PPPPPPPP" +
                         "RNBKQBNR";
         final String activeBoard =
-                        "------p-" +
+                "------p-" +
                         "--------" +
                         "---p--P-" +
                         "-p-P-p--" +
@@ -30,17 +32,17 @@ public class Main {
                         "---P-P--" +
                         "--------" +
                         "--------";
-       //On this board, the pawn should take the knight instead of the queen, saving its own queen
-    final String testBoard =
-            //   H G F E D C B A
-                    "-------k" + // 8
-                    "--------" + // 7
-                    "--------" + // 6
-                    "--------" + // 5
-                    "--------" + // 4
-                    "--------" + // 3
-                    "--------" + // 2
-                    "B-------"; // 1
+        //On this board, the pawn should take the knight instead of the queen, saving its own queen
+        final String testBoard =
+                //   H G F E D C B A
+                "-------k" + // 8
+                        "--------" + // 7
+                        "--------" + // 6
+                        "--------" + // 5
+                        "--------" + // 4
+                        "--------" + // 3
+                        "--------" + // 2
+                        "B-------"; // 1
         final String emptyBoard =
                 "--------" +
                         "--------" +
@@ -51,7 +53,7 @@ public class Main {
                         "--------" +
                         "--------";
 
-    chessBoard.stringToBitBoard(regBoard);  //make bitboards out of board string
+        chessBoard.stringToBitBoard(regBoard);  //make bitboards out of board string
 
 
         Instant inst1 = Instant.now();                          //start tracking time
@@ -62,9 +64,47 @@ public class Main {
 
 
         //MULTIPLE MOVE
-        int moves = 1;
+        int moves = 0;
+
+        Scanner scanner = new Scanner(System.in);
+        boolean validInput = false;
+        while (!validInput) {
+            System.out.println("Enter the amount of moves you would like to see: ");
+            try {
+                moves = scanner.nextInt();
+                validInput = true; // Set to true if input is valid
+            } catch (InputMismatchException e) {
+                System.out.println("Invalid input. Please try again.");
+                scanner.nextLine(); // Clear the invalid input from scanner
+            }
+        }
+        validInput = false;
+        String inputStr = " ";
+        while (!validInput) {
+            System.out.println("Enter opponent(black) strength: \n(R: Random, W: Weak, S: Strong)");
+            try {
+                inputStr = scanner.next();
+                if (inputStr.equals("R") || inputStr.equals("W") || inputStr.equals("S")) {
+                    validInput = true; // Set to true if input is valid
+                } else {
+                    System.out.println("Invalid input. Please try again.");
+                    scanner.nextLine(); // Clear the invalid input from scanner
+                }
+            } catch (InputMismatchException e) {
+                System.out.println("Invalid input. Please try again.");
+                scanner.nextLine(); // Clear the invalid input from scanner
+            }
+        }
         int whiteDepth = 4;
-        int blackDepth = 2;
+        int blackDepth = 0;
+        boolean blackRand = false;
+        if (inputStr.equals("W")) {
+            blackDepth = 2;
+        } else if (inputStr.equals("S")) {
+            blackDepth = 4;
+        } else {
+            blackRand = true;
+        }
 
         for (int i = 0; i < moves; i++) {
             Tuple<Long, Long> whiteMove = miniMax.computeMove(chessBoard, whiteDepth, true);
@@ -72,8 +112,12 @@ public class Main {
 
             move.doMove(chessBoard, whiteMove);
             System.out.println("White move:\n" + chessBoard);
-            //Tuple<Long,Long> blackMove = miniMax.computeMove(chessBoard, blackDepth, false);
-            Tuple<Long,Long> blackMove = move.randomBlackMove(chessBoard);
+            Tuple<Long, Long> blackMove;
+            if (!blackRand) {
+                blackMove = miniMax.computeMove(chessBoard, blackDepth, false);
+            } else {
+                blackMove = move.randomBlackMove(chessBoard);
+            }
 
             move.doMove(chessBoard, blackMove);
             System.out.println("Black move:\n" + chessBoard);
