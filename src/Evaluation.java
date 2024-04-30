@@ -150,9 +150,6 @@ public class Evaluation {
             100, 100, 100, 100, 100, 100, 100, 100,
     };
 
-    public int evaluate(Board board, int turn) {
-        return turn * evaluatePSQ(board);
-    }
 
     public int evaluatePSQ(Board board) {
         int whiteScore = 0;
@@ -187,5 +184,60 @@ public class Evaluation {
         }
         return score;
     }
+    // Existing evaluation weights and tables
+    private static final int PASSED_PAWN_BONUS = 20;  // Fixed bonus for each passed pawn
+
+    public int evaluate(Board board, int turn) {
+        return turn * (evaluatePSQ(board) + evaluatePassedPawns(board));
+    }
+
+    private int evaluatePassedPawns(Board board) {
+        int whitePassedPawnScore = countPassedPawns(board.whitePawnBoard, board.blackPawnBoard, true);
+        int blackPassedPawnScore = countPassedPawns(board.blackPawnBoard, board.whitePawnBoard, false);
+        return (whitePassedPawnScore - blackPassedPawnScore) * PASSED_PAWN_BONUS;
+    }
+
+    private int countPassedPawns(long pawns, long opposingPawns, boolean isWhite) {
+        int count = 0;
+        long tempPawns = pawns;
+        while (tempPawns != 0) {
+            int index = Long.numberOfTrailingZeros(tempPawns);
+            if (isPassedPawn(index, opposingPawns, isWhite)) {
+                count++;
+            }
+            tempPawns &= tempPawns - 1;
+        }
+        return count;
+    }
+
+    private boolean isPassedPawn(int pawnIndex, long opposingPawns, boolean isWhite) {
+        int rank = pawnIndex / 8;
+        int file = pawnIndex % 8;
+        // Check files directly ahead and diagonally ahead for opposing pawns
+        long forwardMask = 0L;
+        if (file > 0) forwardMask |= fileMask(file - 1);  // Left file
+        forwardMask |= fileMask(file);                  // Center file
+        if (file < 7) forwardMask |= fileMask(file + 1);  // Right file
+
+        // Modify forwardMask based on the pawn's color
+        if (isWhite) {
+            // For white pawns, clear rows below the pawn's current rank
+            forwardMask &= ~((1L << (rank * 8)) - 1);
+        } else {
+            // For black pawns, clear rows above the pawn's current rank
+            forwardMask &= -(1L << ((rank + 1) * 8));
+        }
+
+        return (opposingPawns & forwardMask) == 0;
+    }
+
+    private long fileMask(int file) {
+        long mask = 0;
+        for (int rank = 0; rank < 8; rank++) {
+            mask |= (1L << (rank * 8 + file));
+        }
+        return mask;
+    }
+
 }
 
