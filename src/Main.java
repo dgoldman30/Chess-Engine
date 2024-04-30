@@ -1,5 +1,6 @@
 import java.time.Duration;
 import java.time.Instant;
+import java.util.concurrent.ExecutionException;
 
 public class Main {
     public static void main(String[] args) {
@@ -59,10 +60,14 @@ public class Main {
 
         // i = number of turns (i < 1 = one move for white and black)
         for (int i = 0; i < 20; i++) {
-            miniMax.computeMove(chessBoard, 2, true);
-            System.out.println("White move: \n" + chessBoard);
-            miniMax.computeMove(chessBoard, 4, false);
-            System.out.println("Black move: \n" + chessBoard);
+            try {
+                miniMax.computeMove(chessBoard, 2, true);
+                System.out.println("White move: \n" + chessBoard);
+                miniMax.computeMove(chessBoard, 4, false);
+                System.out.println("Black move: \n" + chessBoard);
+            } catch (InterruptedException | ExecutionException e) {
+                e.printStackTrace();
+            }
         }
         Instant inst2 = Instant.now(); // end tracking time
         System.out.println("Elapsed Time: " + Duration.between(inst1, inst2).toString());// print time

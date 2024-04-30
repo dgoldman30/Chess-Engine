@@ -12,7 +12,8 @@ public class miniMax {
     // same as above for the qui search
     // HashMap<Integer, Tuple<Long, Long>> bestQuiScores = new HashMap<>();
 
-    public void computeMove(Board chessBoard, int depth, boolean isWhite) {
+    public void computeMove(Board chessBoard, int depth, boolean isWhite)
+            throws InterruptedException, ExecutionException {
 
         Tuple<Long, Long> bestMove;
         int alpha = Integer.MIN_VALUE;
@@ -56,7 +57,7 @@ public class miniMax {
                     if (childScore < beta) {
                         beta = childScore;
                         if (beta <= alpha) {
-                            break;
+                            return beta; // Beta cutoff
                         }
                     }
                 }
@@ -65,7 +66,8 @@ public class miniMax {
         }
     }
 
-    public int max(Board chessBoard, int depth, int alpha, int beta, boolean isWhite) {
+    public int max(Board chessBoard, int depth, int alpha, int beta, boolean isWhite)
+            throws InterruptedException, ExecutionException {
         if (depth == 0) {
             int score = isWhite ? evaluate.evaluate(chessBoard, 1) : evaluate.evaluate(chessBoard, -1);
             return score;
@@ -76,16 +78,13 @@ public class miniMax {
             List<Tuple<Long, List<Long>>> moveList = isWhite ? Move.generateWhiteMoves(chessBoard)
                     : Move.generateBlackMoves(chessBoard);
             // iterate through move list
-            for (int i = 0; i < moveList.size(); i++) {
-                // get each piece, grabs each tuple
-                Tuple<Long, List<Long>> piece = moveList.get(i);
-                // get the possible moves for that piece from the cur position
+            for (Tuple<Long, List<Long>> piece : moveList) {
                 List<Long> pieceMoves = piece.getMoves();
                 // iterate through the pieces moves
-                for (int z = 0; z < pieceMoves.size(); z++) {
+                for (Long move : pieceMoves) {
                     // construct the move with the starting position of the piece and the current(i)
                     // end move
-                    Tuple<Long, Long> singleMoveTuple = new Tuple<>(piece.getStart(), pieceMoves.get(z));
+                    Tuple<Long, Long> singleMoveTuple = new Tuple<>(piece.getStart(), move);
                     // apply the move
                     Move.doMove(chessBoard, singleMoveTuple);
                     int childScore = min(chessBoard, depth - 1, alpha, beta, !isWhite);
@@ -95,7 +94,7 @@ public class miniMax {
                         bestScore = childScore;
                         bestScores.put(bestScore, singleMoveTuple);
                         if (beta <= alpha) {
-                            break;
+                            return alpha; // Alpha cutoff
                         }
                     }
                 }

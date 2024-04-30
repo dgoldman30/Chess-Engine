@@ -1,10 +1,20 @@
 import java.util.*;
-import java.util.ArrayList;
-import java.util.List;
+
 import static java.lang.Long.*;
 import java.util.concurrent.*;
 
 public class Move {
+
+    private ExecutorService executor;
+
+    public void shutdown() {
+        // Shutdown the executor service
+        executor.shutdown();
+    }
+
+    public Move() {
+        this.executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
+    }
 
     // current move errors:
     // rooks wrap around the board (fixed?)
@@ -13,7 +23,6 @@ public class Move {
     // were reversed in parameters for move functions)
 
     Random randomGenerator = new Random(); // for random move REMOVE LATER LOL***
-    private final ExecutorService executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
 
     // madeMoves represents a Stack(Move((startPosition, endPosition), Captured
     // Piece type)). Used for undoMove to keep track of past moves
@@ -22,14 +31,17 @@ public class Move {
 
     public List<Tuple<Long, List<Long>>> generateWhiteMoves(Board chessBoard)
             throws InterruptedException, ExecutionException {
-        List<Callable<List<Tuple<Long, List<Long>>>>> tasks = new ArrayList<>();
 
-        tasks.add(() -> whitePawnMove(chessBoard.whitePawnBoard, chessBoard.whiteOccBoard, chessBoard.blackOccBoard));
-        tasks.add(() -> whiteKnightMove(chessBoard.whiteKnightBoard, chessBoard.whiteOccBoard));
-        tasks.add(() -> whiteRookMove(chessBoard.whiteRookBoard, chessBoard.whiteOccBoard, chessBoard.blackOccBoard));
+        List<Callable<List<Tuple<Long, List<Long>>>>> tasks = new ArrayList<>();
         tasks.add(
-                () -> whiteBishopMove(chessBoard.whiteBishopBoard, chessBoard.whiteOccBoard, chessBoard.blackOccBoard));
-        tasks.add(() -> whiteQueenMove(chessBoard.whiteQueenBoard, chessBoard.whiteOccBoard, chessBoard.blackOccBoard));
+                () -> whitePawnMove(chessBoard.whitePawnBoard, chessBoard.whiteOccBoard, chessBoard.blackOccBoard));
+        tasks.add(() -> whiteKnightMove(chessBoard.whiteKnightBoard, chessBoard.whiteOccBoard));
+        tasks.add(
+                () -> whiteRookMove(chessBoard.whiteRookBoard, chessBoard.whiteOccBoard, chessBoard.blackOccBoard));
+        tasks.add(() -> whiteBishopMove(chessBoard.whiteBishopBoard, chessBoard.whiteOccBoard,
+                chessBoard.blackOccBoard));
+        tasks.add(() -> whiteQueenMove(chessBoard.whiteQueenBoard, chessBoard.whiteOccBoard,
+                chessBoard.blackOccBoard));
         tasks.add(() -> whiteKingMove(chessBoard.whiteKingBoard, chessBoard.whiteOccBoard));
 
         List<Future<List<Tuple<Long, List<Long>>>>> futures = executor.invokeAll(tasks);
@@ -39,21 +51,37 @@ public class Move {
             moveList.addAll(future.get());
         }
 
-        executor.shutdown();
+        return moveList;
+
+    }
+
+    public List<Tuple<Long, List<Long>>> testgenerateWhiteMoves(Board chessBoard) {
+        List<Tuple<Long, List<Long>>> moveList = new ArrayList<>();
+
+        moveList.addAll(whitePawnMove(chessBoard.whitePawnBoard, chessBoard.whiteOccBoard, chessBoard.blackOccBoard));
+        moveList.addAll(whiteKnightMove(chessBoard.whiteKnightBoard, chessBoard.whiteOccBoard));
+        moveList.addAll(whiteRookMove(chessBoard.whiteRookBoard, chessBoard.whiteOccBoard, chessBoard.blackOccBoard));
+        moveList.addAll(
+                whiteBishopMove(chessBoard.whiteBishopBoard, chessBoard.whiteOccBoard, chessBoard.blackOccBoard));
+        moveList.addAll(whiteQueenMove(chessBoard.whiteQueenBoard, chessBoard.whiteOccBoard, chessBoard.blackOccBoard));
+        moveList.addAll(whiteKingMove(chessBoard.whiteKingBoard, chessBoard.whiteOccBoard));
 
         return moveList;
     }
 
     public List<Tuple<Long, List<Long>>> generateBlackMoves(Board chessBoard)
             throws InterruptedException, ExecutionException {
-        List<Callable<List<Tuple<Long, List<Long>>>>> tasks = new ArrayList<>();
 
-        tasks.add(() -> blackPawnMove(chessBoard.blackPawnBoard, chessBoard.whiteOccBoard, chessBoard.blackOccBoard));
-        tasks.add(() -> blackKnightMove(chessBoard.blackKnightBoard, chessBoard.blackOccBoard));
-        tasks.add(() -> blackRookMove(chessBoard.blackRookBoard, chessBoard.blackOccBoard, chessBoard.whiteOccBoard));
+        List<Callable<List<Tuple<Long, List<Long>>>>> tasks = new ArrayList<>();
         tasks.add(
-                () -> blackBishopMove(chessBoard.blackBishopBoard, chessBoard.blackOccBoard, chessBoard.whiteOccBoard));
-        tasks.add(() -> blackQueenMove(chessBoard.blackQueenBoard, chessBoard.whiteOccBoard, chessBoard.blackOccBoard));
+                () -> blackPawnMove(chessBoard.blackPawnBoard, chessBoard.whiteOccBoard, chessBoard.blackOccBoard));
+        tasks.add(() -> blackKnightMove(chessBoard.blackKnightBoard, chessBoard.blackOccBoard));
+        tasks.add(
+                () -> blackRookMove(chessBoard.blackRookBoard, chessBoard.blackOccBoard, chessBoard.whiteOccBoard));
+        tasks.add(() -> blackBishopMove(chessBoard.blackBishopBoard, chessBoard.blackOccBoard,
+                chessBoard.whiteOccBoard));
+        tasks.add(() -> blackQueenMove(chessBoard.blackQueenBoard, chessBoard.whiteOccBoard,
+                chessBoard.blackOccBoard));
         tasks.add(() -> blackKingMove(chessBoard.blackKingBoard, chessBoard.blackOccBoard));
 
         List<Future<List<Tuple<Long, List<Long>>>>> futures = executor.invokeAll(tasks);
@@ -63,7 +91,20 @@ public class Move {
             moveList.addAll(future.get());
         }
 
-        executor.shutdown();
+        return moveList;
+
+    }
+
+    public List<Tuple<Long, List<Long>>> testgenerateBlackMoves(Board chessBoard) {
+        List<Tuple<Long, List<Long>>> moveList = new ArrayList<>();
+
+        moveList.addAll(blackPawnMove(chessBoard.blackPawnBoard, chessBoard.whiteOccBoard, chessBoard.blackOccBoard));
+        moveList.addAll(blackKnightMove(chessBoard.blackKnightBoard, chessBoard.blackOccBoard));
+        moveList.addAll(blackRookMove(chessBoard.blackRookBoard, chessBoard.blackOccBoard, chessBoard.whiteOccBoard));
+        moveList.addAll(
+                blackBishopMove(chessBoard.blackBishopBoard, chessBoard.blackOccBoard, chessBoard.whiteOccBoard));
+        moveList.addAll(blackQueenMove(chessBoard.blackQueenBoard, chessBoard.whiteOccBoard, chessBoard.blackOccBoard));
+        moveList.addAll(blackKingMove(chessBoard.blackKingBoard, chessBoard.blackOccBoard));
 
         return moveList;
     }
@@ -1173,7 +1214,7 @@ public class Move {
         return piece;
     }
 
-    public Board randomBlackMove(Board chessBoard) {
+    public Board randomBlackMove(Board chessBoard) throws InterruptedException, ExecutionException {
         List<Tuple<Long, List<Long>>> moveList = generateBlackMoves(chessBoard); // generate all moves
 
         Tuple piece = choseMove(moveList); // select Piece and Move for piece
@@ -1182,7 +1223,7 @@ public class Move {
         return chessBoard;
     }
 
-    public Board randomWhiteMove(Board chessBoard) {
+    public Board randomWhiteMove(Board chessBoard) throws InterruptedException, ExecutionException {
         List<Tuple<Long, List<Long>>> moveList = generateWhiteMoves(chessBoard); // generate all moves
 
         Tuple piece = choseMove(moveList); // select Piece and Move for piece
