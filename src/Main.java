@@ -51,7 +51,7 @@ public class Main {
                         "--------" +
                         "--------";
 
-    chessBoard.stringToBitBoard(testBoard);  //make bitboards out of board string
+    chessBoard.stringToBitBoard(regBoard);  //make bitboards out of board string
 
 
         Instant inst1 = Instant.now();                          //start tracking time
