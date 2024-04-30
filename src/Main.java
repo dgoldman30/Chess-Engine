@@ -62,18 +62,18 @@ public class Main {
 
 
         //MULTIPLE MOVE
-        int moves = 20;
+        int moves = 1;
         int whiteDepth = 4;
         int blackDepth = 2;
 
         for (int i = 0; i < moves; i++) {
             Tuple<Long, Long> whiteMove = miniMax.computeMove(chessBoard, whiteDepth, true);
-            //move.randomWhiteMove(chessBoard);
+            //Tuple<Long, Long> whiteMove = move.randomWhiteMove(chessBoard);
 
             move.doMove(chessBoard, whiteMove);
             System.out.println("White move:\n" + chessBoard);
-            Tuple<Long,Long> blackMove = miniMax.computeMove(chessBoard, blackDepth, false);
-            //move.randomBlackMove(chessBoard);
+            //Tuple<Long,Long> blackMove = miniMax.computeMove(chessBoard, blackDepth, false);
+            Tuple<Long,Long> blackMove = move.randomBlackMove(chessBoard);
 
             move.doMove(chessBoard, blackMove);
             System.out.println("Black move:\n" + chessBoard);
