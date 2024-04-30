@@ -22,12 +22,12 @@ public class Main {
                         "PPPPPPPP" +
                         "RNBKQBNR";
         final String activeBoard =
+                        "------p-" +
                         "--------" +
-                        "--------" +
-                        "--------" +
-                        "---q----" +
-                        "---P----" +
-                        "--------" +
+                        "---p--P-" +
+                        "-p-P-p--" +
+                        "-P-P-p--" +
+                        "---P-P--" +
                         "--------" +
                         "--------";
        //On this board, the pawn should take the knight instead of the queen, saving its own queen
@@ -82,6 +82,3 @@ public class Main {
         System.out.println("Elapsed Time: " + Duration.between(inst1, inst2).toString());//print time
     }
 }
-
-
-//bitboard popCount() counts the number of pieces on each bitboard.

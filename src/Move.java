@@ -679,6 +679,19 @@ public class Move {
             Tuple<Tuple<Long, Long>, Integer> finalTuple = new Tuple<>(tuple, capturedPiece);
 
             madeMoves.push(finalTuple);
+
+            // Update occupancy boards
+            currentBoard.whiteOccBoard = currentBoard.whitePawnBoard | currentBoard.whiteKnightBoard |
+                    currentBoard.whiteBishopBoard | currentBoard.whiteRookBoard |
+                    currentBoard.whiteQueenBoard | currentBoard.whiteKingBoard;
+
+            currentBoard.blackOccBoard = currentBoard.blackPawnBoard | currentBoard.blackKnightBoard |
+                    currentBoard.blackBishopBoard | currentBoard.blackRookBoard |
+                    currentBoard.blackQueenBoard | currentBoard.blackKingBoard;
+
+            // Update the overall occupancy board
+            currentBoard.occBoard = currentBoard.whiteOccBoard | currentBoard.blackOccBoard;
+
         }else{
             System.out.println("no available moves");
         }
