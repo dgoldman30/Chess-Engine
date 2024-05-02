@@ -22,7 +22,7 @@ public class Board {
 
     public long blackOccBoard;
 
-    public long occBoard = blackOccBoard | whiteOccBoard;
+    public long occBoard;
 
     // attack bitboards
     protected long[] whitePawnAttacks;
@@ -81,6 +81,7 @@ public class Board {
         this.whitePawnAttacks = pawnWhiteAttackBitboards();
         this.blackPawnAttacks = blackPawnAttackBitboards();
         this.knightAttacks = knightAttackBitboards();
+        this.occBoard = blackOccBoard | whiteOccBoard;
     }
 
     //empty constructor
