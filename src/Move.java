@@ -832,7 +832,7 @@ public class Move {
                 || ((isWhite ? chessBoard.blackKnightBoard : chessBoard.whiteKnightBoard) & knightAttacks[kingPos]) != 0
                 || ((isWhite ? chessBoard.blackBishopBoard : chessBoard.whiteBishopBoard)& bishopAttacks) != 0
                 || ((isWhite ? chessBoard.blackRookBoard : chessBoard.whiteRookBoard) & rookAttacks) != 0
-                || ((isWhite ? chessBoard.blackKnightBoard : chessBoard.whiteKnightBoard) & queenAttacks) != 0
+                || ((isWhite ? chessBoard.blackQueenBoard : chessBoard.whiteQueenBoard) & queenAttacks) != 0
                 // illegal for kings to check other kings -> still want to check as we generate all possible moves
                 || ((isWhite ? chessBoard.blackKingBoard : chessBoard.whiteKingBoard) & kingAttacks[kingPos]) != 0)
             return true;

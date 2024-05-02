@@ -285,24 +285,35 @@ public class Board {
         long bishopAttacks = bishopMask(sq);
         int blockIdx;
         long blockMask;
-        long NWblock = NWmask(sq); //& occupancy;
-        long NEblock = NEmask(sq); //& occupancy;
-        long SWblock = SWmask(sq);// & occupancy;
-        long SEblock = SEmask(sq); // & occupancy;
+        long NWblock = NWmask(sq) & occupancy;
+        long NEblock = NEmask(sq) & occupancy;
+        long SWblock = SWmask(sq) & occupancy;
+        long SEblock = SEmask(sq) & occupancy;
 
+        if (NWblock != 0){
+            blockIdx = 63 - Long.numberOfLeadingZeros(NWblock);
+            blockMask = NWmask(blockIdx);
+            bishopAttacks ^= blockMask;
+        }
 
+        if (NEblock != 0){
+            blockIdx = 63 - Long.numberOfLeadingZeros(NEblock);
+            blockMask = NEmask(blockIdx);
+            bishopAttacks ^= blockMask;
+        }
 
+        if(SWblock != 0){
+            blockIdx = 63 - Long.numberOfLeadingZeros(SWblock);
+            blockMask = SWmask(blockIdx);
+           bishopAttacks ^= blockMask;
+        }
 
-        Board b = new Board(NEblock);
-        System.out.println("NE = \n" + b);
-        Board b3 = new Board(SEblock);
-        System.out.println("SE = \n" + b3);
-        Board b4 = new Board(NWblock);
-        System.out.println("NW = \n" + b4);
-        Board b5 = new Board(SWblock);
-        System.out.println("SW = \n" + b5);
-        Board b2 = new Board(bishopAttacks);
-        System.out.println("bishop Attacks\n" + b2);
+        if(SEblock != 0){
+            blockIdx = 63 - Long.numberOfLeadingZeros(SEblock);
+            blockMask = SEmask(blockIdx);
+            bishopAttacks ^= blockMask;
+        }
+
         return bishopAttacks;
     }
 
