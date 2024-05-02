@@ -62,7 +62,7 @@ public class Move {
                 // Total occupied squares on the board
                 Long occ = blackOcc | whiteOcc;
                 // Move one square forward
-                Long singleMove = (pawnMask >> 8) & ~occ;
+                Long singleMove = (pawnMask >>> 8) & ~occ;
                 if (singleMove != 0) {
                     moveList.add(singleMove);
                 }
@@ -72,12 +72,12 @@ public class Move {
                     moveList.add(doubleMove);
                 }
                 // Capture to the left
-                Long captureLeft = (pawnMask >> 7) & ~Board.FILE_A & blackOcc;
+                Long captureLeft = (pawnMask >>> 7) & ~Board.FILE_A & blackOcc;
                 if (captureLeft != 0) {
                     moveList.add(captureLeft);
                 }
                 // Capture to the right
-                Long captureRight = (pawnMask >> 9) & ~Board.FILE_H & blackOcc;
+                Long captureRight = (pawnMask >>> 9) & ~Board.FILE_H & blackOcc;
                 if (captureRight != 0) {
                     moveList.add(captureRight);
                 }
@@ -817,17 +817,25 @@ public class Move {
     //inCheck testing
     public boolean inCheck(Board chessBoard, boolean isWhite){
         long kingBoard = isWhite ? chessBoard.whiteKingBoard : chessBoard.blackKingBoard;
-        int kingPos = SIZE - Long.numberOfLeadingZeros(kingBoard);
-        long oppOccBoard = isWhite ? chessBoard.blackOccBoard : chessBoard.whiteOccBoard;
+        int kingPos = (SIZE - Long.numberOfLeadingZeros(kingBoard)) - 1;
+        // Attacks are from the king position
         long[] pawnAttacks = isWhite ? chessBoard.blackPawnAttacks : chessBoard.whitePawnAttacks;
         long[] knightAttacks = chessBoard.knightAttacks;
-        //long[] bishopAttacks = chessBoard.bishopAttacks;
+        long rookAttacks = chessBoard.getRookAttacks(kingPos, chessBoard.whiteOccBoard, chessBoard.blackOccBoard);
+        long bishopAttacks = chessBoard.getBishopAttacks(kingPos, chessBoard.whiteOccBoard, chessBoard.blackOccBoard);
+        long queenAttacks = chessBoard.getQueenAttacks(kingPos, chessBoard.whiteOccBoard, chessBoard.blackOccBoard);
 
-        if (( oppOccBoard & pawnAttacks[kingPos - 1]) != 0
-                || (oppOccBoard & knightAttacks[kingPos - 1]) != 0)
-                //|| ((oppOccBoard & bishopAttacks[kingPos - 1]) != 0))
+        System.out.println("king pos = " + kingPos);
+
+        if (((isWhite ? chessBoard.blackPawnBoard : chessBoard.whitePawnBoard) & pawnAttacks[kingPos]) != 0
+                || ((isWhite ? chessBoard.blackKnightBoard : chessBoard.whiteKnightBoard) & knightAttacks[kingPos]) != 0
+                || ((isWhite ? chessBoard.blackBishopBoard : chessBoard.whiteBishopBoard)& bishopAttacks) != 0
+                || ((isWhite ? chessBoard.blackRookBoard : chessBoard.whiteRookBoard) & rookAttacks) != 0
+                || ((isWhite ? chessBoard.blackKnightBoard : chessBoard.whiteKnightBoard) & queenAttacks) != 0)
             return true;
-        else return false;
+
+
+        return false;
     }
 
 }

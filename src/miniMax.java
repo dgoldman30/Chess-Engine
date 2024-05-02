@@ -18,10 +18,10 @@ public class miniMax {
         int beta = Integer.MAX_VALUE;
 
         int bestMoveScore = max(chessBoard, depth, alpha, beta, isWhite);
-        //int capScore = quiSearch(chessBoard, alpha, beta, isWhite);
-
-        //if (capScore > bestMoveScore) bestMove = bestQuiScores.get(capScore);
-        //else bestMove = bestScores.get(bestMoveScore);
+//        int capScore = quiSearch(chessBoard, alpha, beta, isWhite);
+//
+//        if (capScore > bestMoveScore) bestMove = bestQuiScores.get(capScore);
+//        else bestMove = bestScores.get(bestMoveScore);
         bestMove = bestScores.get(bestMoveScore);
         return bestMove;
     }
@@ -31,8 +31,6 @@ public class miniMax {
             int score = isWhite ? evaluate.evaluate(chessBoard, 1) : evaluate.evaluate(chessBoard, -1);
             return score;
         } else {
-            //set the best score to be min number possible
-            int bestScore = Integer.MIN_VALUE;
             //find all new possible moves for player to move
             List<Tuple<Long, List<Long>>> moveList = isWhite ? Move.generateWhiteMoves(chessBoard) : Move.generateBlackMoves(chessBoard);
             //iterate through move list
@@ -98,34 +96,34 @@ public class miniMax {
         }
     }
 
-    /*public int quiSearch(Board chessBoard, int alpha, int beta, boolean isWhite){
-        int standPat = isWhite ? evaluate.evaluate(chessBoard, 1) : evaluate.evaluate(chessBoard, -1);
-        List<Tuple<Long, List<Long>>> moveList = isWhite ? Move.generateWhiteMoves(chessBoard) : Move.generateBlackMoves(chessBoard);
-        List<Tuple<Long, List<Long>>> captures = Move.captureMoves(moveList, chessBoard, isWhite);
-        if (standPat >= beta) {
-            return beta;
-        }
-        else if(alpha < beta){
-            alpha = standPat;
-        }
-
-        for(int i = 0; i < captures.size(); i++){
-            Tuple<Long, List<Long>> piece = captures.get(i);
-            List<Long> pieceMoves = piece.getMoves();
-            for(long mv : pieceMoves){
-                Tuple<Long, Long> singleMoveTuple = new Tuple<>(piece.getStart(), mv);
-                Move.doMove(chessBoard, singleMoveTuple);
-                int score = -quiSearch(chessBoard, -beta, -alpha, !isWhite);
-                Move.undoMove(chessBoard);
-
-                if(score >= beta)
-                    return beta;
-                else if (score > alpha)
-                    alpha = score;
-                    bestQuiScores.put(score, singleMoveTuple);
-            }
-        }
-        return alpha;
-    }*/
+//    /public int quiSearch(Board chessBoard, int alpha, int beta, boolean isWhite){
+//        int standPat = isWhite ? evaluate.evaluate(chessBoard, 1) : evaluate.evaluate(chessBoard, -1);
+//        List<Tuple<Long, List<Long>>> moveList = isWhite ? Move.generateWhiteMoves(chessBoard) : Move.generateBlackMoves(chessBoard);
+//        List<Tuple<Long, List<Long>>> captures = Move.captureMoves(moveList, chessBoard, isWhite);
+//        if (standPat >= beta) {
+//            return beta;
+//        }
+//        else if(alpha < beta){
+//            alpha = standPat;
+//        }
+//
+//        for(int i = 0; i < captures.size(); i++){
+//            Tuple<Long, List<Long>> piece = captures.get(i);
+//            List<Long> pieceMoves = piece.getMoves();
+//            for(long mv : pieceMoves){
+//                Tuple<Long, Long> singleMoveTuple = new Tuple<>(piece.getStart(), mv);
+//                Move.doMove(chessBoard, singleMoveTuple);
+//                int score = -quiSearch(chessBoard, -beta, -alpha, !isWhite);
+//                Move.undoMove(chessBoard);
+//
+//                if(score >= beta)
+//                    return beta;
+//                else if (score > alpha)
+//                    alpha = score;
+//                    bestQuiScores.put(score, singleMoveTuple);
+//            }
+//        }
+//        return alpha;
+//    }
 
 }
