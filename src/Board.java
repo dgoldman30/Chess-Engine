@@ -29,6 +29,8 @@ public class Board {
     protected long[] blackPawnAttacks;
     protected long[] knightAttacks;
 
+    protected long[] kingAttacks;
+
 
     // Bitmasks for each file
     // NOTICE: this is alphabetically backwards! FILE_A is the file to the far right and FILE_H is the file to the far left
@@ -54,6 +56,9 @@ public class Board {
     public static final long RANK_8 = RANK_1 << 56; //1s along the top (black)
 
     public static final long[] ranks = {RANK_8, RANK_7, RANK_6, RANK_5, RANK_4, RANK_3, RANK_2, RANK_1};
+
+    protected static final long mainDiag = 0x8040201008040201L;
+    protected static final long antiDiag = 0x8040201008040201L;
 
     //all args constructor
     public Board(long whitePawnBoard, long whiteKnightBoard, long whiteRookBoard, long whiteBishopBoard, long whiteKingBoard,
@@ -83,7 +88,7 @@ public class Board {
         this.whitePawnAttacks = pawnWhiteAttackBitboards();
         this.blackPawnAttacks = blackPawnAttackBitboards();
         this.knightAttacks = knightAttackBitboards();
-        //this.bishopAttacks = bishopAttackBitboards();
+        this.kingAttacks = kingAttackBitboards();
     }
 
     public Board(long blackKingBoard){
@@ -135,6 +140,39 @@ public class Board {
         return knightAttacks;
     }
 
+    protected long generateKingMoves(int sq){
+        long king = 1L << sq;
+        long attacks = 0L;
+
+        attacks |= king << 1;
+        attacks |= king >>>1;
+        attacks |= king << 8;
+        attacks |= king >>> 8;
+        attacks |= king << 7;
+        attacks |= king >>> 7;
+        attacks |= king << 9;
+        attacks |= king >>> 9;
+
+        attacks &= ~FILE_H;
+        attacks &= ~FILE_A;
+        attacks &= ~RANK_8;
+        attacks &= ~RANK_1;
+
+        return attacks;
+    }
+
+    protected long[] kingAttackBitboards(){
+        long[] kingAttacks = new long[64];
+
+        for(int sq = 0; sq < 64; sq++){
+            long attacks = generateKingMoves(sq);
+            kingAttacks[sq] = attacks;
+        }
+
+        return kingAttacks;
+    }
+
+    // Masks and things used for sliding pieces
     private static long southMask(int sq){
         return 0x0101010101010100L << sq;
     }
@@ -145,13 +183,31 @@ public class Board {
 
     private static long eastMask(int sq){
         long one = 1L;
-        return 2 * ( (one << (sq | 7)) - (one << sq));
+        return 2 * ((one << (sq | 7)) - (one << sq));
     }
 
     private static long westMask(int sq){
         long one = 1L;
         return (one << sq) - (one << (sq & 56));
     }
+
+    private static long SEmask(int sq){
+        return diagMask(sq) & (-2L << sq);
+    }
+
+    private static long SWmask(int sq){
+        return  antiDiagMask(sq) & (-2L << sq) ;
+    }
+
+    private static long NWmask(int sq){
+        return diagMask(sq) & ((1L << sq) -1);
+    }
+
+    private static long NEmask(int sq){
+        return antiDiagMask(sq) & ((1L << sq) - 1);
+    }
+
+
 
     private static long rankMask(int sq){
         return 0xFFL << (sq & 56);
@@ -181,9 +237,9 @@ public class Board {
         return diagMask(sq) ^ antiDiagMask(sq);
     }
 
-    protected long queenMask(int sq){
-        return rookMask(sq) ^ bishopMask(sq);
-    }
+//    protected long queenMask(int sq){
+//        return rookMask(sq) ^ bishopMask(sq);
+//    }
 
     protected long getRookAttacks(int sq, long whiteOccBoard, long blackOccBoard){
         long occupancy = whiteOccBoard | blackOccBoard;
@@ -203,27 +259,23 @@ public class Board {
 
         if (southBlock != 0){
             blockIdx = 63 - Long.numberOfLeadingZeros(southBlock);
-            System.out.println(blockIdx);
             blockMask = southMask(blockIdx);
             rookAttacks ^= blockMask;
         }
 
         if(eastBlock != 0){
             blockIdx = 63 - Long.numberOfLeadingZeros(eastBlock);
-            System.out.println(blockIdx);
             blockMask = eastMask(blockIdx);
             rookAttacks ^= blockMask;
         }
 
         if(westBlock != 0){
             blockIdx = 63 - Long.numberOfLeadingZeros(westBlock);
-            System.out.println(blockIdx);
             blockMask = westMask(blockIdx);
             rookAttacks ^= blockMask;
         }
 
-        Board b = new Board(rookAttacks);
-        System.out.println(b);
+
 
         return rookAttacks;
     }
@@ -233,8 +285,24 @@ public class Board {
         long bishopAttacks = bishopMask(sq);
         int blockIdx;
         long blockMask;
+        long NWblock = NWmask(sq); //& occupancy;
+        long NEblock = NEmask(sq); //& occupancy;
+        long SWblock = SWmask(sq);// & occupancy;
+        long SEblock = SEmask(sq); // & occupancy;
 
 
+
+
+        Board b = new Board(NEblock);
+        System.out.println("NE = \n" + b);
+        Board b3 = new Board(SEblock);
+        System.out.println("SE = \n" + b3);
+        Board b4 = new Board(NWblock);
+        System.out.println("NW = \n" + b4);
+        Board b5 = new Board(SWblock);
+        System.out.println("SW = \n" + b5);
+        Board b2 = new Board(bishopAttacks);
+        System.out.println("bishop Attacks\n" + b2);
         return bishopAttacks;
     }
 
