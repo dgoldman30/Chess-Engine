@@ -42,7 +42,7 @@ public class Main {
                     "--------" + // 4
                     "----k---" + // 3
                     "--------" + // 2
-                    "----Q---"; // 1
+                    "----R---"; // 1
         final String emptyBoard =
                         "--------" +
                         "--------" +
@@ -53,7 +53,7 @@ public class Main {
                         "--------" +
                         "--------";
 
-    chessBoard.stringToBitBoard(regBoard);  //make bitboards out of board string
+    chessBoard.stringToBitBoard(testBoard);  //make bitboards out of board string
 
 
         Instant inst1 = Instant.now();                          //start tracking time
@@ -126,18 +126,19 @@ public class Main {
 //        }
 
        // i = number of turns (i < 1 = one move for white and black)
-        for (int i = 0; i < 6; i++) {
-            Tuple<Long, Long> whiteMove = miniMax.computeMove(chessBoard, 4, true);
-            move.doMove(chessBoard, whiteMove);
-            System.out.println("White move:\n" + chessBoard);
-            Tuple<Long,Long> blackMove = miniMax.computeMove(chessBoard, 2, false);
-            move.doMove(chessBoard, blackMove);
-            System.out.println("Black move:\n" + chessBoard);
-        }
-
-//        if(move.inCheck(chessBoard, false))
-//            System.out.println("incheck");
-//        else System.out.println("not");
+//        for (int i = 0; i < 6; i++) {
+//            Tuple<Long, Long> whiteMove = miniMax.computeMove(chessBoard, 4, true);
+//            move.doMove(chessBoard, whiteMove);
+//            System.out.println("White move:\n" + chessBoard);
+//            Tuple<Long,Long> blackMove = miniMax.computeMove(chessBoard, 2, false);
+//            move.doMove(chessBoard, blackMove);
+//            System.out.println("Black move:\n" + chessBoard);
+//        }
+        chessBoard.inCheck(chessBoard, false);
+        System.out.println("chessBoard = \n" + chessBoard);
+        if(chessBoard.isInCheck())
+            System.out.println("incheck");
+        else System.out.println("not");
         Instant inst2 = Instant.now();                          //end tracking time
         System.out.println("Elapsed Time: " + Duration.between(inst1, inst2).toString());//print time
     }
