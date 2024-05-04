@@ -32,7 +32,7 @@ public class Main {
         // its own queen
         final String testBoard =
                 // H G F E D C B A
-                "-------p" + // 8
+                "-------k" + // 8
                         "--------" + // 7
                         "--------" + // 6
                         "--------" + // 5
@@ -51,20 +51,29 @@ public class Main {
 
         chessBoard.stringToBitBoard(regBoard); // make bitboards out of board string
 
-        // Generate Random Move
-        // chessBoard = move.randomMove(chessBoard);
-
         Instant inst1 = Instant.now(); // start tracking time
+
+        // INDIVIDUAL MOVE
         // miniMax.computeMove(chessBoard, 6, true);
         // System.out.println("White move: \n" + chessBoard);
 
-        // i = number of turns (i < 1 = one move for white and black)
-        for (int i = 0; i < 20; i++) {
+        // MULTIPLE MOVE
+        int moves = 20;
+        int whiteDepth = 4;
+        int blackDepth = 2;
+
+        for (int i = 0; i < moves; i++) {
             try {
-                miniMax.computeMove(chessBoard, 2, true);
-                System.out.println("White move: \n" + chessBoard);
-                miniMax.computeMove(chessBoard, 4, false);
-                System.out.println("Black move: \n" + chessBoard);
+                Tuple<Long, Long> whiteMove = miniMax.computeMove(chessBoard, whiteDepth, true);
+                // move.randomWhiteMove(chessBoard);
+
+                move.doMove(chessBoard, whiteMove);
+                System.out.println("White move:\n" + chessBoard);
+                Tuple<Long, Long> blackMove = miniMax.computeMove(chessBoard, blackDepth, false);
+                // move.randomBlackMove(chessBoard);
+
+                move.doMove(chessBoard, blackMove);
+                System.out.println("Black move:\n" + chessBoard);
             } catch (InterruptedException | ExecutionException e) {
                 e.printStackTrace();
             }
