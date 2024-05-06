@@ -365,13 +365,13 @@ public class Board {
         }
 
         if (southBlock != 0){
-            blockIdx = 63 - Long.numberOfLeadingZeros(southBlock);
+            blockIdx = Long.numberOfTrailingZeros(southBlock);
             blockMask = southMask(blockIdx);
             rookAttacks ^= blockMask;
         }
 
         if(eastBlock != 0){
-            blockIdx = 63 - Long.numberOfLeadingZeros(eastBlock);
+            blockIdx = Long.numberOfTrailingZeros(eastBlock);
             blockMask = eastMask(blockIdx);
             rookAttacks ^= blockMask;
         }
@@ -410,13 +410,13 @@ public class Board {
         }
 
         if(SWblock != 0){
-            blockIdx = 63 - Long.numberOfLeadingZeros(SWblock);
+            blockIdx = Long.numberOfTrailingZeros(SWblock);
             blockMask = SWmask(blockIdx);
-           bishopAttacks ^= blockMask;
+            bishopAttacks ^= blockMask;
         }
 
         if(SEblock != 0){
-            blockIdx = 63 - Long.numberOfLeadingZeros(SEblock);
+            blockIdx = Long.numberOfTrailingZeros(SEblock);
             blockMask = SEmask(blockIdx);
             bishopAttacks ^= blockMask;
         }

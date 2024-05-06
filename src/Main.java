@@ -24,7 +24,7 @@ public class Main {
                         "PPPPPPPP" +
                         "RNBKQBNR";
         final String activeBoard =
-                "------p-" +
+                        "------p-" +
                         "--------" +
                         "---p--P-" +
                         "-p-P-p--" +
@@ -35,14 +35,14 @@ public class Main {
        //On this board, the pawn should take the knight instead of the queen, saving its own queen
     final String testBoard =
             //   H G F E D C B A
-                    "K--R--B-" + // 8
-                    "--------" + // 7
-                    "R---q---" + // 6
+                    "K-------" + // 8
+                    "-P------" + // 7
+                    "--------" + // 6
                     "--------" + // 5
-                    "-pp---p-" + // 4
-                    "R-------" + // 3
-                    "----R---" + // 2
-                    "-------P"; // 1
+                    "--------" + // 4
+                    "--------" + // 3
+                    "------p-" + // 2
+                    "--------"; // 1
         final String emptyBoard =
                         "--------" +
                         "--------" +
@@ -53,7 +53,7 @@ public class Main {
                         "--------" +
                         "--------";
 
-    chessBoard.stringToBitBoard(testBoard);  //make bitboards out of board string
+    chessBoard.stringToBitBoard(regBoard);  //make bitboards out of board string
 
 
         Instant inst1 = Instant.now();                          //start tracking time
@@ -126,31 +126,31 @@ public class Main {
 //        }
 
        // i = number of turns (i < 1 = one move for white and black)
-//        for (int i = 0; i < 6; i++) {
-//            Tuple<Long, Long> whiteMove = miniMax.computeMove(chessBoard, 4, true);
+        for (int i = 0; i < 6; i++) {
+            Tuple<Long, Long> whiteMove = miniMax.computeMove(chessBoard, 4, true);
 ////            if (whiteMove.getMoves() == null) {
 ////                Board.BoardState bs = chessBoard.getBoardState();
 ////                if (bs == Board.BoardState.CHECKMATE){
 ////                    System.out.println("Checkmate");
 ////                }
 ////            }
-//                move.doMove(chessBoard, whiteMove);
-//
-//
+                move.doMove(chessBoard, whiteMove);
+
+
 ////            if(chessBoard.inCheck(chessBoard, false))
 ////                chessBoard.setInCheck(true);
-//            System.out.println("White move:\n" + chessBoard);
-//            Tuple<Long,Long> blackMove = miniMax.computeMove(chessBoard, 2, false);
-//            move.doMove(chessBoard, blackMove);
+            System.out.println("White move:\n" + chessBoard);
+            Tuple<Long,Long> blackMove = miniMax.computeMove(chessBoard, 4, false);
+            move.doMove(chessBoard, blackMove);
 ////            if(chessBoard.inCheck(chessBoard, true))
 ////                chessBoard.setInCheck(true);
-//            System.out.println("Black move:\n" + chessBoard);
-//        }
-        chessBoard.inCheck(chessBoard, true);
-        System.out.println("chessBoard = \n" + chessBoard);
-        if(chessBoard.isInCheck())
-            System.out.println("incheck");
-        else System.out.println("not");
+        System.out.println("Black move:\n" + chessBoard);
+        }
+
+//        System.out.println("chessBoard = \n" + chessBoard);
+//        if(chessBoard.inCheck(chessBoard, true))
+//            System.out.println("incheck");
+//        else System.out.println("not");
         Instant inst2 = Instant.now();                          //end tracking time
         System.out.println("Elapsed Time: " + Duration.between(inst1, inst2).toString());//print time
     }
