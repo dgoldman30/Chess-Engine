@@ -22,14 +22,15 @@ public class Board {
 
     public long blackOccBoard;
 
-    public long occBoard = blackOccBoard | whiteOccBoard;
+    public long occBoard;
 
     // attack bitboards
     protected long[] whitePawnAttacks;
     protected long[] blackPawnAttacks;
     protected long[] knightAttacks;
 
-    protected long[] bishopAttacks;
+    protected long[] kingAttacks;
+
 
     // Bitmasks for each file
     // NOTICE: this is alphabetically backwards! FILE_A is the file to the far right and FILE_H is the file to the far left
@@ -56,6 +57,9 @@ public class Board {
 
     public static final long[] ranks = {RANK_8, RANK_7, RANK_6, RANK_5, RANK_4, RANK_3, RANK_2, RANK_1};
 
+    protected static final long mainDiag = 0x8040201008040201L;
+    protected static final long antiDiag = 0x8040201008040201L;
+
     //all args constructor
     public Board(long whitePawnBoard, long whiteKnightBoard, long whiteRookBoard, long whiteBishopBoard, long whiteKingBoard,
                  long whiteQueenBoard, long whiteOccBoard, long blackPawnBoard, long blackKnightBoard, long blackBishopBoard,
@@ -77,6 +81,7 @@ public class Board {
         this.whitePawnAttacks = pawnWhiteAttackBitboards();
         this.blackPawnAttacks = blackPawnAttackBitboards();
         this.knightAttacks = knightAttackBitboards();
+        this.occBoard = blackOccBoard | whiteOccBoard;
     }
 
     //empty constructor
@@ -84,12 +89,11 @@ public class Board {
         this.whitePawnAttacks = pawnWhiteAttackBitboards();
         this.blackPawnAttacks = blackPawnAttackBitboards();
         this.knightAttacks = knightAttackBitboards();
-        this.bishopAttacks = bishopAttackBitboards();
+        this.kingAttacks = kingAttackBitboards();
     }
 
-    public Board(long blackKingBoard, long whitePawnBoard){
+    public Board(long blackKingBoard){
         this.blackKingBoard = blackKingBoard;
-        this.whitePawnBoard = whitePawnBoard;
     }
 
     protected long[] pawnWhiteAttackBitboards(){
@@ -137,34 +141,185 @@ public class Board {
         return knightAttacks;
     }
 
-    protected long generateBishopAttacks(int square){
-        long bishop = 1l << square;
-        long attacks = 0l;
+    protected long generateKingMoves(int sq){
+        long king = 1L << sq;
+        long attacks = 0L;
 
-        for(int i = 1; i <= 7; i++){
-            long northEast = (bishop << (i * 8 + i)) & ~FILE_A;
-            long northWest = (bishop << (i * 8 - i)) & ~FILE_H;
-            long southEast = (bishop >>> (i * 8 - i)) & ~FILE_H;
-            long southWest = (bishop >>> (i * 8 + i)) & ~FILE_A;
+        attacks |= king << 1;
+        attacks |= king >>>1;
+        attacks |= king << 8;
+        attacks |= king >>> 8;
+        attacks |= king << 7;
+        attacks |= king >>> 7;
+        attacks |= king << 9;
+        attacks |= king >>> 9;
 
-            attacks |= northEast | northWest | southWest | southEast;
-
-            if((attacks & occBoard) != 0)
-                break;
-        }
+        attacks &= ~FILE_H;
+        attacks &= ~FILE_A;
+        attacks &= ~RANK_8;
+        attacks &= ~RANK_1;
 
         return attacks;
     }
 
-    protected long[] bishopAttackBitboards() {
-        long[] bishopAttacks = new long[64];
+    protected long[] kingAttackBitboards(){
+        long[] kingAttacks = new long[64];
 
-        for(int square = 0; square < 64; square++){
-            long attacks = generateBishopAttacks(square);
-            bishopAttacks[square] = attacks;
+        for(int sq = 0; sq < 64; sq++){
+            long attacks = generateKingMoves(sq);
+            kingAttacks[sq] = attacks;
+        }
+
+        return kingAttacks;
+    }
+
+    // Masks and things used for sliding pieces
+    private static long southMask(int sq){
+        return 0x0101010101010100L << sq;
+    }
+
+    private static long northMask(int sq){
+        return 0x0080808080808080L >> (sq ^ 63);
+    }
+
+    private static long eastMask(int sq){
+        long one = 1L;
+        return 2 * ((one << (sq | 7)) - (one << sq));
+    }
+
+    private static long westMask(int sq){
+        long one = 1L;
+        return (one << sq) - (one << (sq & 56));
+    }
+
+    private static long SEmask(int sq){
+        return diagMask(sq) & (-2L << sq);
+    }
+
+    private static long SWmask(int sq){
+        return  antiDiagMask(sq) & (-2L << sq) ;
+    }
+
+    private static long NWmask(int sq){
+        return diagMask(sq) & ((1L << sq) -1);
+    }
+
+    private static long NEmask(int sq){
+        return antiDiagMask(sq) & ((1L << sq) - 1);
+    }
+
+
+
+    private static long rankMask(int sq){
+        return 0xFFL << (sq & 56);
+    }
+
+    private static long fileMask(int sq){
+        return 0x0101010101010101L << (sq & 7);
+    }
+
+    private static long diagMask(int sq){
+        long maindia = 0x8040201008040201L;
+        int diag = (sq & 7) - (sq >>> 3);
+        return diag >= 0 ? maindia >>> diag * 8 : maindia << -diag * 8;
+    }
+
+    private static long antiDiagMask(int sq){
+        long maindia = 0x0102040810204080L;
+        int diag = 7 - (sq & 7) - (sq >>> 3);
+        return diag >= 0 ? maindia >>> diag * 8 : maindia << -diag * 8;
+    }
+
+    protected long rookMask(int sq){
+        return rankMask(sq) ^ fileMask(sq);
+    }
+
+    protected long bishopMask(int sq){
+        return diagMask(sq) ^ antiDiagMask(sq);
+    }
+
+//    protected long queenMask(int sq){
+//        return rookMask(sq) ^ bishopMask(sq);
+//    }
+
+    protected long getRookAttacks(int sq, long whiteOccBoard, long blackOccBoard){
+        long occupancy = whiteOccBoard | blackOccBoard;
+        long rookAttacks = rookMask(sq);
+        int blockIdx;
+        long blockMask;
+        long northBlock = northMask(sq) & occupancy;
+        long southBlock = southMask(sq) & occupancy;
+        long eastBlock = eastMask(sq) & occupancy;
+        long westBlock = westMask(sq) & occupancy;
+
+        if (northBlock != 0){
+            blockIdx = 63 - Long.numberOfLeadingZeros(northBlock);
+            blockMask = northMask(blockIdx);
+            rookAttacks ^= blockMask;
+        }
+
+        if (southBlock != 0){
+            blockIdx = 63 - Long.numberOfLeadingZeros(southBlock);
+            blockMask = southMask(blockIdx);
+            rookAttacks ^= blockMask;
+        }
+
+        if(eastBlock != 0){
+            blockIdx = 63 - Long.numberOfLeadingZeros(eastBlock);
+            blockMask = eastMask(blockIdx);
+            rookAttacks ^= blockMask;
+        }
+
+        if(westBlock != 0){
+            blockIdx = 63 - Long.numberOfLeadingZeros(westBlock);
+            blockMask = westMask(blockIdx);
+            rookAttacks ^= blockMask;
+        }
+
+
+
+        return rookAttacks;
+    }
+
+    protected long getBishopAttacks(int sq, long whiteOccBoard, long blackOccBoard){
+        long occupancy = whiteOccBoard | blackOccBoard;
+        long bishopAttacks = bishopMask(sq);
+        int blockIdx;
+        long blockMask;
+        long NWblock = NWmask(sq) & occupancy;
+        long NEblock = NEmask(sq) & occupancy;
+        long SWblock = SWmask(sq) & occupancy;
+        long SEblock = SEmask(sq) & occupancy;
+
+        if (NWblock != 0){
+            blockIdx = 63 - Long.numberOfLeadingZeros(NWblock);
+            blockMask = NWmask(blockIdx);
+            bishopAttacks ^= blockMask;
+        }
+
+        if (NEblock != 0){
+            blockIdx = 63 - Long.numberOfLeadingZeros(NEblock);
+            blockMask = NEmask(blockIdx);
+            bishopAttacks ^= blockMask;
+        }
+
+        if(SWblock != 0){
+            blockIdx = 63 - Long.numberOfLeadingZeros(SWblock);
+            blockMask = SWmask(blockIdx);
+           bishopAttacks ^= blockMask;
+        }
+
+        if(SEblock != 0){
+            blockIdx = 63 - Long.numberOfLeadingZeros(SEblock);
+            blockMask = SEmask(blockIdx);
+            bishopAttacks ^= blockMask;
         }
 
         return bishopAttacks;
+    }
+
+    protected long getQueenAttacks(int sq, long whiteOccBoard, long blackOccBoard){
+        return getBishopAttacks(sq, whiteOccBoard, blackOccBoard) | getRookAttacks(sq, whiteOccBoard, blackOccBoard);
     }
 
 
@@ -267,8 +422,8 @@ public class Board {
                     blackOccBoard |= bitBoard << i;
                     break;
                 case 'k':
-                    blackKingBoard |= bitBoard << i;
-                    blackOccBoard |= bitBoard << i;
+                    blackKingBoard |= bitBoard  << i;
+                    blackOccBoard |=  bitBoard  << i;
                     break;
             }
         }

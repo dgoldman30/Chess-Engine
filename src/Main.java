@@ -1,6 +1,8 @@
 import java.time.Duration;
 import java.time.Instant;
 import java.util.concurrent.ExecutionException;
+import java.util.InputMismatchException;
+import java.util.Scanner;
 
 public class Main {
     public static void main(String[] args) {
@@ -20,26 +22,26 @@ public class Main {
                 "--------" +
                 "PPPPPPPP" +
                 "RNBKQBNR";
-        final String activeBoard = "--------" +
+        final String activeBoard = "------p-" +
                 "--------" +
-                "--------" +
-                "---q----" +
-                "---P----" +
-                "--------" +
+                "---p--P-" +
+                "-p-P-p--" +
+                "-P-P-p--" +
+                "---P-P--" +
                 "--------" +
                 "--------";
         // On this board, the pawn should take the knight instead of the queen, saving
         // its own queen
         final String testBoard =
                 // H G F E D C B A
-                "-------k" + // 8
+                "--------" + // 8
                         "--------" + // 7
                         "--------" + // 6
                         "--------" + // 5
                         "--------" + // 4
-                        "--------" + // 3
+                        "----k---" + // 3
                         "--------" + // 2
-                        "B-------"; // 1
+                        "----Q---"; // 1
         final String emptyBoard = "--------" +
                 "--------" +
                 "--------" +
@@ -57,20 +59,71 @@ public class Main {
         // miniMax.computeMove(chessBoard, 6, true);
         // System.out.println("White move: \n" + chessBoard);
 
+        // INDIVIDUAL MOVE
+        // miniMax.computeMove(chessBoard, 6, true);
+        // Tuple<Long, Long> whiteMove = miniMax.computeMove(chessBoard, 6, true);
+        // move.doMove(chessBoard, whiteMove);
+        // System.out.println("White move: \n" + chessBoard);
+
         // MULTIPLE MOVE
-        int moves = 20;
+        int moves = 0;
+
+        Scanner scanner = new Scanner(System.in);
+        boolean validInput = false;
+        while (!validInput) {
+            System.out.println("Enter the amount of moves you would like to see: ");
+            try {
+                moves = scanner.nextInt();
+                validInput = true; // Set to true if input is valid
+            } catch (InputMismatchException e) {
+                System.out.println("Invalid input. Please try again.");
+                scanner.nextLine(); // Clear the invalid input from scanner
+            }
+        }
+        validInput = false;
+        String inputStr = " ";
+        while (!validInput) {
+            System.out.println("Enter opponent(black) strength: \n(R: Random, W: Weak, S: Strong)");
+            try {
+                inputStr = scanner.next();
+                if (inputStr.equals("R") || inputStr.equals("W") || inputStr.equals("S")) {
+                    validInput = true; // Set to true if input is valid
+                } else {
+                    System.out.println("Invalid input. Please try again.");
+                    scanner.nextLine(); // Clear the invalid input from scanner
+                }
+            } catch (InputMismatchException e) {
+                System.out.println("Invalid input. Please try again.");
+                scanner.nextLine(); // Clear the invalid input from scanner
+            }
+        }
+
         int whiteDepth = 4;
-        int blackDepth = 2;
+        int blackDepth = 0;
+        boolean blackRand = false;
+        if (inputStr.equals("W")) {
+            blackDepth = 2;
+        } else if (inputStr.equals("S")) {
+            blackDepth = 4;
+        } else {
+            blackRand = true;
+        }
 
         for (int i = 0; i < moves; i++) {
+
             try {
+
                 Tuple<Long, Long> whiteMove = miniMax.computeMove(chessBoard, whiteDepth, true);
-                // move.randomWhiteMove(chessBoard);
+                // Tuple<Long, Long> whiteMove = move.randomWhiteMove(chessBoard);
 
                 move.doMove(chessBoard, whiteMove);
                 System.out.println("White move:\n" + chessBoard);
-                Tuple<Long, Long> blackMove = miniMax.computeMove(chessBoard, blackDepth, false);
-                // move.randomBlackMove(chessBoard);
+                Tuple<Long, Long> blackMove;
+                if (!blackRand) {
+                    blackMove = miniMax.computeMove(chessBoard, blackDepth, false);
+                } else {
+                    blackMove = move.randomBlackMove(chessBoard);
+                }
 
                 move.doMove(chessBoard, blackMove);
                 System.out.println("Black move:\n" + chessBoard);
@@ -78,8 +131,24 @@ public class Main {
                 e.printStackTrace();
             }
         }
+
+        // i = number of turns (i < 1 = one move for white and black)
+        // for (int i = 0; i < 20; i++) {
+        // Tuple<Long, Long> whiteMove = miniMax.computeMove(chessBoard, 4, true);
+        // move.doMove(chessBoard, whiteMove);
+        // System.out.println("White move:\n" + chessBoard);
+        // Tuple<Long,Long> blackMove = miniMax.computeMove(chessBoard, 2, false);
+        // move.doMove(chessBoard, blackMove);
+        // System.out.println("Black move:\n" + chessBoard);
+        // }
+
+        if (move.inCheck(chessBoard, false))
+            System.out.println("incheck");
+        else
+            System.out.println("not");
         Instant inst2 = Instant.now(); // end tracking time
         System.out.println("Elapsed Time: " + Duration.between(inst1, inst2).toString());// print time
+
     }
 }
 
