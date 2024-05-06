@@ -43,7 +43,11 @@ public class Board {
     public static final long FILE_G = FILE_A << 6;
     public static final long FILE_H = FILE_A << 7; // 1s on the left edge (with white on bottom) -- used to be the other way around, but the board was turned around
 
-    public static final long[] files = {FILE_H, FILE_G, FILE_F, FILE_E, FILE_D, FILE_C, FILE_B, FILE_A};
+    public static final long[] files =
+            {
+                    0x101010101010101L, 0x202020202020202L, 0x404040404040404L, 0x808080808080808L,
+                    0x1010101010101010L, 0x2020202020202020L, 0x4040404040404040L, 0x8080808080808080L
+            };
 
     // Bitmasks for each rank
     public static final long RANK_1 = 0xFFL; // 1s along the bottom (white)
@@ -55,7 +59,7 @@ public class Board {
     public static final long RANK_7 = RANK_1 << 48;
     public static final long RANK_8 = RANK_1 << 56; //1s along the top (black)
 
-    public static final long[] ranks = {RANK_8, RANK_7, RANK_6, RANK_5, RANK_4, RANK_3, RANK_2, RANK_1};
+    public static final long[] ranks = {0xFFL, 0xFF00L, 0xFF0000L, 0xFF000000L, 0xFF00000000L, 0xFF0000000000L, 0xFF000000000000L, 0xFF00000000000000L};
 
     protected static final long mainDiag = 0x8040201008040201L;
     protected static final long antiDiag = 0x8040201008040201L;

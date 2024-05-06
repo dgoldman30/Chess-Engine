@@ -24,27 +24,27 @@ public class Main {
                         "PPPPPPPP" +
                         "RNBKQBNR";
         final String activeBoard =
-                "------p-" +
                         "--------" +
-                        "---p--P-" +
-                        "-p-P-p--" +
-                        "-P-P-p--" +
-                        "---P-P--" +
+                        "--------" +
+                        "--------" +
+                        "---q----" +
+                        "---P----" +
+                        "--------" +
                         "--------" +
                         "--------";
        //On this board, the pawn should take the knight instead of the queen, saving its own queen
     final String testBoard =
             //   H G F E D C B A
                     "--------" + // 8
-                    "--------" + // 7
+                    "-------R" + // 7
                     "--------" + // 6
                     "--------" + // 5
                     "--------" + // 4
-                    "----k---" + // 3
+                    "----n---" + // 3
                     "--------" + // 2
-                    "----Q---"; // 1
+                    "---------"; // 1
         final String emptyBoard =
-                        "--------" +
+                "--------" +
                         "--------" +
                         "--------" +
                         "--------" +
@@ -134,10 +134,11 @@ public class Main {
 //            move.doMove(chessBoard, blackMove);
 //            System.out.println("Black move:\n" + chessBoard);
 //        }
-
+/*
         if(move.inCheck(chessBoard, false))
             System.out.println("incheck");
         else System.out.println("not");
+ */
         Instant inst2 = Instant.now();                          //end tracking time
         System.out.println("Elapsed Time: " + Duration.between(inst1, inst2).toString());//print time
     }
