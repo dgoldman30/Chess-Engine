@@ -50,7 +50,7 @@ public class miniMax {
                     // end move
                     Tuple<Long, Long> singleMoveTuple = new Tuple<>(piece.getStart(), pieceMoves.get(z));
                     // apply the move
-                    Move.doMove(chessBoard, singleMoveTuple);
+                    Move.doMove(chessBoard, singleMoveTuple, isWhite);
                     int childScore = max(chessBoard, depth - 1, alpha, beta, !isWhite);
                     Move.undoMove(chessBoard);
                     if (childScore < beta) {
@@ -85,7 +85,7 @@ public class miniMax {
                     // end move
                     Tuple<Long, Long> singleMoveTuple = new Tuple<>(piece.getStart(), move);
                     // apply the move
-                    Move.doMove(chessBoard, singleMoveTuple);
+                    Move.doMove(chessBoard, singleMoveTuple, isWhite);
                     int childScore = min(chessBoard, depth - 1, alpha, beta, !isWhite);
                     Move.undoMove(chessBoard);
                     if (childScore > alpha) {

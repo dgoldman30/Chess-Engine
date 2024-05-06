@@ -24,8 +24,11 @@ public class Move {
 
     Random randomGenerator = new Random(); // for random move REMOVE LATER LOL***
 
+    Stack<String> moveHistory = new Stack<>();
+
     // madeMoves represents a Stack(Move((startPosition, endPosition), Captured
     // Piece type)). Used for undoMove to keep track of past moves
+
     Stack<Tuple<Tuple<Long, Long>, Integer>> madeMoves = new Stack<>(); // make tuple constructor for third element
                                                                         // String, twice as efficient
 
@@ -55,7 +58,7 @@ public class Move {
 
     }
 
-    public List<Tuple<Long, List<Long>>> testgenerateWhiteMoves(Board chessBoard) {
+    public List<Tuple<Long, List<Long>>> naiveGenerateWhiteMoves(Board chessBoard) {
         List<Tuple<Long, List<Long>>> moveList = new ArrayList<>();
 
         moveList.addAll(whitePawnMove(chessBoard.whitePawnBoard, chessBoard.whiteOccBoard, chessBoard.blackOccBoard));
@@ -95,7 +98,7 @@ public class Move {
 
     }
 
-    public List<Tuple<Long, List<Long>>> testgenerateBlackMoves(Board chessBoard) {
+    public List<Tuple<Long, List<Long>>> navieGenerateBlackMoves(Board chessBoard) {
         List<Tuple<Long, List<Long>>> moveList = new ArrayList<>();
 
         moveList.addAll(blackPawnMove(chessBoard.blackPawnBoard, chessBoard.whiteOccBoard, chessBoard.blackOccBoard));
@@ -683,7 +686,52 @@ public class Move {
 
     }
 
-    public Board doMove(Board currentBoard, Tuple tuple) {
+    public boolean isThreefoldRepetition(Board chessBoard) {
+        int count = 0;
+        String currentBoard = boardToString(chessBoard.whiteOccBoard, chessBoard.blackOccBoard); // Convert current
+                                                                                                 // board to a string
+        for (int i = 0; i < moveHistory.size(); i++) {
+            if (isEqualBoard(currentBoard, moveHistory.get(i))) {
+                count++;
+            }
+        }
+        return count >= 3;
+    }
+
+    public boolean isEqualBoard(String currentBoard, String historyBoard) {
+        return currentBoard.equals(historyBoard);
+    }
+
+    public String boardToString(long whiteBoard, long blackBoard) {
+        StringBuilder boardString = new StringBuilder();
+
+        // Iterate over each square of the board (64 squares)
+        for (int square = 0; square < 64; square++) {
+            long mask = 1L << square;
+
+            // Check if the square is occupied by a white piece
+            if ((whiteBoard & mask) != 0) {
+                boardString.append('W'); // 'W' represents a white piece
+            }
+            // Check if the square is occupied by a black piece
+            else if ((blackBoard & mask) != 0) {
+                boardString.append('B'); // 'B' represents a black piece
+            }
+            // If the square is empty
+            else {
+                boardString.append('-'); // '-' represents an empty square
+            }
+
+            // Add newline character for every 8 squares to represent a row
+            if ((square + 1) % 8 == 0) {
+                boardString.append('\n');
+            }
+        }
+
+        return boardString.toString();
+    }
+
+    public Board doMove(Board currentBoard, Tuple tuple, Boolean isWhite) {
 
         if (tuple != null) { // make sure theres available move
 
@@ -796,9 +844,23 @@ public class Move {
             // Update the overall occupancy board
             currentBoard.occBoard = currentBoard.whiteOccBoard | currentBoard.blackOccBoard;
 
+            String newBoard = boardToString(currentBoard.whiteOccBoard, currentBoard.blackOccBoard);
+            moveHistory.add(newBoard);
+
+            if (moveHistory.size() > 3) {
+                moveHistory.remove(0); // Remove the oldest board state
+            }
+
         } else {
+            if (isWhite && !currentBoard.whiteInCheck || !isWhite && !currentBoard.blackInCheck)
+                currentBoard.isStalemate = true;
+            else if (isWhite && currentBoard.whiteInCheck)
+                currentBoard.whiteInCheckmate = true;
+            else if (!isWhite && currentBoard.blackInCheck)
+                currentBoard.blackInCheckmate = true;
 
             System.out.println("no available moves");
+
         }
         return currentBoard;
     }
@@ -944,6 +1006,8 @@ public class Move {
 
         System.out.println("king pos = " + kingPos);
 
+        boolean inCheck = false;
+
         if (((isWhite ? chessBoard.blackPawnBoard : chessBoard.whitePawnBoard) & pawnAttacks[kingPos]) != 0
                 || ((isWhite ? chessBoard.blackKnightBoard : chessBoard.whiteKnightBoard) & knightAttacks[kingPos]) != 0
                 || ((isWhite ? chessBoard.blackBishopBoard : chessBoard.whiteBishopBoard) & bishopAttacks) != 0
@@ -952,9 +1016,17 @@ public class Move {
                 // illegal for kings to check other kings -> still want to check as we generate
                 // all possible moves
                 || ((isWhite ? chessBoard.blackKingBoard : chessBoard.whiteKingBoard) & kingAttacks[kingPos]) != 0)
-            return true;
+            inCheck = true;
 
-        return false;
+        // Update the corresponding flag indicating if white is in check or black is in
+        // check
+        if (isWhite) {
+            chessBoard.whiteInCheck = inCheck;
+        } else {
+            chessBoard.blackInCheck = inCheck;
+        }
+
+        return inCheck;
     }
 
 }

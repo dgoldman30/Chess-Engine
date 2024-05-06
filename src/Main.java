@@ -116,8 +116,20 @@ public class Main {
                 Tuple<Long, Long> whiteMove = miniMax.computeMove(chessBoard, whiteDepth, true);
                 // Tuple<Long, Long> whiteMove = move.randomWhiteMove(chessBoard);
 
-                move.doMove(chessBoard, whiteMove);
+                move.doMove(chessBoard, whiteMove, true);
                 System.out.println("White move:\n" + chessBoard);
+
+                if (chessBoard.isStalemate) {
+                    System.out.println("Stalemate!");
+                    break;
+                } else if (chessBoard.threeFoldRepetition) {
+                    System.out.println("Threefold Repetition!");
+                    break;
+                } else if (chessBoard.insufficientPiece) {
+                    System.out.println("Insufficient Piece!");
+                    break;
+                }
+
                 Tuple<Long, Long> blackMove;
                 if (!blackRand) {
                     blackMove = miniMax.computeMove(chessBoard, blackDepth, false);
@@ -125,27 +137,39 @@ public class Main {
                     blackMove = move.randomBlackMove(chessBoard);
                 }
 
-                move.doMove(chessBoard, blackMove);
+                move.doMove(chessBoard, blackMove, false);
                 System.out.println("Black move:\n" + chessBoard);
+
+                if (chessBoard.isStalemate) {
+                    System.out.println("Stalemate!");
+                    break;
+                } else if (chessBoard.threeFoldRepetition) {
+                    System.out.println("Threefold Repetition!");
+                    break;
+                } else if (chessBoard.insufficientPiece) {
+                    System.out.println("Insufficient Piece!");
+                    break;
+                }
+
             } catch (InterruptedException | ExecutionException e) {
                 e.printStackTrace();
             }
+
+            // i = number of turns (i < 1 = one move for white and black)
+            // for (int i = 0; i < 20; i++) {
+            // Tuple<Long, Long> whiteMove = miniMax.computeMove(chessBoard, 4, true);
+            // move.doMove(chessBoard, whiteMove);
+            // System.out.println("White move:\n" + chessBoard);
+            // Tuple<Long,Long> blackMove = miniMax.computeMove(chessBoard, 2, false);
+            // move.doMove(chessBoard, blackMove);
+            // System.out.println("Black move:\n" + chessBoard);
+            // }
+
+            if (move.inCheck(chessBoard, false))
+                System.out.println("incheck");
+            else
+                System.out.println("not");
         }
-
-        // i = number of turns (i < 1 = one move for white and black)
-        // for (int i = 0; i < 20; i++) {
-        // Tuple<Long, Long> whiteMove = miniMax.computeMove(chessBoard, 4, true);
-        // move.doMove(chessBoard, whiteMove);
-        // System.out.println("White move:\n" + chessBoard);
-        // Tuple<Long,Long> blackMove = miniMax.computeMove(chessBoard, 2, false);
-        // move.doMove(chessBoard, blackMove);
-        // System.out.println("Black move:\n" + chessBoard);
-        // }
-
-        if (move.inCheck(chessBoard, false))
-            System.out.println("incheck");
-        else
-            System.out.println("not");
         Instant inst2 = Instant.now(); // end tracking time
         System.out.println("Elapsed Time: " + Duration.between(inst1, inst2).toString());// print time
 

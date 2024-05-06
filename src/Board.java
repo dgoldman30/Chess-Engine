@@ -1,7 +1,7 @@
 public class Board {
-    //set the bitboards for each type
+    // set the bitboards for each type
 
-    //white
+    // white
     public long whitePawnBoard;
     public long whiteKnightBoard;
     public long whiteRookBoard;
@@ -11,8 +11,7 @@ public class Board {
 
     public long whiteOccBoard;
 
-
-    //black
+    // black
     public long blackPawnBoard;
     public long blackKnightBoard;
     public long blackBishopBoard;
@@ -31,9 +30,17 @@ public class Board {
 
     protected long[] kingAttacks;
 
+    public boolean whiteInCheck = false;
+    public boolean blackInCheck = false;
+    public boolean whiteInCheckmate = false;
+    public boolean blackInCheckmate = false;
+    public boolean threeFoldRepetition = false;
+    public boolean isStalemate = false;
+    public boolean insufficientPiece = false;
 
     // Bitmasks for each file
-    // NOTICE: this is alphabetically backwards! FILE_A is the file to the far right and FILE_H is the file to the far left
+    // NOTICE: this is alphabetically backwards! FILE_A is the file to the far right
+    // and FILE_H is the file to the far left
     public static final long FILE_A = 0x0101010101010101L; // 1s on the right edge (with white on bottom)
     public static final long FILE_B = FILE_A << 1;
     public static final long FILE_C = FILE_A << 2;
@@ -41,9 +48,10 @@ public class Board {
     public static final long FILE_E = FILE_A << 4;
     public static final long FILE_F = FILE_A << 5;
     public static final long FILE_G = FILE_A << 6;
-    public static final long FILE_H = FILE_A << 7; // 1s on the left edge (with white on bottom) -- used to be the other way around, but the board was turned around
+    public static final long FILE_H = FILE_A << 7; // 1s on the left edge (with white on bottom) -- used to be the other
+                                                   // way around, but the board was turned around
 
-    public static final long[] files = {FILE_H, FILE_G, FILE_F, FILE_E, FILE_D, FILE_C, FILE_B, FILE_A};
+    public static final long[] files = { FILE_H, FILE_G, FILE_F, FILE_E, FILE_D, FILE_C, FILE_B, FILE_A };
 
     // Bitmasks for each rank
     public static final long RANK_1 = 0xFFL; // 1s along the bottom (white)
@@ -53,17 +61,18 @@ public class Board {
     public static final long RANK_5 = RANK_1 << 32;
     public static final long RANK_6 = RANK_1 << 40;
     public static final long RANK_7 = RANK_1 << 48;
-    public static final long RANK_8 = RANK_1 << 56; //1s along the top (black)
+    public static final long RANK_8 = RANK_1 << 56; // 1s along the top (black)
 
-    public static final long[] ranks = {RANK_8, RANK_7, RANK_6, RANK_5, RANK_4, RANK_3, RANK_2, RANK_1};
+    public static final long[] ranks = { RANK_8, RANK_7, RANK_6, RANK_5, RANK_4, RANK_3, RANK_2, RANK_1 };
 
     protected static final long mainDiag = 0x8040201008040201L;
     protected static final long antiDiag = 0x8040201008040201L;
 
-    //all args constructor
-    public Board(long whitePawnBoard, long whiteKnightBoard, long whiteRookBoard, long whiteBishopBoard, long whiteKingBoard,
-                 long whiteQueenBoard, long whiteOccBoard, long blackPawnBoard, long blackKnightBoard, long blackBishopBoard,
-                 long blackRookBoard, long blackQueenBoard, long blackKingBoard, long blackOccBoard){
+    // all args constructor
+    public Board(long whitePawnBoard, long whiteKnightBoard, long whiteRookBoard, long whiteBishopBoard,
+            long whiteKingBoard,
+            long whiteQueenBoard, long whiteOccBoard, long blackPawnBoard, long blackKnightBoard, long blackBishopBoard,
+            long blackRookBoard, long blackQueenBoard, long blackKingBoard, long blackOccBoard) {
         this.whitePawnBoard = whitePawnBoard;
         this.whiteKnightBoard = whiteKnightBoard;
         this.whiteRookBoard = whiteRookBoard;
@@ -84,7 +93,7 @@ public class Board {
         this.occBoard = blackOccBoard | whiteOccBoard;
     }
 
-    //empty constructor
+    // empty constructor
     public Board() {
         this.whitePawnAttacks = pawnWhiteAttackBitboards();
         this.blackPawnAttacks = blackPawnAttackBitboards();
@@ -92,14 +101,14 @@ public class Board {
         this.kingAttacks = kingAttackBitboards();
     }
 
-    public Board(long blackKingBoard){
+    public Board(long blackKingBoard) {
         this.blackKingBoard = blackKingBoard;
     }
 
-    protected long[] pawnWhiteAttackBitboards(){
+    protected long[] pawnWhiteAttackBitboards() {
         long[] pawnAttacks = new long[64];
 
-        for(int square = 0; square < 64; square++){
+        for (int square = 0; square < 64; square++) {
             long pawn = 1L << square;
             long attacks = (pawn << 7) & ~FILE_A;
             attacks |= (pawn << 9) & ~FILE_H;
@@ -109,10 +118,10 @@ public class Board {
         return pawnAttacks;
     }
 
-    protected long[] blackPawnAttackBitboards(){
+    protected long[] blackPawnAttackBitboards() {
         long[] pawnAttacks = new long[64];
 
-        for(int square = 0; square < 64; square++){
+        for (int square = 0; square < 64; square++) {
             long pawn = 1L << square;
             long attacks = (pawn >>> 9) & ~FILE_A;
             attacks |= (pawn >>> 7) & ~FILE_H;
@@ -122,10 +131,10 @@ public class Board {
         return pawnAttacks;
     }
 
-    protected long[] knightAttackBitboards(){
+    protected long[] knightAttackBitboards() {
         long[] knightAttacks = new long[64];
 
-        for(int square = 0; square < 64; square++){
+        for (int square = 0; square < 64; square++) {
             long knight = 1L << square;
             long attacks = 0;
             attacks |= (knight << 17) & ~FILE_A & ~FILE_B;
@@ -141,12 +150,12 @@ public class Board {
         return knightAttacks;
     }
 
-    protected long generateKingMoves(int sq){
+    protected long generateKingMoves(int sq) {
         long king = 1L << sq;
         long attacks = 0L;
 
         attacks |= king << 1;
-        attacks |= king >>>1;
+        attacks |= king >>> 1;
         attacks |= king << 8;
         attacks |= king >>> 8;
         attacks |= king << 7;
@@ -162,10 +171,10 @@ public class Board {
         return attacks;
     }
 
-    protected long[] kingAttackBitboards(){
+    protected long[] kingAttackBitboards() {
         long[] kingAttacks = new long[64];
 
-        for(int sq = 0; sq < 64; sq++){
+        for (int sq = 0; sq < 64; sq++) {
             long attacks = generateKingMoves(sq);
             kingAttacks[sq] = attacks;
         }
@@ -174,75 +183,73 @@ public class Board {
     }
 
     // Masks and things used for sliding pieces
-    private static long southMask(int sq){
+    private static long southMask(int sq) {
         return 0x0101010101010100L << sq;
     }
 
-    private static long northMask(int sq){
+    private static long northMask(int sq) {
         return 0x0080808080808080L >> (sq ^ 63);
     }
 
-    private static long eastMask(int sq){
+    private static long eastMask(int sq) {
         long one = 1L;
         return 2 * ((one << (sq | 7)) - (one << sq));
     }
 
-    private static long westMask(int sq){
+    private static long westMask(int sq) {
         long one = 1L;
         return (one << sq) - (one << (sq & 56));
     }
 
-    private static long SEmask(int sq){
+    private static long SEmask(int sq) {
         return diagMask(sq) & (-2L << sq);
     }
 
-    private static long SWmask(int sq){
-        return  antiDiagMask(sq) & (-2L << sq) ;
+    private static long SWmask(int sq) {
+        return antiDiagMask(sq) & (-2L << sq);
     }
 
-    private static long NWmask(int sq){
-        return diagMask(sq) & ((1L << sq) -1);
+    private static long NWmask(int sq) {
+        return diagMask(sq) & ((1L << sq) - 1);
     }
 
-    private static long NEmask(int sq){
+    private static long NEmask(int sq) {
         return antiDiagMask(sq) & ((1L << sq) - 1);
     }
 
-
-
-    private static long rankMask(int sq){
+    private static long rankMask(int sq) {
         return 0xFFL << (sq & 56);
     }
 
-    private static long fileMask(int sq){
+    private static long fileMask(int sq) {
         return 0x0101010101010101L << (sq & 7);
     }
 
-    private static long diagMask(int sq){
+    private static long diagMask(int sq) {
         long maindia = 0x8040201008040201L;
         int diag = (sq & 7) - (sq >>> 3);
         return diag >= 0 ? maindia >>> diag * 8 : maindia << -diag * 8;
     }
 
-    private static long antiDiagMask(int sq){
+    private static long antiDiagMask(int sq) {
         long maindia = 0x0102040810204080L;
         int diag = 7 - (sq & 7) - (sq >>> 3);
         return diag >= 0 ? maindia >>> diag * 8 : maindia << -diag * 8;
     }
 
-    protected long rookMask(int sq){
+    protected long rookMask(int sq) {
         return rankMask(sq) ^ fileMask(sq);
     }
 
-    protected long bishopMask(int sq){
+    protected long bishopMask(int sq) {
         return diagMask(sq) ^ antiDiagMask(sq);
     }
 
-//    protected long queenMask(int sq){
-//        return rookMask(sq) ^ bishopMask(sq);
-//    }
+    // protected long queenMask(int sq){
+    // return rookMask(sq) ^ bishopMask(sq);
+    // }
 
-    protected long getRookAttacks(int sq, long whiteOccBoard, long blackOccBoard){
+    protected long getRookAttacks(int sq, long whiteOccBoard, long blackOccBoard) {
         long occupancy = whiteOccBoard | blackOccBoard;
         long rookAttacks = rookMask(sq);
         int blockIdx;
@@ -252,36 +259,34 @@ public class Board {
         long eastBlock = eastMask(sq) & occupancy;
         long westBlock = westMask(sq) & occupancy;
 
-        if (northBlock != 0){
+        if (northBlock != 0) {
             blockIdx = 63 - Long.numberOfLeadingZeros(northBlock);
             blockMask = northMask(blockIdx);
             rookAttacks ^= blockMask;
         }
 
-        if (southBlock != 0){
+        if (southBlock != 0) {
             blockIdx = 63 - Long.numberOfLeadingZeros(southBlock);
             blockMask = southMask(blockIdx);
             rookAttacks ^= blockMask;
         }
 
-        if(eastBlock != 0){
+        if (eastBlock != 0) {
             blockIdx = 63 - Long.numberOfLeadingZeros(eastBlock);
             blockMask = eastMask(blockIdx);
             rookAttacks ^= blockMask;
         }
 
-        if(westBlock != 0){
+        if (westBlock != 0) {
             blockIdx = 63 - Long.numberOfLeadingZeros(westBlock);
             blockMask = westMask(blockIdx);
             rookAttacks ^= blockMask;
         }
 
-
-
         return rookAttacks;
     }
 
-    protected long getBishopAttacks(int sq, long whiteOccBoard, long blackOccBoard){
+    protected long getBishopAttacks(int sq, long whiteOccBoard, long blackOccBoard) {
         long occupancy = whiteOccBoard | blackOccBoard;
         long bishopAttacks = bishopMask(sq);
         int blockIdx;
@@ -291,25 +296,25 @@ public class Board {
         long SWblock = SWmask(sq) & occupancy;
         long SEblock = SEmask(sq) & occupancy;
 
-        if (NWblock != 0){
+        if (NWblock != 0) {
             blockIdx = 63 - Long.numberOfLeadingZeros(NWblock);
             blockMask = NWmask(blockIdx);
             bishopAttacks ^= blockMask;
         }
 
-        if (NEblock != 0){
+        if (NEblock != 0) {
             blockIdx = 63 - Long.numberOfLeadingZeros(NEblock);
             blockMask = NEmask(blockIdx);
             bishopAttacks ^= blockMask;
         }
 
-        if(SWblock != 0){
+        if (SWblock != 0) {
             blockIdx = 63 - Long.numberOfLeadingZeros(SWblock);
             blockMask = SWmask(blockIdx);
-           bishopAttacks ^= blockMask;
+            bishopAttacks ^= blockMask;
         }
 
-        if(SEblock != 0){
+        if (SEblock != 0) {
             blockIdx = 63 - Long.numberOfLeadingZeros(SEblock);
             blockMask = SEmask(blockIdx);
             bishopAttacks ^= blockMask;
@@ -318,10 +323,9 @@ public class Board {
         return bishopAttacks;
     }
 
-    protected long getQueenAttacks(int sq, long whiteOccBoard, long blackOccBoard){
+    protected long getQueenAttacks(int sq, long whiteOccBoard, long blackOccBoard) {
         return getBishopAttacks(sq, whiteOccBoard, blackOccBoard) | getRookAttacks(sq, whiteOccBoard, blackOccBoard);
     }
-
 
     @Override
     public String toString() {
@@ -331,9 +335,9 @@ public class Board {
                 int square = rank * 8 + file;
                 long squareMask = 1L << square;
 
-                char piece = '-';//empty square
+                char piece = '-';// empty square
 
-                //place piece if bitboard is occupied for the given piece
+                // place piece if bitboard is occupied for the given piece
                 if ((blackPawnBoard & squareMask) != 0) {
                     piece = '♙';
                 } else if ((blackKnightBoard & squareMask) != 0) {
@@ -367,11 +371,12 @@ public class Board {
         return ret;
     }
 
-    //CHANGES BOARD STRING INTO BITBOARDS
+    // CHANGES BOARD STRING INTO BITBOARDS
     public void stringToBitBoard(String str) {
 
         Long bitBoard = 0000000000000000000000000000000000000000000000000000000000000001L;
-        //need to shift the 1 to the place of the char and then add it to the bitBoard for the individual piece.
+        // need to shift the 1 to the place of the char and then add it to the bitBoard
+        // for the individual piece.
 
         for (int i = 0; i < str.length(); i++) {
             switch (str.charAt(i)) {
@@ -422,8 +427,8 @@ public class Board {
                     blackOccBoard |= bitBoard << i;
                     break;
                 case 'k':
-                    blackKingBoard |= bitBoard  << i;
-                    blackOccBoard |=  bitBoard  << i;
+                    blackKingBoard |= bitBoard << i;
+                    blackOccBoard |= bitBoard << i;
                     break;
             }
         }
