@@ -1,6 +1,5 @@
 import java.util.*;
 
-import static java.lang.Long.*;
 import java.util.concurrent.*;
 
 public class Move {
@@ -1128,7 +1127,6 @@ public class Move {
                 moveHistory.remove(0); // Remove the oldest board state
             }
 
-        } else {
             if (isWhite && !currentBoard.isWhiteInCheck() || !isWhite && !currentBoard.isBlackInCheck())
                 currentBoard.setStalemate(true);
             else if (isWhite && currentBoard.isWhiteInCheck())
