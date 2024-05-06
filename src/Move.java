@@ -64,7 +64,6 @@ public class Move {
 
     Stack<Tuple<Tuple<Long, Long>, Integer>> madeMoves = new Stack<>(); // make tuple constructor for third element
                                                                         // String, twice as efficient
-
     public List<Tuple<Long, List<Long>>> naiveGenerateWhiteMoves(Board chessBoard)
             throws InterruptedException, ExecutionException {
 
@@ -90,12 +89,8 @@ public class Move {
         for (Future<List<Tuple<Long, List<Long>>>> future : futures) {
             moveList.addAll(future.get());
         }
-
         return moveList;
-
     }
-    boolean promoteWhite = false;
-    boolean promoteBlack = false;
 
     public List<Tuple<Long, List<Long>>> generateWhiteMoves(Board chessBoard) {
         List<Tuple<Long, List<Long>>> moveList = new ArrayList<>();
@@ -628,7 +623,6 @@ public class Move {
             boolean inCheck) {
         List<Tuple<Long, List<Long>>> finalMoves = new ArrayList<>();
 
-        List<Integer> arr = findPieces(rooks);
         if (inCheck) {
             List<Tuple<pieceNames, Long>> inCheckList = Board.inCheckList(chessBoard, true);
             if (inCheckList.size() > 1) {
@@ -636,6 +630,7 @@ public class Move {
             }
         }
 
+        List<Integer> arr = findPieces(rooks);
         // Iterate through each rook's position individually
         // for each rook, so need some kind of loop or to do it for all of them at once? not sure how to do it without the loop yet
         // maybe use a rook mask but note the rank / file for each one instead of just the individual square?
@@ -953,9 +948,6 @@ public class Move {
 
     public Board doMove(Board currentBoard, Tuple tuple, Boolean isWhite) {
 
-        promoteWhite = false;
-        promoteBlack = false;
-
         if (tuple != null) { //make sure theres available move
 
             // this inputs the bitboard of the piece that is being moved and removes the
@@ -970,7 +962,6 @@ public class Move {
             boolean isWhitePawn = (currentBoard.whitePawnBoard & start) != 0;
             boolean isBlackPawn = (currentBoard.blackPawnBoard & start) != 0;
             boolean enPassantCapture = (endMove.equals(enPassantTarget));
-
             if (enPassantCapture) {
                 if (isWhitePawn) {
                     // Remove black pawn captured via en passant
@@ -1031,14 +1022,7 @@ public class Move {
             // CASES TO REMOVE START PIECE AND ADD END PIECE TO CORRECT BOARD.
             if ((currentBoard.whitePawnBoard & start) != 0) {
                 currentBoard.whitePawnBoard = currentBoard.whitePawnBoard & ~start;   //REMOVES THE STARTING SQUARE PIECE
-                if ((endMove & Board.RANK_1) != 0) {
-                    currentBoard.whiteQueenBoard |= endMove;
-                    promoteWhite = true;
-                } else {
-                    currentBoard.whitePawnBoard |= endMove;                               //ADDS ENDMOVE TO CORRECT BITBOARD
-                }
-                currentBoard.whitePawnBoard = currentBoard.whitePawnBoard & ~start; // REMOVES THE STARTING SQUARE PIECE
-                currentBoard.whitePawnBoard |= endMove; // ADDS ENDMOVE TO CORRECT BITBOARD
+                currentBoard.whitePawnBoard |= endMove;                               //ADDS ENDMOVE TO CORRECT BITBOARD
                 // Set en passant target if the white pawn made a double move
                 setEnPassantTarget(start, endMove);
             } else if ((currentBoard.blackPawnBoard & start) != 0) {
@@ -1046,12 +1030,6 @@ public class Move {
                 currentBoard.blackPawnBoard |= endMove;
                 // Set en passant target if the black pawn made a double move
                 setEnPassantTarget(start, endMove);
-                if ((endMove & Board.RANK_8) != 0) {
-                    currentBoard.blackQueenBoard |= endMove;
-                    promoteBlack = true;
-                } else {
-                    currentBoard.blackPawnBoard |= endMove;                               //ADDS ENDMOVE TO CORRECT BITBOARD
-                }
             } else if ((currentBoard.whiteKnightBoard & start) != 0) {
                 currentBoard.whiteKnightBoard = currentBoard.whiteKnightBoard & ~start;
                 currentBoard.whiteKnightBoard |= endMove;
@@ -1162,22 +1140,11 @@ public class Move {
 
             // Identifying the moving piece and moving it back
             if ((currentBoard.whitePawnBoard & endPosition) != 0) {
-                // System.out.println("End:    " + Long.toBinaryString(endPosition));
-                if (promoteWhite) {
-                    currentBoard.whiteQueenBoard &= ~endPosition;
-                    currentBoard.whitePawnBoard |= startPosition;
-                } else {
                     currentBoard.whitePawnBoard &= ~endPosition;
                     currentBoard.whitePawnBoard |= startPosition;
-                }
             } else if ((currentBoard.blackPawnBoard & endPosition) != 0) {
-                if (promoteBlack) {
-                    currentBoard.blackQueenBoard &= ~endPosition;
-                    currentBoard.blackPawnBoard |= startPosition;
-                } else {
                     currentBoard.blackPawnBoard &= ~endPosition;
                     currentBoard.blackPawnBoard |= startPosition;
-                }
             } else if ((currentBoard.whiteKnightBoard & endPosition) != 0) {
                 currentBoard.blackPawnBoard &= ~endPosition;
                 currentBoard.blackPawnBoard |= startPosition;
@@ -1267,7 +1234,6 @@ public class Move {
                 } else if (pieceType == pieceNames.BK.getPieceNum()) {
                     currentBoard.blackKingBoard |= endPosition;
                 }
-
             }
 
             // Restore the previous en passant target
