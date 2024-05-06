@@ -51,8 +51,6 @@ public class Main {
                 "--------" +
                 "--------";
 
-        chessBoard.stringToBitBoard(regBoard); // make bitboards out of board string
-
         Instant inst1 = Instant.now(); // start tracking time
 
         // INDIVIDUAL MOVE
@@ -119,7 +117,7 @@ public class Main {
                 move.doMove(chessBoard, whiteMove, true);
                 System.out.println("White move:\n" + chessBoard);
 
-                if (chessBoard.isStalemate) {
+                if (chessBoard.isStalemate()) {
                     System.out.println("Stalemate!");
                     break;
                 } else if (chessBoard.threeFoldRepetition) {
@@ -140,7 +138,7 @@ public class Main {
                 move.doMove(chessBoard, blackMove, false);
                 System.out.println("Black move:\n" + chessBoard);
 
-                if (chessBoard.isStalemate) {
+                if (chessBoard.isStalemate()) {
                     System.out.println("Stalemate!");
                     break;
                 } else if (chessBoard.threeFoldRepetition) {
@@ -165,10 +163,6 @@ public class Main {
             // System.out.println("Black move:\n" + chessBoard);
             // }
 
-            if (move.inCheck(chessBoard, false))
-                System.out.println("incheck");
-            else
-                System.out.println("not");
         }
         Instant inst2 = Instant.now(); // end tracking time
         System.out.println("Elapsed Time: " + Duration.between(inst1, inst2).toString());// print time
