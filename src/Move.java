@@ -470,13 +470,27 @@ public class Move {
         return finalMoves;
     }
 
-    public static int[] findPieces(Long board) {
-        int[] locations = new int[Long.bitCount(board)];
-        int index = 0;
+    public static void drawBitboard(long bitBoard) {
+        String chessBoard[][]=new String[8][8];
+        for (int i=0;i<64;i++) {
+            chessBoard[i/8][i%8]="";
+        }
+        for (int i=0;i<64;i++) {
+            if (((bitBoard>>>i)&1)==1) {chessBoard[i/8][i%8]="O";}
+            if ("".equals(chessBoard[i/8][i%8])) {chessBoard[i/8][i%8]=" ";}
+        }
+        for (int i=0;i<8;i++) {
+            System.out.println(Arrays.toString(chessBoard[i]));
+        }
+        System.out.println("\n");
+    }
+
+    public static List<Integer> findPieces(Long board) {
+        List<Integer> locations = new ArrayList<>();
         while (board != 0) {
             long square = board & -board;
             int location = Long.numberOfTrailingZeros(square);
-            locations[index++] = location;
+            locations.add(location);
             board ^= square;
         }
         return locations;
@@ -519,27 +533,27 @@ public class Move {
                 0x80402010080402L, 0x8040201008040201L, 0x4020100804020100L, 0x2010080402010000L, 0x1008040201000000L,
                 0x804020100000000L, 0x402010000000000L, 0x201000000000000L, 0x100000000000000L };
 
-        int[] arr = findPieces(bishops);
+        List<Integer> arr = findPieces(bishops);
         // Iterate through each bishop's position individually
-        for (int i = 0; i < arr.length; i++) {
+        for (int i = 0; i < arr.size(); i++) {
 
             List<Long> moveList = new ArrayList<>(); // Make move list for the individual piece
             Tuple<Long, List<Long>> tuple = new Tuple<>(0L, moveList); // Initiate tuple for individual piece
 
             // hyperbola quintessence (o^(o-2r) trick)
             // variable for the current occupancy of the single bishop
-            long piece = 1L << arr[i];
+            long piece = 1L << arr.get(i);
             tuple.setFirst(piece);
             long occupied = (whiteOcc | blackOcc);
 
-            long diagonalMoves = ((occupied & diagonal[(arr[i] / 8) + (arr[i] % 8)]) - (2 * piece)) ^ Long.reverse(
-                    Long.reverse(occupied & diagonal[(arr[i] / 8) + (arr[i] % 8)]) - (2 * Long.reverse(piece)));
-            long antiDiagonalMoves = ((occupied & antidiagonal[(arr[i] / 8) + 7 - (arr[i] % 8)]) - (2 * piece))
-                    ^ Long.reverse(Long.reverse(occupied & antidiagonal[(arr[i] / 8) + 7 - (arr[i] % 8)])
+            long diagonalMoves = ((occupied & diagonal[(arr.get(i) / 8) + (arr.get(i) % 8)]) - (2 * piece)) ^ Long.reverse(
+                    Long.reverse(occupied & diagonal[(arr.get(i) / 8) + (arr.get(i) % 8)]) - (2 * Long.reverse(piece)));
+            long antiDiagonalMoves = ((occupied & antidiagonal[(arr.get(i) / 8) + 7 - (arr.get(i) % 8)]) - (2 * piece))
+                    ^ Long.reverse(Long.reverse(occupied & antidiagonal[(arr.get(i) / 8) + 7 - (arr.get(i) % 8)])
                             - (2 * Long.reverse(piece)));
-            long available = (diagonalMoves & diagonal[(arr[i] / 8) + (arr[i] % 8)])
-                    | (antiDiagonalMoves & antidiagonal[(arr[i] / 8) + 7 - (arr[i] % 8)]);
-            // System.out.println(Long.toBinaryString(available));
+            long available = (diagonalMoves & diagonal[(arr.get(i) / 8) + (arr.get(i) % 8)])
+                    | (antiDiagonalMoves & antidiagonal[(arr.get(i) / 8) + 7 - (arr.get(i) % 8)]) & ~whiteOcc;
+            //drawBitboard(available);
 
             moveList = convertMultipleBitboards(available, moveList);
 
@@ -578,27 +592,27 @@ public class Move {
                 0x80402010080402L, 0x8040201008040201L, 0x4020100804020100L, 0x2010080402010000L, 0x1008040201000000L,
                 0x804020100000000L, 0x402010000000000L, 0x201000000000000L, 0x100000000000000L };
 
-        int[] arr = findPieces(bishops);
+        List<Integer> arr = findPieces(bishops);
         // Iterate through each bishop's position individually
-        for (int i = 0; i < arr.length; i++) {
+        for (int i = 0; i < arr.size(); i++) {
 
             List<Long> moveList = new ArrayList<>(); // Make move list for the individual piece
             Tuple<Long, List<Long>> tuple = new Tuple<>(0L, moveList); // Initiate tuple for individual piece
 
             // hyperbola quintessence (o^(o-2r) trick)
             // variable for the current occupancy of the single bishop
-            long piece = 1L << arr[i];
+            long piece = 1L << arr.get(i);
             tuple.setFirst(piece);
             long occupied = (whiteOcc | blackOcc);
 
-            long diagonalMoves = ((occupied & diagonal[(arr[i] / 8) + (arr[i] % 8)]) - (2 * piece)) ^ Long.reverse(
-                    Long.reverse(occupied & diagonal[(arr[i] / 8) + (arr[i] % 8)]) - (2 * Long.reverse(piece)));
-            long antiDiagonalMoves = ((occupied & antidiagonal[(arr[i] / 8) + 7 - (arr[i] % 8)]) - (2 * piece))
-                    ^ Long.reverse(Long.reverse(occupied & antidiagonal[(arr[i] / 8) + 7 - (arr[i] % 8)])
+            long diagonalMoves = ((occupied & diagonal[(arr.get(i) / 8) + (arr.get(i) % 8)]) - (2 * piece)) ^ Long.reverse(
+                    Long.reverse(occupied & diagonal[(arr.get(i) / 8) + (arr.get(i) % 8)]) - (2 * Long.reverse(piece)));
+            long antiDiagonalMoves = ((occupied & antidiagonal[(arr.get(i) / 8) + 7 - (arr.get(i) % 8)]) - (2 * piece))
+                    ^ Long.reverse(Long.reverse(occupied & antidiagonal[(arr.get(i) / 8) + 7 - (arr.get(i) % 8)])
                             - (2 * Long.reverse(piece)));
-            long available = (diagonalMoves & diagonal[(arr[i] / 8) + (arr[i] % 8)])
-                    | (antiDiagonalMoves & antidiagonal[(arr[i] / 8) + 7 - (arr[i] % 8)]);
-            // System.out.println(Long.toBinaryString(available));
+            long available = (diagonalMoves & diagonal[(arr.get(i) / 8) + (arr.get(i) % 8)])
+                    | (antiDiagonalMoves & antidiagonal[(arr.get(i) / 8) + 7 - (arr.get(i) % 8)]) & ~blackOcc;
+            //drawBitboard(available);
 
             moveList = convertMultipleBitboards(available, moveList);
 
@@ -618,7 +632,6 @@ public class Move {
     public List<Tuple<Long, List<Long>>> whiteRookMove(Board chessBoard, Long rooks, Long whiteOcc, Long blackOcc,
             boolean inCheck) {
         List<Tuple<Long, List<Long>>> finalMoves = new ArrayList<>();
-        long rookMask;
 
         if (inCheck) {
             List<Tuple<pieceNames, Long>> inCheckList = Board.inCheckList(chessBoard, true);
@@ -627,47 +640,29 @@ public class Move {
             }
         }
 
-        int[] arr = findPieces(rooks);
-
+        List<Integer> arr = findPieces(rooks);
         // Iterate through each rook's position individually
-        // for each rook, so need some kind of loop or to do it for all of them at once?
-        // not sure how to do it without the loop yet
-        // maybe use a rook mask but note the rank / file for each one instead of just
-        // the individual square?
-        for (int i = 0; i < arr.length; i++) {
+        for (int i = 0; i < arr.size(); i++) {
 
             List<Long> moveList = new ArrayList<>(); // Make move list for the individual piece
             Tuple<Long, List<Long>> tuple = new Tuple<>(0L, moveList); // Initiate tuple for individual piece
 
             // hyperbola quintessence (o^(o-2r) trick)
             // variable for the current occupancy of the single rook
-            long piece = 1L << arr[i];
+            long piece = 1L << arr.get(i);
             tuple.setFirst(piece);
             long occupied = (whiteOcc | blackOcc);
 
             // rankmasks are equal to the longs of the ranks & same for files
-            // need to be able to identify the file and rank for the piece without going
-            // through all combinations
-            // i % 8 and i / 8 should get the correct file & rank for the piece, but there
-            // is something wrong with HORIZONTAL; the rank and position are correct
-            // problem with PIECE generating the correct location
+            // need to be able to identify the file and rank for the piece without going through all combinations
             long horizontal = (occupied - (2 * piece))
                     ^ Long.reverse(Long.reverse(occupied) - (2 * Long.reverse(piece)));
-            long vertical = ((occupied & Board.files[arr[i] % 8]) - (2 * piece))
-                    ^ Long.reverse(Long.reverse(occupied & Board.files[arr[i] % 8]) - (2 * Long.reverse(piece)));
+            long vertical = ((occupied & Board.files[arr.get(i) % 8]) - (2 * piece))
+                    ^ Long.reverse(Long.reverse(occupied & Board.files[arr.get(i) % 8]) - (2 * Long.reverse(piece)));
             // need to remove the position of the piece itself from the list of possible
             // moves! that's what the ^ is for
-            long available = horizontal & Board.ranks[arr[i] / 8] ^ vertical & Board.files[arr[i] % 8];
-            // System.out.println(Long.toBinaryString(available));
-            // System.out.println(Long.toBinaryString(available));
-            // System.out.println(arr[i]);
-            // System.out.println("File: " + Long.toBinaryString(Board.files[arr[i] % 8])+ "
-            // Number of leading zeros: " + Long.numberOfLeadingZeros(Board.files[arr[i] %
-            // 8]));
-            // System.out.println("File: " + Long.toBinaryString(Board.FILE_F) + " Number of
-            // leading zeros: " + Long.numberOfLeadingZeros(Board.FILE_F));
-            // System.out.println("Rank: " + Long.toBinaryString(Board.ranks[arr[i] % 8]));
-            // debug print statements ^
+            long available = (horizontal & Board.ranks[arr.get(i) / 8] ^ vertical & Board.files[arr.get(i) % 8]) & ~whiteOcc;
+             // drawBitboard(available);
 
             // this is itself a list of moves, so it will not return with the same structure
             // as the tuple unless converted to individual bitboards
@@ -691,7 +686,6 @@ public class Move {
     public List<Tuple<Long, List<Long>>> blackRookMove(Board chessBoard, Long rooks, Long blackOcc, Long whiteOcc,
             boolean inCheck) {
         List<Tuple<Long, List<Long>>> finalMoves = new ArrayList<>();
-        long rookMask;
 
         if (inCheck) {
             List<Tuple<pieceNames, Long>> inCheckList = Board.inCheckList(chessBoard, true);
@@ -700,21 +694,22 @@ public class Move {
             }
         }
 
-        int[] arr = findPieces(rooks);
-        for (int i = 0; i < arr.length; i++) {
+        List<Integer> arr = findPieces(rooks);
+        for (int i = 0; i < arr.size(); i++) {
 
             List<Long> moveList = new ArrayList<>(); // Make move list for the individual piece
             Tuple<Long, List<Long>> tuple = new Tuple<>(0L, moveList); // Initiate tuple for individual piece
 
-            long piece = 1L << arr[i];
+            long piece = 1L << arr.get(i);
             tuple.setFirst(piece);
             long occupied = (whiteOcc | blackOcc);
 
             long horizontal = (occupied - (2 * piece))
                     ^ Long.reverse(Long.reverse(occupied) - (2 * Long.reverse(piece)));
-            long vertical = ((occupied & Board.files[arr[i] % 8]) - (2 * piece))
-                    ^ Long.reverse(Long.reverse(occupied & Board.files[arr[i] % 8]) - (2 * Long.reverse(piece)));
-            long available = horizontal & Board.ranks[arr[i] / 8] ^ vertical & Board.files[arr[i] % 8];
+            long vertical = ((occupied & Board.files[arr.get(i) % 8]) - (2 * piece))
+                    ^ Long.reverse(Long.reverse(occupied & Board.files[arr.get(i) % 8]) - (2 * Long.reverse(piece)));
+            long available = (horizontal & Board.ranks[arr.get(i) / 8] ^ vertical & Board.files[arr.get(i) % 8]) & ~blackOcc;
+             // drawBitboard(available);
 
             moveList = convertMultipleBitboards(available, moveList);
 

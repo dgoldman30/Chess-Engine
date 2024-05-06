@@ -35,13 +35,13 @@ public class Main {
         final String testBoard =
                 // H G F E D C B A
                 "--------" + // 8
-                        "---K----" + // 7
+                        "--------" + // 7
                         "--------" + // 6
-                        "--------" + // 5
-                        "--------" + // 4
-                        "----k---" + // 3
-                        "--------" + // 2
-                        "----b---"; // 1
+                        "--P-----" + // 5
+                        "----n---" + // 4
+                        "--------" + // 3
+                        "------PP" + // 2
+                        "------pr"; // 1
         final String emptyBoard = "--------" +
                 "--------" +
                 "--------" +
@@ -53,7 +53,7 @@ public class Main {
 
         Instant inst1 = Instant.now(); // start tracking time
 
-        chessBoard.stringToBitBoard(regBoard);
+        chessBoard.stringToBitBoard(testBoard);
 
         // INDIVIDUAL MOVE
         // miniMax.computeMove(chessBoard, 6, true);
