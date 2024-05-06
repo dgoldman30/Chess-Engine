@@ -5,7 +5,6 @@ import java.util.concurrent.*;
 public class Move {
 
     private ExecutorService executor;
-    private Long enPassantTarget = 0L;
 
     public void shutdown() {
         // Shutdown the executor service
@@ -38,25 +37,6 @@ public class Move {
             return pieceNum;
         }
 
-    }
-
-    public void setEnPassantTarget(long fromSquare, long toSquare) {
-        int fromIndex = Long.numberOfTrailingZeros(fromSquare);
-        int toIndex = Long.numberOfTrailingZeros(toSquare);
-
-        // Check if the move was a two-square pawn move
-        if (Math.abs(toIndex - fromIndex) == 16) {
-            // White pawn moving two squares forward (from RANK_2 to RANK_4)
-            if ((fromSquare & Board.RANK_2) != 0) {
-                enPassantTarget = toSquare >>> 8;
-            }
-            // Black pawn moving two squares forward (from RANK_7 to RANK_5)
-            else if ((fromSquare & Board.RANK_7) != 0) {
-                enPassantTarget = toSquare << 8;
-            }
-        } else {
-            enPassantTarget = 0L;
-        }
     }
 
     // madeMoves represents a Stack(Move((startPosition, endPosition), Captured
@@ -94,6 +74,7 @@ public class Move {
         return moveList;
 
     }
+
     boolean promoteWhite = false;
     boolean promoteBlack = false;
 
@@ -264,17 +245,6 @@ public class Move {
                 if (captureRight != 0) {
                     moveList.add(captureRight);
                 }
-                if ((pawnMask & Board.RANK_5) != 0) {
-                    Long enPassantLeft = (pawnMask >>> 7) & ~Board.FILE_A & enPassantTarget;
-                    if (enPassantLeft != 0) {
-                        moveList.add(enPassantLeft);
-                    }
-
-                    Long enPassantRight = (pawnMask >>> 9) & ~Board.FILE_H & enPassantTarget;
-                    if (enPassantRight != 0) {
-                        moveList.add(enPassantRight);
-                    }
-                }
 
                 if (inCheck)
                     moveList = filterMoves(moveList, chessBoard, pieceNames.WP, true);
@@ -333,18 +303,6 @@ public class Move {
                 Long captureRight = (pawnMask << 9) & ~Board.FILE_A & whiteOcc;
                 if (captureRight != 0) {
                     moveList.add(captureRight);
-                }
-
-                if ((pawnMask & Board.RANK_4) != 0) {
-                    Long enPassantLeft = (pawnMask << 7) & ~Board.FILE_H & enPassantTarget;
-                    if (enPassantLeft != 0) {
-                        moveList.add(enPassantLeft);
-                    }
-
-                    Long enPassantRight = (pawnMask << 9) & ~Board.FILE_A & enPassantTarget;
-                    if (enPassantRight != 0) {
-                        moveList.add(enPassantRight);
-                    }
                 }
 
                 if (inCheck)
@@ -474,15 +432,19 @@ public class Move {
     }
 
     public static void drawBitboard(long bitBoard) {
-        String chessBoard[][]=new String[8][8];
-        for (int i=0;i<64;i++) {
-            chessBoard[i/8][i%8]="";
+        String chessBoard[][] = new String[8][8];
+        for (int i = 0; i < 64; i++) {
+            chessBoard[i / 8][i % 8] = "";
         }
-        for (int i=0;i<64;i++) {
-            if (((bitBoard>>>i)&1)==1) {chessBoard[i/8][i%8]="!";}
-            if ("".equals(chessBoard[i/8][i%8])) {chessBoard[i/8][i%8]=" ";}
+        for (int i = 0; i < 64; i++) {
+            if (((bitBoard >>> i) & 1) == 1) {
+                chessBoard[i / 8][i % 8] = "!";
+            }
+            if ("".equals(chessBoard[i / 8][i % 8])) {
+                chessBoard[i / 8][i % 8] = " ";
+            }
         }
-        for (int i=0;i<8;i++) {
+        for (int i = 0; i < 8; i++) {
             System.out.println(Arrays.toString(chessBoard[i]));
         }
         System.out.println("");
@@ -551,11 +513,16 @@ public class Move {
             tuple.setFirst(piece);
             long occupied = (whiteOcc | blackOcc);
 
-            long diagonalMoves = ((occupied & diagonal[(arr.get(i) / 8) + (arr.get(i) % 8)]) - (2 * piece)) ^ Long.reverse(Long.reverse(occupied & diagonal[(arr.get(i) / 8) + (arr.get(i) % 8)]) - (2 * Long.reverse(piece)));
-            long antiDiagonalMoves = ((occupied & antidiagonal[(arr.get(i) / 8) + 7 - (arr.get(i) % 8)]) - (2 * piece)) ^ Long.reverse(Long.reverse(occupied & antidiagonal[(arr.get(i) / 8) + 7 - (arr.get(i) % 8)]) - (2 * Long.reverse(piece)));
-            long available = (diagonalMoves & diagonal[(arr.get(i) / 8) + (arr.get(i) % 8)]) | (antiDiagonalMoves & antidiagonal[(arr.get(i) / 8) + 7 - (arr.get(i) % 8)]);
+            long diagonalMoves = ((occupied & diagonal[(arr.get(i) / 8) + (arr.get(i) % 8)]) - (2 * piece))
+                    ^ Long.reverse(Long.reverse(occupied & diagonal[(arr.get(i) / 8) + (arr.get(i) % 8)])
+                            - (2 * Long.reverse(piece)));
+            long antiDiagonalMoves = ((occupied & antidiagonal[(arr.get(i) / 8) + 7 - (arr.get(i) % 8)]) - (2 * piece))
+                    ^ Long.reverse(Long.reverse(occupied & antidiagonal[(arr.get(i) / 8) + 7 - (arr.get(i) % 8)])
+                            - (2 * Long.reverse(piece)));
+            long available = (diagonalMoves & diagonal[(arr.get(i) / 8) + (arr.get(i) % 8)])
+                    | (antiDiagonalMoves & antidiagonal[(arr.get(i) / 8) + 7 - (arr.get(i) % 8)]);
 
-            moveList = convertMultipleBitboards(available, moveList);
+            convertMultipleBitboards(available, moveList);
 
             if (inCheck)
                 moveList = filterMoves(moveList, chessBoard, pieceNames.WB, true);
@@ -605,11 +572,16 @@ public class Move {
             tuple.setFirst(piece);
             long occupied = (whiteOcc | blackOcc);
 
-            long diagonalMoves = ((occupied & diagonal[(arr.get(i) / 8) + (arr.get(i) % 8)]) - (2 * piece)) ^ Long.reverse(Long.reverse(occupied & diagonal[(arr.get(i) / 8) + (arr.get(i) % 8)]) - (2 * Long.reverse(piece)));
-            long antiDiagonalMoves = ((occupied & antidiagonal[(arr.get(i) / 8) + 7 - (arr.get(i) % 8)]) - (2 * piece)) ^ Long.reverse(Long.reverse(occupied & antidiagonal[(arr.get(i) / 8) + 7 - (arr.get(i) % 8)]) - (2 * Long.reverse(piece)));
-            long available = (diagonalMoves & diagonal[(arr.get(i) / 8) + (arr.get(i) % 8)]) | (antiDiagonalMoves & antidiagonal[(arr.get(i) / 8) + 7 - (arr.get(i) % 8)]);
+            long diagonalMoves = ((occupied & diagonal[(arr.get(i) / 8) + (arr.get(i) % 8)]) - (2 * piece))
+                    ^ Long.reverse(Long.reverse(occupied & diagonal[(arr.get(i) / 8) + (arr.get(i) % 8)])
+                            - (2 * Long.reverse(piece)));
+            long antiDiagonalMoves = ((occupied & antidiagonal[(arr.get(i) / 8) + 7 - (arr.get(i) % 8)]) - (2 * piece))
+                    ^ Long.reverse(Long.reverse(occupied & antidiagonal[(arr.get(i) / 8) + 7 - (arr.get(i) % 8)])
+                            - (2 * Long.reverse(piece)));
+            long available = (diagonalMoves & diagonal[(arr.get(i) / 8) + (arr.get(i) % 8)])
+                    | (antiDiagonalMoves & antidiagonal[(arr.get(i) / 8) + 7 - (arr.get(i) % 8)]);
 
-           moveList = convertMultipleBitboards(available, moveList);
+            moveList = convertMultipleBitboards(available, moveList);
 
             if (inCheck)
                 moveList = filterMoves(moveList, chessBoard, pieceNames.BB, false);
@@ -637,8 +609,10 @@ public class Move {
         }
 
         // Iterate through each rook's position individually
-        // for each rook, so need some kind of loop or to do it for all of them at once? not sure how to do it without the loop yet
-        // maybe use a rook mask but note the rank / file for each one instead of just the individual square?
+        // for each rook, so need some kind of loop or to do it for all of them at once?
+        // not sure how to do it without the loop yet
+        // maybe use a rook mask but note the rank / file for each one instead of just
+        // the individual square?
         for (int i = 0; i < arr.size(); i++) {
             List<Long> moveList = new ArrayList<>(); // Make move list for the individual piece
             Tuple<Long, List<Long>> tuple = new Tuple<>(0L, moveList); // Initiate tuple for individual piece
@@ -653,13 +627,14 @@ public class Move {
             // what is the problem with sliding pieces currently???
             // horizontal appears to be wrong & vertical appears to be right
             long horizontal = (occupied - 2 * piece) ^ Long.reverse(Long.reverse(occupied) - 2 * Long.reverse(piece));
-            long vertical = ((occupied & Board.files[arr.get(i) % 8]) - (2 * piece)) ^ Long.reverse(Long.reverse(occupied & Board.files[arr.get(i) % 8]) - (2 * Long.reverse(piece)));
+            long vertical = ((occupied & Board.files[arr.get(i) % 8]) - (2 * piece))
+                    ^ Long.reverse(Long.reverse(occupied & Board.files[arr.get(i) % 8]) - (2 * Long.reverse(piece)));
             long available = (horizontal & Board.ranks[arr.get(i) / 8]) | (vertical & Board.files[arr.get(i) % 8]);
             // System.out.println("Position: " + arr.get(i));
-           //  System.out.println("Piece: ");
-           //  drawBitboard(piece);
-           //  System.out.println("Vertical: ");
-           // drawBitboard(vertical & Board.files[arr.get(i) % 8]);
+            // System.out.println("Piece: ");
+            // drawBitboard(piece);
+            // System.out.println("Vertical: ");
+            // drawBitboard(vertical & Board.files[arr.get(i) % 8]);
             // debug print statements ^
 
             // this is itself a list of moves, so it will not return with the same structure
@@ -667,7 +642,7 @@ public class Move {
             // converts the bitboard of all possible moves into individual bitboards to add
             // to the moveList
             // Iterate over each set bit in the original bitboard
-            moveList = convertMultipleBitboards(available, moveList);
+            convertMultipleBitboards(available, moveList);
 
             if (inCheck)
                 moveList = filterMoves(moveList, chessBoard, pieceNames.WR, true);
@@ -692,7 +667,6 @@ public class Move {
             }
         }
 
-
         List<Integer> arr = findPieces(rooks);
         for (int i = 0; i < arr.size(); i++) {
 
@@ -704,10 +678,11 @@ public class Move {
             long occupied = (whiteOcc | blackOcc);
 
             long horizontal = (occupied - 2 * piece) ^ Long.reverse(Long.reverse(occupied) - 2 * Long.reverse(piece));
-            long vertical = ((occupied & Board.files[arr.get(i) % 8]) - (2 * piece)) ^ Long.reverse(Long.reverse(occupied & Board.files[arr.get(i) % 8]) - (2 * Long.reverse(piece)));
+            long vertical = ((occupied & Board.files[arr.get(i) % 8]) - (2 * piece))
+                    ^ Long.reverse(Long.reverse(occupied & Board.files[arr.get(i) % 8]) - (2 * Long.reverse(piece)));
             long available = (horizontal & Board.ranks[arr.get(i) / 8]) | (vertical & Board.files[arr.get(i) % 8]);
 
-            moveList = convertMultipleBitboards(available, moveList);
+            convertMultipleBitboards(available, moveList);
 
             if (inCheck)
                 moveList = filterMoves(moveList, chessBoard, pieceNames.BR, false);
@@ -956,7 +931,7 @@ public class Move {
         promoteWhite = false;
         promoteBlack = false;
 
-        if (tuple != null) { //make sure theres available move
+        if (tuple != null) { // make sure theres available move
 
             // this inputs the bitboard of the piece that is being moved and removes the
             // starting piece
@@ -965,23 +940,6 @@ public class Move {
 
             // piece type of captured piece
             int capturedPiece = pieceNames.NA.getPieceNum();
-
-            // Handle en passant captures
-            boolean isWhitePawn = (currentBoard.whitePawnBoard & start) != 0;
-            boolean isBlackPawn = (currentBoard.blackPawnBoard & start) != 0;
-            boolean enPassantCapture = (endMove.equals(enPassantTarget));
-
-            if (enPassantCapture) {
-                if (isWhitePawn) {
-                    // Remove black pawn captured via en passant
-                    currentBoard.blackPawnBoard &= ~(enPassantTarget << 8);
-                    capturedPiece = pieceNames.BP.getPieceNum();
-                } else if (isBlackPawn) {
-                    // Remove white pawn captured via en passant
-                    currentBoard.whitePawnBoard &= ~(enPassantTarget >>> 8);
-                    capturedPiece = pieceNames.WP.getPieceNum();
-                }
-            }
 
             // CLEAR END SQUARE FIRST
             // find type of piece on end square to capture
@@ -1030,28 +988,27 @@ public class Move {
             // CLEAR START SQUARE, POPULATE END SQUARE
             // CASES TO REMOVE START PIECE AND ADD END PIECE TO CORRECT BOARD.
             if ((currentBoard.whitePawnBoard & start) != 0) {
-                currentBoard.whitePawnBoard = currentBoard.whitePawnBoard & ~start;   //REMOVES THE STARTING SQUARE PIECE
+                currentBoard.whitePawnBoard = currentBoard.whitePawnBoard & ~start; // REMOVES THE STARTING SQUARE PIECE
                 if ((endMove & Board.RANK_1) != 0) {
                     currentBoard.whiteQueenBoard |= endMove;
                     promoteWhite = true;
                 } else {
-                    currentBoard.whitePawnBoard |= endMove;                               //ADDS ENDMOVE TO CORRECT BITBOARD
+                    currentBoard.whitePawnBoard |= endMove; // ADDS ENDMOVE TO CORRECT BITBOARD
                 }
                 currentBoard.whitePawnBoard = currentBoard.whitePawnBoard & ~start; // REMOVES THE STARTING SQUARE PIECE
                 currentBoard.whitePawnBoard |= endMove; // ADDS ENDMOVE TO CORRECT BITBOARD
-                // Set en passant target if the white pawn made a double move
-                setEnPassantTarget(start, endMove);
             } else if ((currentBoard.blackPawnBoard & start) != 0) {
                 currentBoard.blackPawnBoard = currentBoard.blackPawnBoard & ~start;
                 currentBoard.blackPawnBoard |= endMove;
                 // Set en passant target if the black pawn made a double move
-                setEnPassantTarget(start, endMove);
+
                 if ((endMove & Board.RANK_8) != 0) {
                     currentBoard.blackQueenBoard |= endMove;
                     promoteBlack = true;
                 } else {
-                    currentBoard.blackPawnBoard |= endMove;                               //ADDS ENDMOVE TO CORRECT BITBOARD
+                    currentBoard.blackPawnBoard |= endMove; // ADDS ENDMOVE TO CORRECT BITBOARD
                 }
+
             } else if ((currentBoard.whiteKnightBoard & start) != 0) {
                 currentBoard.whiteKnightBoard = currentBoard.whiteKnightBoard & ~start;
                 currentBoard.whiteKnightBoard |= endMove;
@@ -1151,18 +1108,10 @@ public class Move {
 
             Long endPosition = lastMove.getMoves();
             Long startPosition = lastMove.getStart();
-            int capturedPiece = moveInfo.getMoves();
-
-            boolean isWhitePawn = (currentBoard.whitePawnBoard & endPosition) != 0;
-            boolean isBlackPawn = (currentBoard.blackPawnBoard & endPosition) != 0;
-            boolean wasEnPassantCapture = (capturedPiece == pieceNames.WP.getPieceNum()
-                    || capturedPiece == pieceNames.BP.getPieceNum()) &&
-                    ((isWhitePawn && (endPosition & Board.RANK_6) != 0) ||
-                            (isBlackPawn && (endPosition & Board.RANK_3) != 0));
 
             // Identifying the moving piece and moving it back
             if ((currentBoard.whitePawnBoard & endPosition) != 0) {
-                // System.out.println("End:    " + Long.toBinaryString(endPosition));
+                // System.out.println("End: " + Long.toBinaryString(endPosition));
                 if (promoteWhite) {
                     currentBoard.whiteQueenBoard &= ~endPosition;
                     currentBoard.whitePawnBoard |= startPosition;
@@ -1234,18 +1183,10 @@ public class Move {
             int pieceType = moveInfo.getMoves();
 
             if (pieceType != pieceNames.NA.getPieceNum()) {
-                if (capturedPiece == pieceNames.WP.getPieceNum()) {
-                    if (wasEnPassantCapture) {
-                        currentBoard.whitePawnBoard |= endPosition << 8;
-                    } else {
-                        currentBoard.whitePawnBoard |= endPosition;
-                    }
-                } else if (capturedPiece == pieceNames.BP.getPieceNum()) {
-                    if (wasEnPassantCapture) {
-                        currentBoard.blackPawnBoard |= endPosition >>> 8;
-                    } else {
-                        currentBoard.blackPawnBoard |= endPosition;
-                    }
+                if (pieceType == pieceNames.WP.getPieceNum()) {
+                    currentBoard.whitePawnBoard |= endPosition;
+                } else if (pieceType == pieceNames.BP.getPieceNum()) {
+                    currentBoard.blackPawnBoard |= endPosition;
                 } else if (pieceType == pieceNames.WN.getPieceNum()) {
                     currentBoard.whiteKnightBoard |= endPosition;
                 } else if (pieceType == pieceNames.BN.getPieceNum()) {
@@ -1269,15 +1210,6 @@ public class Move {
                 }
 
             }
-
-            // Restore the previous en passant target
-            if (!madeMoves.isEmpty()) {
-                Tuple<Tuple<Long, Long>, Integer> previousMove = madeMoves.peek();
-                setEnPassantTarget(previousMove.getStart().getStart(), previousMove.getStart().getMoves());
-            } else {
-                enPassantTarget = 0L;
-            }
-
             // Update occupancy boards
             currentBoard.whiteOccBoard = currentBoard.whitePawnBoard | currentBoard.whiteKnightBoard |
                     currentBoard.whiteBishopBoard | currentBoard.whiteRookBoard |
@@ -1294,7 +1226,7 @@ public class Move {
 
     // This is used only for making a random move
     // this returns an error when there are no black pieces on the board
-    public Tuple choseMove(List<Tuple<Long, List<Long>>> moveList){
+    public Tuple choseMove(List<Tuple<Long, List<Long>>> moveList) {
 
         Tuple piece = moveList.get(randomGenerator.nextInt(moveList.size()));
         List<Long> moves = (List<Long>) piece.getMoves(); // get list of moves
