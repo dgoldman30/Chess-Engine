@@ -180,7 +180,7 @@ public class Board {
     protected static final long mainDiag = 0x8040201008040201L;
     protected static final long antiDiag = 0x8040201008040201L;
 
-    // CASTLEING
+    // CASTLING
     public boolean whiteCastleKing = true;
     public boolean whiteCastleQueen = true;
     public boolean blackCastleKing = true;
@@ -471,15 +471,15 @@ public class Board {
     }
 
     private static long diagMask(int sq) {
-        long maindia = 0x8040201008040201L;
+        long mainDiag = 0x8040201008040201L;
         int diag = (sq & 7) - (sq >>> 3);
-        return diag >= 0 ? maindia >>> diag * 8 : maindia << -diag * 8;
+        return diag >= 0 ? mainDiag >>> diag * 8 : mainDiag << -diag * 8;
     }
 
     private static long antiDiagMask(int sq) {
-        long maindia = 0x0102040810204080L;
+        long mainDiag = 0x0102040810204080L;
         int diag = 7 - (sq & 7) - (sq >>> 3);
-        return diag >= 0 ? maindia >>> diag * 8 : maindia << -diag * 8;
+        return diag >= 0 ? mainDiag >>> diag * 8 : mainDiag << -diag * 8;
     }
 
     protected long rookMask(int sq) {

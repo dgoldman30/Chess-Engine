@@ -1,6 +1,5 @@
 import java.util.*;
 
-import static java.lang.Long.*;
 import java.util.concurrent.*;
 
 public class Move {
@@ -20,7 +19,7 @@ public class Move {
     // current move errors:
     // rooks wrap around the board (fixed?)
     // white pawns capture one square forward (Fixed?)
-    // black queen and pawns captures other black pieces (Fixed by TC, occboards
+    // black queen and pawns captures other black pieces (Fixed by TC, occBoards
     // were reversed in parameters for move functions)
     Stack<String> moveHistory = new Stack<>();
     Random randomGenerator = new Random(); // for random move REMOVE LATER LOL***
@@ -182,6 +181,7 @@ public class Move {
                     break;
                 case BP:
                     newBoard.setBlackPawnBoard(move);
+                    break;
                 case BQ:
                     newBoard.setBlackQueenBoard(move);
                     break;
@@ -357,7 +357,7 @@ public class Move {
     }
 
     public List<Tuple<Long, List<Long>>> whiteKnightMove(Board chessBoard, Long knights, Long whiteOcc,
-            boolean inCheck) { // HAVING BOUND ISSUES. it still adds the out of bounds moves to the list,
+            boolean inCheck) { // HAVING BOUND ISSUES. it still adds the out-of-bounds moves to the list,
                                // resulting in empty moves***
 
         List<Tuple<Long, List<Long>>> finalMoves = new ArrayList<>();
@@ -375,7 +375,7 @@ public class Move {
             // Check if there's a white knight at the current position
             if ((knights & knightMask) != 0) {
 
-                List<Long> moveList = new ArrayList<>(); // make movelist for the individual piece
+                List<Long> moveList = new ArrayList<>(); // make moveList for the individual piece
 
                 Tuple tuple = new Tuple(0L, moveList); // initiate tuple for individual piece
                 tuple.setFirst(knightMask); // set starting board
@@ -430,7 +430,7 @@ public class Move {
             // Check if there's a black knight at the current position
             if ((knights & knightMask) != 0) {
 
-                List<Long> moveList = new ArrayList<>(); // make movelist for the individual piece
+                List<Long> moveList = new ArrayList<>(); // make moveList for the individual piece
 
                 Tuple tuple = new Tuple(0L, moveList); // initiate tuple for individual piece
                 tuple.setFirst(knightMask); // set starting board
@@ -471,15 +471,15 @@ public class Move {
     }
 
     public static void drawBitboard(long bitBoard) {
-        String chessBoard[][]=new String[8][8];
-        for (int i=0;i<64;i++) {
-            chessBoard[i/8][i%8]="";
+        String chessBoard[][] = new String[8][8];
+        for (int i = 0; i < 64; i++) {
+            chessBoard[i / 8][i % 8]= "";
         }
-        for (int i=0;i<64;i++) {
-            if (((bitBoard>>>i)&1)==1) {chessBoard[i/8][i%8]="O";}
-            if ("".equals(chessBoard[i/8][i%8])) {chessBoard[i/8][i%8]=" ";}
+        for (int i = 0 ; i < 64; i++) {
+            if (((bitBoard >>> i) & 1) == 1) {chessBoard[i / 8][i % 8] = "O";}
+            if ("".equals(chessBoard[i / 8][i % 8])) {chessBoard[i / 8][i % 8] = " ";}
         }
-        for (int i=0;i<8;i++) {
+        for (int i = 0; i < 8; i++) {
             System.out.println(Arrays.toString(chessBoard[i]));
         }
         System.out.println("\n");
@@ -527,8 +527,8 @@ public class Move {
                 0x102040810204080L, 0x204081020408000L, 0x408102040800000L, 0x810204080000000L, 0x1020408000000000L,
                 0x2040800000000000L, 0x4080000000000000L, 0x8000000000000000L };
 
-        // antidiagonal masks:
-        // all antidiagonals move down and left from their starting position
+        // anti-diagonal masks:
+        // all anti-diagonals move down and left from their starting position
         long antidiagonal[] = { 0x80L, 0x8040L, 0x804020L, 0x80402010L, 0x8040201008L, 0x804020100804L,
                 0x80402010080402L, 0x8040201008040201L, 0x4020100804020100L, 0x2010080402010000L, 0x1008040201000000L,
                 0x804020100000000L, 0x402010000000000L, 0x201000000000000L, 0x100000000000000L };
@@ -586,8 +586,8 @@ public class Move {
                 0x102040810204080L, 0x204081020408000L, 0x408102040800000L, 0x810204080000000L, 0x1020408000000000L,
                 0x2040800000000000L, 0x4080000000000000L, 0x8000000000000000L };
 
-        // antidiagonal masks:
-        // all antidiagonals move down and left from their starting position
+        // anti-diagonal masks:
+        // all anti-diagonals move down and left from their starting position
         long antidiagonal[] = { 0x80L, 0x8040L, 0x804020L, 0x80402010L, 0x8040201008L, 0x804020100804L,
                 0x80402010080402L, 0x8040201008040201L, 0x4020100804020100L, 0x2010080402010000L, 0x1008040201000000L,
                 0x804020100000000L, 0x402010000000000L, 0x201000000000000L, 0x100000000000000L };
@@ -614,6 +614,8 @@ public class Move {
                     | (antiDiagonalMoves & antidiagonal[(arr.get(i) / 8) + 7 - (arr.get(i) % 8)]) & ~blackOcc;
             //drawBitboard(available);
 
+            // there is a warning that the variable is already assigned to this value, but this is likely because in the initial board
+            // there is nowhere for the bishop to go, so moveList is empty
             moveList = convertMultipleBitboards(available, moveList);
 
             if (inCheck)
@@ -957,7 +959,7 @@ public class Move {
 
     public Board doMove(Board currentBoard, Tuple tuple, Boolean isWhite) {
 
-        if (tuple != null) { // make sure theres available move
+        if (tuple != null) { // make sure there is an available move
 
             // this inputs the bitboard of the piece that is being moved and removes the
             // starting piece
@@ -1301,14 +1303,14 @@ public class Move {
         long allOccupied = board.whiteOccBoard | board.blackOccBoard;
 
         List<Tuple<Long, List<Long>>> castlingMoves = new ArrayList<>();
-        List<Long> endLoactions = new ArrayList<>();
+        List<Long> endLocations = new ArrayList<>();
 
         // Check if queenside castling is allowed
         if (board.whiteCastleQueen) {
             if ((allOccupied & board.whiteCastleQueenMask) == 0) {
                 // System.out.println("Queenside castling is possible for white.");
                 // Perform queenside castling logic here
-                endLoactions.add(1L << 58);
+                endLocations.add(1L << 58);
             }
         }
         // Check if kingside castling is allowed
@@ -1317,15 +1319,16 @@ public class Move {
             if ((allOccupied & board.whiteCastleKingMask) == 0) {
                 // System.out.println("Kingside castling is possible for white.");
                 // kingside castling logic
-                endLoactions.add(1L << 62);
+                endLocations.add(1L << 62);
             }
         }
         // construct tuple
-        Tuple tuple = new Tuple(1L << 60, endLoactions);
-        castlingMoves.add(tuple);
+        if (!endLocations.isEmpty()) {
+            Tuple<Long, List<Long>> tuple = new Tuple<>(1L << 60, endLocations);
+            castlingMoves.add(tuple);
+        }
         return castlingMoves;
-    }
-
+}
 }
 
 // Later on: if we want to speed up move generation functions, make king and
