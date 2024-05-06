@@ -1,22 +1,37 @@
 import java.util.*;
 
 import static java.lang.Long.*;
+import java.util.concurrent.*;
 
 public class Move {
 
+    private ExecutorService executor;
+    private Long enPassantTarget = 0L;
+
+    public void shutdown() {
+        // Shutdown the executor service
+        executor.shutdown();
+    }
+
+    public Move() {
+        this.executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
+    }
 
     // current move errors:
-    // white pawns capture one square forward (Fixed by TC)
-    // black queen and pawns captures other black pieces (Fixed by TC, occboards were reversed in parameters for move functions)
+    // rooks wrap around the board (fixed?)
+    // white pawns capture one square forward (Fixed?)
+    // black queen and pawns captures other black pieces (Fixed by TC, occboards
+    // were reversed in parameters for move functions)
+    Stack<String> moveHistory = new Stack<>();
+    Random randomGenerator = new Random(); // for random move REMOVE LATER LOL***
 
-    Random randomGenerator = new Random(); //for random move REMOVE LATER LOL***
-    protected enum pieceNames{
+    protected enum pieceNames {
         NA(0), WP(1), BP(2), WQ(3), BQ(4), WN(5), BN(6),
         WR(7), BR(8), WB(9), BB(10), WK(11), BK(12);
 
         private final int pieceNum;
 
-        pieceNames(int pieceNum){
+        pieceNames(int pieceNum) {
             this.pieceNum = pieceNum;
         }
 
@@ -26,45 +41,140 @@ public class Move {
 
     }
 
-    //madeMoves represents a Stack(Move((startPosition, endPosition), Captured Piece type)). Used for undoMove to keep track of past moves
-    Stack<Tuple<Tuple<Long, Long>, Integer>> madeMoves = new Stack<>();    //make tuple constructor for third element String, twice as efficient
+    public void setEnPassantTarget(long fromSquare, long toSquare) {
+        int fromIndex = Long.numberOfTrailingZeros(fromSquare);
+        int toIndex = Long.numberOfTrailingZeros(toSquare);
 
+        // Check if the move was a two-square pawn move
+        if (Math.abs(toIndex - fromIndex) == 16) {
+            // White pawn moving two squares forward (from RANK_2 to RANK_4)
+            if ((fromSquare & Board.RANK_2) != 0) {
+                enPassantTarget = toSquare >>> 8;
+            }
+            // Black pawn moving two squares forward (from RANK_7 to RANK_5)
+            else if ((fromSquare & Board.RANK_7) != 0) {
+                enPassantTarget = toSquare << 8;
+            }
+        } else {
+            enPassantTarget = 0L;
+        }
+    }
+
+    // madeMoves represents a Stack(Move((startPosition, endPosition), Captured
+    // Piece type)). Used for undoMove to keep track of past moves
+
+    Stack<Tuple<Tuple<Long, Long>, Integer>> madeMoves = new Stack<>(); // make tuple constructor for third element
+                                                                        // String, twice as efficient
+
+    public List<Tuple<Long, List<Long>>> naiveGenerateWhiteMoves(Board chessBoard)
+            throws InterruptedException, ExecutionException {
+
+        List<Callable<List<Tuple<Long, List<Long>>>>> tasks = new ArrayList<>();
+        tasks.add(
+                () -> whitePawnMove(chessBoard, chessBoard.whitePawnBoard, chessBoard.whiteOccBoard,
+                        chessBoard.blackOccBoard, chessBoard.isWhiteInCheck()));
+        tasks.add(() -> whiteKnightMove(chessBoard, chessBoard.whiteKnightBoard, chessBoard.whiteOccBoard,
+                chessBoard.isWhiteInCheck()));
+        tasks.add(
+                () -> whiteRookMove(chessBoard, chessBoard.whiteRookBoard, chessBoard.whiteOccBoard,
+                        chessBoard.blackOccBoard, chessBoard.isWhiteInCheck()));
+        tasks.add(() -> whiteBishopMove(chessBoard, chessBoard.whiteBishopBoard, chessBoard.whiteOccBoard,
+                chessBoard.blackOccBoard, chessBoard.isWhiteInCheck()));
+        tasks.add(() -> whiteQueenMove(chessBoard, chessBoard.whiteQueenBoard, chessBoard.whiteOccBoard,
+                chessBoard.blackOccBoard, chessBoard.isWhiteInCheck()));
+        tasks.add(() -> whiteKingMove(chessBoard, chessBoard.whiteKingBoard, chessBoard.whiteOccBoard,
+                chessBoard.isWhiteInCheck()));
+
+        List<Future<List<Tuple<Long, List<Long>>>>> futures = executor.invokeAll(tasks);
+
+        List<Tuple<Long, List<Long>>> moveList = new ArrayList<>();
+        for (Future<List<Tuple<Long, List<Long>>>> future : futures) {
+            moveList.addAll(future.get());
+        }
+
+        return moveList;
+
+    }
     boolean promoteWhite = false;
     boolean promoteBlack = false;
 
     public List<Tuple<Long, List<Long>>> generateWhiteMoves(Board chessBoard) {
         List<Tuple<Long, List<Long>>> moveList = new ArrayList<>();
 
-        moveList.addAll(whitePawnMove(chessBoard, chessBoard.whitePawnBoard, chessBoard.whiteOccBoard, chessBoard.blackOccBoard, false));
-        //moveList.addAll(whiteKnightMove(chessBoard.whiteKnightBoard, chessBoard.whiteOccBoard));
-       // moveList.addAll(whiteRookMove(chessBoard.whiteRookBoard, chessBoard.whiteOccBoard, chessBoard.blackOccBoard));
-        //moveList.addAll(whiteBishopMove(chessBoard.whiteBishopBoard, chessBoard.whiteOccBoard, chessBoard.blackOccBoard));
-        //moveList.addAll(whiteQueenMove(chessBoard.whiteQueenBoard, chessBoard.whiteOccBoard, chessBoard.blackOccBoard));
-        //moveList.addAll(whiteKingMove(chessBoard.whiteKingBoard, chessBoard.whiteOccBoard));
+        moveList.addAll(whitePawnMove(chessBoard, chessBoard.whitePawnBoard, chessBoard.whiteOccBoard,
+                chessBoard.blackOccBoard, chessBoard.isWhiteInCheck()));
+        moveList.addAll(whiteKnightMove(chessBoard, chessBoard.whiteKnightBoard, chessBoard.whiteOccBoard,
+                chessBoard.isWhiteInCheck()));
+        moveList.addAll(whiteRookMove(chessBoard, chessBoard.whiteRookBoard, chessBoard.whiteOccBoard,
+                chessBoard.blackOccBoard, chessBoard.isWhiteInCheck()));
+        moveList.addAll(whiteBishopMove(chessBoard, chessBoard.whiteBishopBoard, chessBoard.whiteOccBoard,
+                chessBoard.blackOccBoard, chessBoard.isWhiteInCheck()));
+        moveList.addAll(whiteQueenMove(chessBoard, chessBoard.whiteQueenBoard, chessBoard.whiteOccBoard,
+                chessBoard.blackOccBoard, chessBoard.isWhiteInCheck()));
+        moveList.addAll(
+                whiteKingMove(chessBoard, chessBoard.whiteKingBoard, chessBoard.whiteOccBoard,
+                        chessBoard.isWhiteInCheck()));
         moveList.addAll(generateWhiteCastlingMoves(chessBoard));
 
         return moveList;
     }
 
+    public List<Tuple<Long, List<Long>>> naiveGenerateBlackMoves(Board chessBoard)
+            throws InterruptedException, ExecutionException {
+
+        List<Callable<List<Tuple<Long, List<Long>>>>> tasks = new ArrayList<>();
+        tasks.add(
+                () -> blackPawnMove(chessBoard, chessBoard.blackPawnBoard, chessBoard.whiteOccBoard,
+                        chessBoard.blackOccBoard, chessBoard.isBlackInCheck()));
+        tasks.add(() -> blackKnightMove(chessBoard, chessBoard.blackKnightBoard, chessBoard.blackOccBoard,
+                chessBoard.isBlackInCheck()));
+        tasks.add(
+                () -> blackRookMove(chessBoard, chessBoard.blackRookBoard, chessBoard.blackOccBoard,
+                        chessBoard.whiteOccBoard, chessBoard.isBlackInCheck()));
+        tasks.add(() -> blackBishopMove(chessBoard, chessBoard.blackBishopBoard, chessBoard.blackOccBoard,
+                chessBoard.whiteOccBoard, chessBoard.isBlackInCheck()));
+        tasks.add(() -> blackQueenMove(chessBoard, chessBoard.blackQueenBoard, chessBoard.whiteOccBoard,
+                chessBoard.blackOccBoard, chessBoard.isBlackInCheck()));
+        tasks.add(() -> blackKingMove(chessBoard, chessBoard.blackKingBoard, chessBoard.blackOccBoard,
+                chessBoard.isBlackInCheck()));
+
+        List<Future<List<Tuple<Long, List<Long>>>>> futures = executor.invokeAll(tasks);
+
+        List<Tuple<Long, List<Long>>> moveList = new ArrayList<>();
+        for (Future<List<Tuple<Long, List<Long>>>> future : futures) {
+            moveList.addAll(future.get());
+        }
+
+        return moveList;
+
+    }
+
     public List<Tuple<Long, List<Long>>> generateBlackMoves(Board chessBoard) {
         List<Tuple<Long, List<Long>>> moveList = new ArrayList<>();
+        moveList.addAll(blackPawnMove(chessBoard, chessBoard.blackPawnBoard, chessBoard.whiteOccBoard,
+                chessBoard.blackOccBoard, chessBoard.isBlackInCheck()));
+        moveList.addAll(blackKnightMove(chessBoard, chessBoard.blackKnightBoard, chessBoard.blackOccBoard,
+                chessBoard.isBlackInCheck()));
+        moveList.addAll(blackRookMove(chessBoard, chessBoard.blackRookBoard, chessBoard.blackOccBoard,
+                chessBoard.whiteOccBoard, chessBoard.isBlackInCheck()));
+        moveList.addAll(blackBishopMove(chessBoard, chessBoard.blackBishopBoard, chessBoard.blackOccBoard,
+                chessBoard.whiteOccBoard, chessBoard.isBlackInCheck()));
+        moveList.addAll(blackQueenMove(chessBoard, chessBoard.blackQueenBoard, chessBoard.whiteOccBoard,
+                chessBoard.blackOccBoard, chessBoard.isBlackInCheck()));
+        moveList.addAll(blackKingMove(chessBoard, chessBoard.blackKingBoard, chessBoard.blackOccBoard,
+                chessBoard.isBlackInCheck()));
 
-        moveList.addAll(blackPawnMove(chessBoard, chessBoard.blackPawnBoard, chessBoard.whiteOccBoard, chessBoard.blackOccBoard, chessBoard.isInCheck()));
-        moveList.addAll(blackKnightMove(chessBoard, chessBoard.blackKnightBoard, chessBoard.blackOccBoard, chessBoard.isInCheck()));
-        moveList.addAll(blackRookMove(chessBoard, chessBoard.blackRookBoard, chessBoard.blackOccBoard, chessBoard.whiteOccBoard, chessBoard.isInCheck()));
-        moveList.addAll(blackBishopMove(chessBoard, chessBoard.blackBishopBoard, chessBoard.blackOccBoard, chessBoard.whiteOccBoard, chessBoard.isInCheck()));
-        moveList.addAll(blackQueenMove(chessBoard, chessBoard.blackQueenBoard, chessBoard.whiteOccBoard, chessBoard.blackOccBoard, chessBoard.isInCheck()));
-        moveList.addAll(blackKingMove(chessBoard, chessBoard.blackKingBoard, chessBoard.blackOccBoard, chessBoard.isInCheck()));
+        // moveList.addAll(generateBlackCastlingMoves(chessBoard));
 
         return moveList;
     }
 
-    protected List<Long> filterMoves(List<Long> origList, Board chessBoard, pieceNames piece, boolean isWhite){
+    protected List<Long> filterMoves(List<Long> origList, Board chessBoard, pieceNames piece, boolean isWhite) {
         List<Long> newList = new ArrayList<>();
         Board newBoard = new Board(chessBoard);
 
-        for(Long move : origList){
-            switch (piece){
+        for (Long move : origList) {
+            switch (piece) {
                 case BB:
                     newBoard.setBlackBishopBoard(move);
                     break;
@@ -102,26 +212,27 @@ public class Move {
                     break;
             }
 
-            if(!newBoard.inCheck(newBoard, isWhite))
+            if (!newBoard.inCheck(newBoard, isWhite))
                 newList.add(move);
         }
 
         return newList;
     }
 
-    public List<Tuple<Long, List<Long>>> whitePawnMove(Board chessBoard, Long pawns, Long whiteOcc, Long blackOcc, boolean inCheck) {
+    public List<Tuple<Long, List<Long>>> whitePawnMove(Board chessBoard, Long pawns, Long whiteOcc, Long blackOcc,
+            boolean inCheck) {
 
         List<Tuple<Long, List<Long>>> finalMoves = new ArrayList<>();
 
-        if(inCheck){
+        if (inCheck) {
             List<Tuple<pieceNames, Long>> inCheckList = Board.inCheckList(chessBoard, true);
-            if(inCheckList.size() > 1){
+            if (inCheckList.size() > 1) {
                 return finalMoves;
             }
         }
 
         // Iterate through each pawn individually
-        for (int i = 0; i < 64; i++) {                  // pawn will never be able to get to first or last rank. room for improvement***
+        for (int i = 0; i < 64; i++) { // pawn will never be able to get to first or last rank. room for improvement***
             long pawnMask = 1L << i;
 
             // Check if there's a white pawn at the current position
@@ -154,6 +265,17 @@ public class Move {
                 if (captureRight != 0) {
                     moveList.add(captureRight);
                 }
+                if ((pawnMask & Board.RANK_5) != 0) {
+                    Long enPassantLeft = (pawnMask >>> 7) & ~Board.FILE_A & enPassantTarget;
+                    if (enPassantLeft != 0) {
+                        moveList.add(enPassantLeft);
+                    }
+
+                    Long enPassantRight = (pawnMask >>> 9) & ~Board.FILE_H & enPassantTarget;
+                    if (enPassantRight != 0) {
+                        moveList.add(enPassantRight);
+                    }
+                }
 
                 if (inCheck)
                     moveList = filterMoves(moveList, chessBoard, pieceNames.WP, true);
@@ -167,19 +289,20 @@ public class Move {
         return finalMoves;
     }
 
-    public List<Tuple<Long, List<Long>>> blackPawnMove(Board chessBoard, Long pawns, Long whiteOcc, Long blackOcc,boolean inCheck) {
+    public List<Tuple<Long, List<Long>>> blackPawnMove(Board chessBoard, Long pawns, Long whiteOcc, Long blackOcc,
+            boolean inCheck) {
 
         List<Tuple<Long, List<Long>>> finalMoves = new ArrayList<>();
 
-        if(inCheck){
+        if (inCheck) {
             List<Tuple<pieceNames, Long>> inCheckList = Board.inCheckList(chessBoard, true);
-            if(inCheckList.size() > 1){
+            if (inCheckList.size() > 1) {
                 return finalMoves;
             }
         }
 
         // Iterate through each pawn individually
-        for (int i = 0; i < 64; i++) {                  //pawn will never be able to get to first or last rank. room for improvement***
+        for (int i = 0; i < 64; i++) { // pawn will never be able to get to first or last rank. room for improvement***
             long pawnMask = 1L << i;
 
             // Check if there's a black pawn at the current position
@@ -213,6 +336,18 @@ public class Move {
                     moveList.add(captureRight);
                 }
 
+                if ((pawnMask & Board.RANK_4) != 0) {
+                    Long enPassantLeft = (pawnMask << 7) & ~Board.FILE_H & enPassantTarget;
+                    if (enPassantLeft != 0) {
+                        moveList.add(enPassantLeft);
+                    }
+
+                    Long enPassantRight = (pawnMask << 9) & ~Board.FILE_A & enPassantTarget;
+                    if (enPassantRight != 0) {
+                        moveList.add(enPassantRight);
+                    }
+                }
+
                 if (inCheck)
                     moveList = filterMoves(moveList, chessBoard, pieceNames.BP, false);
 
@@ -225,13 +360,15 @@ public class Move {
         return finalMoves;
     }
 
-    public List<Tuple<Long, List<Long>>> whiteKnightMove(Board chessBoard, Long knights, Long whiteOcc, boolean inCheck) {    //HAVING BOUND ISSUES. it still adds the out of bounds moves to the list, resulting in empty moves***
+    public List<Tuple<Long, List<Long>>> whiteKnightMove(Board chessBoard, Long knights, Long whiteOcc,
+            boolean inCheck) { // HAVING BOUND ISSUES. it still adds the out of bounds moves to the list,
+                               // resulting in empty moves***
 
         List<Tuple<Long, List<Long>>> finalMoves = new ArrayList<>();
 
-        if(inCheck){
+        if (inCheck) {
             List<Tuple<pieceNames, Long>> inCheckList = Board.inCheckList(chessBoard, true);
-            if(inCheckList.size() > 1){
+            if (inCheckList.size() > 1) {
                 return finalMoves;
             }
         }
@@ -242,12 +379,13 @@ public class Move {
             // Check if there's a white knight at the current position
             if ((knights & knightMask) != 0) {
 
-                List<Long> moveList = new ArrayList<>(); //make movelist for the individual piece
+                List<Long> moveList = new ArrayList<>(); // make movelist for the individual piece
 
-                Tuple tuple = new Tuple(0L, moveList); //initiate tuple for individual piece
-                tuple.setFirst(knightMask);   //set starting board
+                Tuple tuple = new Tuple(0L, moveList); // initiate tuple for individual piece
+                tuple.setFirst(knightMask); // set starting board
 
-                moveList.add((knightMask >>> 6) & ~whiteOcc & ~(Board.FILE_A | Board.FILE_B)); //& will check the end position
+                moveList.add((knightMask >>> 6) & ~whiteOcc & ~(Board.FILE_A | Board.FILE_B)); // & will check the end
+                                                                                               // position
                 moveList.add((knightMask >>> 10) & ~whiteOcc & ~(Board.FILE_G | Board.FILE_H));
                 moveList.add((knightMask >>> 15) & ~whiteOcc & ~Board.FILE_A);
                 moveList.add((knightMask >>> 17) & ~whiteOcc & ~Board.FILE_H);
@@ -257,7 +395,8 @@ public class Move {
                 moveList.add((knightMask << 15) & ~whiteOcc & ~Board.FILE_H);
                 moveList.add((knightMask << 17) & ~whiteOcc & ~Board.FILE_A);
 
-                // Iterate through the list and remove elements with all 0's     THIS REMOVES THE MOVES THAT WERE REMOVED FOR BOUNDARIES
+                // Iterate through the list and remove elements with all 0's THIS REMOVES THE
+                // MOVES THAT WERE REMOVED FOR BOUNDARIES
                 for (int X = moveList.size() - 1; X >= 0; X--) {
                     Long value = moveList.get(X);
                     if (value == 0L) {
@@ -268,22 +407,23 @@ public class Move {
                 if (inCheck)
                     moveList = filterMoves(moveList, chessBoard, pieceNames.WN, true);
 
-                tuple.setSecond(moveList); //add moveList to individual pieces tuple
+                tuple.setSecond(moveList); // add moveList to individual pieces tuple
                 if (!moveList.isEmpty()) {
                     finalMoves.add(tuple);
-                } //add tuple of individual piece to list if list is not empty
+                } // add tuple of individual piece to list if list is not empty
             }
         }
         return finalMoves;
     }
 
-    public List<Tuple<Long, List<Long>>> blackKnightMove(Board chessBoard, Long knights, Long blackOcc, boolean inCheck) {
+    public List<Tuple<Long, List<Long>>> blackKnightMove(Board chessBoard, Long knights, Long blackOcc,
+            boolean inCheck) {
 
         List<Tuple<Long, List<Long>>> finalMoves = new ArrayList<>();
 
-        if(inCheck){
+        if (inCheck) {
             List<Tuple<pieceNames, Long>> inCheckList = Board.inCheckList(chessBoard, true);
-            if(inCheckList.size() > 1){
+            if (inCheckList.size() > 1) {
                 return finalMoves;
             }
         }
@@ -294,12 +434,13 @@ public class Move {
             // Check if there's a black knight at the current position
             if ((knights & knightMask) != 0) {
 
-                List<Long> moveList = new ArrayList<>(); //make movelist for the individual piece
+                List<Long> moveList = new ArrayList<>(); // make movelist for the individual piece
 
-                Tuple tuple = new Tuple(0L, moveList); //initiate tuple for individual piece
-                tuple.setFirst(knightMask);   //set starting board
+                Tuple tuple = new Tuple(0L, moveList); // initiate tuple for individual piece
+                tuple.setFirst(knightMask); // set starting board
 
-                moveList.add((knightMask >>> 6) & ~blackOcc & ~(Board.FILE_A | Board.FILE_B)); //& will check the end position
+                moveList.add((knightMask >>> 6) & ~blackOcc & ~(Board.FILE_A | Board.FILE_B)); // & will check the end
+                                                                                               // position
                 moveList.add((knightMask >>> 10) & ~blackOcc & ~(Board.FILE_G | Board.FILE_H));
                 moveList.add((knightMask >>> 15) & ~blackOcc & ~Board.FILE_A);
                 moveList.add((knightMask >>> 17) & ~blackOcc & ~Board.FILE_H);
@@ -308,10 +449,11 @@ public class Move {
                 moveList.add((knightMask << 10) & ~blackOcc & ~(Board.FILE_A | Board.FILE_B));
                 moveList.add((knightMask << 15) & ~blackOcc & ~Board.FILE_H);
                 moveList.add((knightMask << 17) & ~blackOcc & ~Board.FILE_A);
-                tuple.setSecond(moveList); //add moveList to individual pieces tuple
-                finalMoves.add(tuple); //add tuple of individual piece to list
+                tuple.setSecond(moveList); // add moveList to individual pieces tuple
+                finalMoves.add(tuple); // add tuple of individual piece to list
 
-                // Iterate through the list and remove elements with all 0's     THIS REMOVES THE MOVES THAT WERE REMOVED FOR BOUNDARIES
+                // Iterate through the list and remove elements with all 0's THIS REMOVES THE
+                // MOVES THAT WERE REMOVED FOR BOUNDARIES
                 for (int X = moveList.size() - 1; X >= 0; X--) {
                     Long value = moveList.get(X);
                     if (value == 0L) {
@@ -322,10 +464,11 @@ public class Move {
                 if (inCheck)
                     moveList = filterMoves(moveList, chessBoard, pieceNames.BN, false);
 
-                tuple.setSecond(moveList); //add moveList to individual pieces tuple
+                tuple.setSecond(moveList); // add moveList to individual pieces tuple
+
                 if (!moveList.isEmpty()) {
                     finalMoves.add(tuple);
-                } //add tuple of individual piece to list if list is not empty
+                } // add tuple of individual piece to list if list is not empty
             }
         }
         return finalMoves;
@@ -373,23 +516,28 @@ public class Move {
         return list;
     }
 
-    public List<Tuple<Long, List<Long>>> whiteBishopMove(Board chessBoard, Long bishops, Long whiteOcc, Long blackOcc, boolean inCheck) {
+    public List<Tuple<Long, List<Long>>> whiteBishopMove(Board chessBoard, Long bishops, Long whiteOcc, Long blackOcc,
+            boolean inCheck) {
         List<Tuple<Long, List<Long>>> finalMoves = new ArrayList<>();
 
-        if(inCheck){
+        if (inCheck) {
             List<Tuple<pieceNames, Long>> inCheckList = Board.inCheckList(chessBoard, true);
-            if(inCheckList.size() > 1){
+            if (inCheckList.size() > 1) {
                 return finalMoves;
             }
         }
 
         // diagonal masks:
         // all diagonals move down and right from their starting position
-        long diagonal[] = {0x1L, 0x102L, 0x10204L, 0x1020408L, 0x102040810L, 0x10204081020L, 0x1020408102040L, 0x102040810204080L, 0x204081020408000L, 0x408102040800000L, 0x810204080000000L, 0x1020408000000000L, 0x2040800000000000L, 0x4080000000000000L, 0x8000000000000000L};
+        long diagonal[] = { 0x1L, 0x102L, 0x10204L, 0x1020408L, 0x102040810L, 0x10204081020L, 0x1020408102040L,
+                0x102040810204080L, 0x204081020408000L, 0x408102040800000L, 0x810204080000000L, 0x1020408000000000L,
+                0x2040800000000000L, 0x4080000000000000L, 0x8000000000000000L };
 
         // antidiagonal masks:
         // all antidiagonals move down and left from their starting position
-        long antidiagonal[] = {0x80L, 0x8040L, 0x804020L, 0x80402010L, 0x8040201008L, 0x804020100804L, 0x80402010080402L, 0x8040201008040201L, 0x4020100804020100L, 0x2010080402010000L, 0x1008040201000000L, 0x804020100000000L, 0x402010000000000L, 0x201000000000000L, 0x100000000000000L};
+        long antidiagonal[] = { 0x80L, 0x8040L, 0x804020L, 0x80402010L, 0x8040201008L, 0x804020100804L,
+                0x80402010080402L, 0x8040201008040201L, 0x4020100804020100L, 0x2010080402010000L, 0x1008040201000000L,
+                0x804020100000000L, 0x402010000000000L, 0x201000000000000L, 0x100000000000000L };
 
         List<Integer> arr = findPieces(bishops);
         // Iterate through each bishop's position individually
@@ -398,7 +546,7 @@ public class Move {
             List<Long> moveList = new ArrayList<>(); // Make move list for the individual piece
             Tuple<Long, List<Long>> tuple = new Tuple<>(0L, moveList); // Initiate tuple for individual piece
 
-            //  hyperbola quintessence (o^(o-2r) trick)
+            // hyperbola quintessence (o^(o-2r) trick)
             // variable for the current occupancy of the single bishop
             long piece = 1L << arr.get(i);
             tuple.setFirst(piece);
@@ -422,23 +570,28 @@ public class Move {
         return finalMoves;
     }
 
-    public List<Tuple<Long, List<Long>>> blackBishopMove(Board chessBoard, Long bishops, Long blackOcc, Long whiteOcc, boolean inCheck) {
+    public List<Tuple<Long, List<Long>>> blackBishopMove(Board chessBoard, Long bishops, Long blackOcc, Long whiteOcc,
+            boolean inCheck) {
         List<Tuple<Long, List<Long>>> finalMoves = new ArrayList<>();
 
-        if(inCheck){
+        if (inCheck) {
             List<Tuple<pieceNames, Long>> inCheckList = Board.inCheckList(chessBoard, true);
-            if(inCheckList.size() > 1){
+            if (inCheckList.size() > 1) {
                 return finalMoves;
             }
         }
 
         // diagonal masks:
         // all diagonals move down and right from their starting position
-        long diagonal[] = {0x1L, 0x102L, 0x10204L, 0x1020408L, 0x102040810L, 0x10204081020L, 0x1020408102040L, 0x102040810204080L, 0x204081020408000L, 0x408102040800000L, 0x810204080000000L, 0x1020408000000000L, 0x2040800000000000L, 0x4080000000000000L, 0x8000000000000000L};
+        long diagonal[] = { 0x1L, 0x102L, 0x10204L, 0x1020408L, 0x102040810L, 0x10204081020L, 0x1020408102040L,
+                0x102040810204080L, 0x204081020408000L, 0x408102040800000L, 0x810204080000000L, 0x1020408000000000L,
+                0x2040800000000000L, 0x4080000000000000L, 0x8000000000000000L };
 
         // antidiagonal masks:
         // all antidiagonals move down and left from their starting position
-        long antidiagonal[] = {0x80L, 0x8040L, 0x804020L, 0x80402010L, 0x8040201008L, 0x804020100804L, 0x80402010080402L, 0x8040201008040201L, 0x4020100804020100L, 0x2010080402010000L, 0x1008040201000000L, 0x804020100000000L, 0x402010000000000L, 0x201000000000000L, 0x100000000000000L};
+        long antidiagonal[] = { 0x80L, 0x8040L, 0x804020L, 0x80402010L, 0x8040201008L, 0x804020100804L,
+                0x80402010080402L, 0x8040201008040201L, 0x4020100804020100L, 0x2010080402010000L, 0x1008040201000000L,
+                0x804020100000000L, 0x402010000000000L, 0x201000000000000L, 0x100000000000000L };
 
         List<Integer> arr = findPieces(bishops);
         // Iterate through each bishop's position individually
@@ -447,7 +600,7 @@ public class Move {
             List<Long> moveList = new ArrayList<>(); // Make move list for the individual piece
             Tuple<Long, List<Long>> tuple = new Tuple<>(0L, moveList); // Initiate tuple for individual piece
 
-            //  hyperbola quintessence (o^(o-2r) trick)
+            // hyperbola quintessence (o^(o-2r) trick)
             // variable for the current occupancy of the single bishop
             long piece = 1L << arr.get(i);
             tuple.setFirst(piece);
@@ -472,13 +625,14 @@ public class Move {
     }
 
     // Define the function for calculating legal moves for a rook
-    public List<Tuple<Long, List<Long>>> whiteRookMove(Board chessBoard, Long rooks, Long whiteOcc, Long blackOcc, boolean inCheck) {
+    public List<Tuple<Long, List<Long>>> whiteRookMove(Board chessBoard, Long rooks, Long whiteOcc, Long blackOcc,
+            boolean inCheck) {
         List<Tuple<Long, List<Long>>> finalMoves = new ArrayList<>();
 
         List<Integer> arr = findPieces(rooks);
-        if(inCheck){
+        if (inCheck) {
             List<Tuple<pieceNames, Long>> inCheckList = Board.inCheckList(chessBoard, true);
-            if(inCheckList.size() > 1){
+            if (inCheckList.size() > 1) {
                 return finalMoves;
             }
         }
@@ -490,7 +644,7 @@ public class Move {
             List<Long> moveList = new ArrayList<>(); // Make move list for the individual piece
             Tuple<Long, List<Long>> tuple = new Tuple<>(0L, moveList); // Initiate tuple for individual piece
 
-            //  hyperbola quintessence (o^(o-2r) trick)
+            // hyperbola quintessence (o^(o-2r) trick)
             // variable for the current occupancy of the single rook
             long piece = 1L << arr.get(i);
             tuple.setFirst(piece);
@@ -509,8 +663,10 @@ public class Move {
            // drawBitboard(vertical & Board.files[arr.get(i) % 8]);
             // debug print statements ^
 
-            // this is itself a list of moves, so it will not return with the same structure as the tuple unless converted to individual bitboards
-            // converts the bitboard of all possible moves into individual bitboards to add to the moveList
+            // this is itself a list of moves, so it will not return with the same structure
+            // as the tuple unless converted to individual bitboards
+            // converts the bitboard of all possible moves into individual bitboards to add
+            // to the moveList
             // Iterate over each set bit in the original bitboard
             moveList = convertMultipleBitboards(available, moveList);
 
@@ -526,13 +682,13 @@ public class Move {
         return finalMoves;
     }
 
-    public List<Tuple<Long, List<Long>>> blackRookMove(Board chessBoard, Long rooks, Long blackOcc, Long whiteOcc, boolean inCheck) {
+    public List<Tuple<Long, List<Long>>> blackRookMove(Board chessBoard, Long rooks, Long blackOcc, Long whiteOcc,
+            boolean inCheck) {
         List<Tuple<Long, List<Long>>> finalMoves = new ArrayList<>();
 
-
-        if(inCheck){
+        if (inCheck) {
             List<Tuple<pieceNames, Long>> inCheckList = Board.inCheckList(chessBoard, true);
-            if(inCheckList.size() > 1){
+            if (inCheckList.size() > 1) {
                 return finalMoves;
             }
         }
@@ -565,14 +721,14 @@ public class Move {
         return finalMoves;
     }
 
-
     // Define the function for calculating legal moves for a queen
-    public List<Tuple<Long, List<Long>>> whiteQueenMove(Board chessBoard, Long queens, Long whiteOcc, Long blackOcc, boolean inCheck) {
+    public List<Tuple<Long, List<Long>>> whiteQueenMove(Board chessBoard, Long queens, Long whiteOcc, Long blackOcc,
+            boolean inCheck) {
         List<Tuple<Long, List<Long>>> finalMoves = new ArrayList<>();
 
-        if(inCheck){
+        if (inCheck) {
             List<Tuple<pieceNames, Long>> inCheckList = Board.inCheckList(chessBoard, true);
-            if(inCheckList.size() > 1){
+            if (inCheckList.size() > 1) {
                 return finalMoves;
             }
         }
@@ -590,19 +746,20 @@ public class Move {
     }
 
     // Define the function for calculating legal moves for a queen
-    public List<Tuple<Long, List<Long>>> blackQueenMove(Board chessBoard, Long queens, Long whiteOcc, Long blackOcc, boolean inCheck) {
+    public List<Tuple<Long, List<Long>>> blackQueenMove(Board chessBoard, Long queens, Long whiteOcc, Long blackOcc,
+            boolean inCheck) {
         List<Tuple<Long, List<Long>>> finalMoves = new ArrayList<>();
 
-        if(inCheck){
+        if (inCheck) {
             List<Tuple<pieceNames, Long>> inCheckList = Board.inCheckList(chessBoard, true);
-            if(inCheckList.size() > 1){
+            if (inCheckList.size() > 1) {
                 return finalMoves;
             }
         }
 
         // Combine legal moves of rooks and bishops for black queen
         List<Tuple<Long, List<Long>>> rookMoves = blackRookMove(chessBoard, queens, blackOcc, whiteOcc, inCheck);
-        List<Tuple<Long, List<Long>>> bishopMoves = blackBishopMove(chessBoard,queens, blackOcc, whiteOcc, inCheck);
+        List<Tuple<Long, List<Long>>> bishopMoves = blackBishopMove(chessBoard, queens, blackOcc, whiteOcc, inCheck);
 
         // Add rook moves to the final moves list
         finalMoves.addAll(rookMoves);
@@ -612,7 +769,8 @@ public class Move {
         return finalMoves;
     }
 
-    public List<Tuple<Long, List<Long>>> whiteKingMove(Board chessboard, long kingBoard, long whiteOcc, boolean inCheck) {
+    public List<Tuple<Long, List<Long>>> whiteKingMove(Board chessboard, long kingBoard, long whiteOcc,
+            boolean inCheck) {
         List<Tuple<Long, List<Long>>> finalMoves = new ArrayList<>();
 
         // Iterate through to find the king
@@ -680,7 +838,8 @@ public class Move {
         return finalMoves;
     }
 
-    public List<Tuple<Long, List<Long>>> blackKingMove(Board chessBoard, long kingBoard, long blackOcc, boolean inCheck) {
+    public List<Tuple<Long, List<Long>>> blackKingMove(Board chessBoard, long kingBoard, long blackOcc,
+            boolean inCheck) {
 
         List<Tuple<Long, List<Long>>> finalMoves = new ArrayList<>();
 
@@ -748,30 +907,93 @@ public class Move {
         return finalMoves;
     }
 
-    public Board doMove(Board currentBoard, Tuple tuple){
+    public boolean isThreefoldRepetition(Board chessBoard) {
+        int count = 0;
+        String currentBoard = boardToString(chessBoard.whiteOccBoard, chessBoard.blackOccBoard); // Convert current
+                                                                                                 // board to a string
+        for (int i = 0; i < moveHistory.size(); i++) {
+            if (isEqualBoard(currentBoard, moveHistory.get(i))) {
+                count++;
+            }
+        }
+        return count >= 3;
+    }
+
+    public boolean isEqualBoard(String currentBoard, String historyBoard) {
+        return currentBoard.equals(historyBoard);
+    }
+
+    public String boardToString(long whiteBoard, long blackBoard) {
+        StringBuilder boardString = new StringBuilder();
+
+        // Iterate over each square of the board (64 squares)
+        for (int square = 0; square < 64; square++) {
+            long mask = 1L << square;
+
+            // Check if the square is occupied by a white piece
+            if ((whiteBoard & mask) != 0) {
+                boardString.append('W'); // 'W' represents a white piece
+            }
+            // Check if the square is occupied by a black piece
+            else if ((blackBoard & mask) != 0) {
+                boardString.append('B'); // 'B' represents a black piece
+            }
+            // If the square is empty
+            else {
+                boardString.append('-'); // '-' represents an empty square
+            }
+
+            // Add newline character for every 8 squares to represent a row
+            if ((square + 1) % 8 == 0) {
+                boardString.append('\n');
+            }
+        }
+
+        return boardString.toString();
+    }
+
+    public Board doMove(Board currentBoard, Tuple tuple, Boolean isWhite) {
 
         promoteWhite = false;
         promoteBlack = false;
 
         if (tuple != null) { //make sure theres available move
 
-            //this inputs the bitboard of the piece that is being moved and removes the starting piece
+            // this inputs the bitboard of the piece that is being moved and removes the
+            // starting piece
             Long start = (Long) tuple.getStart();
             Long endMove = (Long) tuple.getMoves();
 
-            //piece type of captured piece
+            // piece type of captured piece
             int capturedPiece = pieceNames.NA.getPieceNum();
 
-//CLEAR END SQUARE FIRST
-            //find type of piece on end square to capture
+            // Handle en passant captures
+            boolean isWhitePawn = (currentBoard.whitePawnBoard & start) != 0;
+            boolean isBlackPawn = (currentBoard.blackPawnBoard & start) != 0;
+            boolean enPassantCapture = (endMove.equals(enPassantTarget));
+
+            if (enPassantCapture) {
+                if (isWhitePawn) {
+                    // Remove black pawn captured via en passant
+                    currentBoard.blackPawnBoard &= ~(enPassantTarget << 8);
+                    capturedPiece = pieceNames.BP.getPieceNum();
+                } else if (isBlackPawn) {
+                    // Remove white pawn captured via en passant
+                    currentBoard.whitePawnBoard &= ~(enPassantTarget >>> 8);
+                    capturedPiece = pieceNames.WP.getPieceNum();
+                }
+            }
+
+            // CLEAR END SQUARE FIRST
+            // find type of piece on end square to capture
             if ((currentBoard.whitePawnBoard & endMove) != 0) {
-                //remove captured piece
+                // remove captured piece
                 currentBoard.whitePawnBoard = currentBoard.whitePawnBoard & ~endMove;
-                //captured piece data
+                // captured piece data
                 capturedPiece = pieceNames.WP.getPieceNum();
             } else if ((currentBoard.blackPawnBoard & endMove) != 0) {
                 currentBoard.blackPawnBoard = currentBoard.blackPawnBoard & ~endMove;
-                //captured piece data
+                // captured piece data
                 capturedPiece = pieceNames.BP.getPieceNum();
             } else if ((currentBoard.whiteQueenBoard & endMove) != 0) {
                 currentBoard.whiteQueenBoard = currentBoard.whiteQueenBoard & ~endMove;
@@ -796,7 +1018,7 @@ public class Move {
                 capturedPiece = pieceNames.WB.getPieceNum();
             } else if ((currentBoard.blackBishopBoard & endMove) != 0) {
                 currentBoard.blackBishopBoard = currentBoard.blackBishopBoard & ~endMove;
-                //captured piece data
+                // captured piece data
                 capturedPiece = pieceNames.BB.getPieceNum();
             } else if ((currentBoard.whiteKingBoard & endMove) != 0) {
                 currentBoard.whiteKingBoard = currentBoard.whiteKingBoard & ~endMove;
@@ -806,20 +1028,25 @@ public class Move {
                 capturedPiece = pieceNames.BK.getPieceNum();
             }
 
-//CLEAR START SQUARE, POPULATE END SQUARE
-// CASES TO REMOVE START PIECE AND ADD END PIECE TO CORRECT BOARD.
+            // CLEAR START SQUARE, POPULATE END SQUARE
+            // CASES TO REMOVE START PIECE AND ADD END PIECE TO CORRECT BOARD.
             if ((currentBoard.whitePawnBoard & start) != 0) {
                 currentBoard.whitePawnBoard = currentBoard.whitePawnBoard & ~start;   //REMOVES THE STARTING SQUARE PIECE
-                System.out.println("Endmove: " + Long.toBinaryString(endMove));
-                // this is turning all of them into queens but then potentially not even selecting that move to DO
                 if ((endMove & Board.RANK_1) != 0) {
                     currentBoard.whiteQueenBoard |= endMove;
                     promoteWhite = true;
                 } else {
                     currentBoard.whitePawnBoard |= endMove;                               //ADDS ENDMOVE TO CORRECT BITBOARD
                 }
+                currentBoard.whitePawnBoard = currentBoard.whitePawnBoard & ~start; // REMOVES THE STARTING SQUARE PIECE
+                currentBoard.whitePawnBoard |= endMove; // ADDS ENDMOVE TO CORRECT BITBOARD
+                // Set en passant target if the white pawn made a double move
+                setEnPassantTarget(start, endMove);
             } else if ((currentBoard.blackPawnBoard & start) != 0) {
                 currentBoard.blackPawnBoard = currentBoard.blackPawnBoard & ~start;
+                currentBoard.blackPawnBoard |= endMove;
+                // Set en passant target if the black pawn made a double move
+                setEnPassantTarget(start, endMove);
                 if ((endMove & Board.RANK_8) != 0) {
                     currentBoard.blackQueenBoard |= endMove;
                     promoteBlack = true;
@@ -850,7 +1077,7 @@ public class Move {
             } else if ((currentBoard.blackQueenBoard & start) != 0) {
                 currentBoard.blackQueenBoard = currentBoard.blackQueenBoard & ~start;
                 currentBoard.blackQueenBoard |= endMove;
-            } else if ((currentBoard.whiteKingBoard & start) != 0) {    //ADD CASTLE LOGIC
+            } else if ((currentBoard.whiteKingBoard & start) != 0) { // ADD CASTLE LOGIC
                 if (Math.abs(start - endMove) > 2) { // This is a castling move
                     // Identify if it's kingside or queenside
                     boolean isKingside = endMove > start;
@@ -858,26 +1085,25 @@ public class Move {
                     // If kingside, move king and rook appropriately
                     if (isKingside) {
                         currentBoard.whiteKingBoard = endMove;
-                        currentBoard.whiteRookBoard &= ~(1L << 63); //clear moved rook
+                        currentBoard.whiteRookBoard &= ~(1L << 63); // clear moved rook
                         currentBoard.whiteRookBoard |= 1L << 61; // H1 to F1
                     } else { // Queenside
                         currentBoard.whiteKingBoard = endMove;
-                        currentBoard.whiteRookBoard &= ~(1L << 56); //clear moved rook
+                        currentBoard.whiteRookBoard &= ~(1L << 56); // clear moved rook
                         currentBoard.whiteRookBoard |= 1L << 59; // A1 to D1
                     }
-                }
-                    else{
-                        currentBoard.whiteKingBoard = currentBoard.whiteKingBoard & ~start;
-                        currentBoard.whiteKingBoard |= endMove;
-                        currentBoard.whiteCastleKing = false;
+                } else {
+                    currentBoard.whiteKingBoard = currentBoard.whiteKingBoard & ~start;
+                    currentBoard.whiteKingBoard |= endMove;
+                    currentBoard.whiteCastleKing = false;
                     currentBoard.whiteCastleQueen = false;
-                    }
+                }
             } else if ((currentBoard.blackKingBoard & start) != 0) {
                 currentBoard.blackKingBoard = currentBoard.blackKingBoard & ~start;
                 currentBoard.blackKingBoard |= endMove;
             }
 
-            //add move to moves list
+            // add move to moves list
             Tuple<Tuple<Long, Long>, Integer> finalTuple = new Tuple<>(tuple, capturedPiece);
 
             madeMoves.push(finalTuple);
@@ -895,23 +1121,46 @@ public class Move {
             currentBoard.occBoard = currentBoard.whiteOccBoard | currentBoard.blackOccBoard;
 
         } else {
+            String newBoard = boardToString(currentBoard.whiteOccBoard, currentBoard.blackOccBoard);
+            moveHistory.add(newBoard);
+
+            if (moveHistory.size() > 3) {
+                moveHistory.remove(0); // Remove the oldest board state
+            }
+
+        } else {
+            if (isWhite && !currentBoard.isWhiteInCheck() || !isWhite && !currentBoard.isBlackInCheck())
+                currentBoard.setStalemate(true);
+            else if (isWhite && currentBoard.isWhiteInCheck())
+                currentBoard.setWhiteInCheckmate(true);
+            else if (!isWhite && currentBoard.isBlackInCheck())
+                currentBoard.setBlackInCheckmate(true);
+
             System.out.println("no available moves");
+
         }
         return currentBoard;
     }
 
     public void undoMove(Board currentBoard) {
 
-        //Get move information
+        // Get move information
         if (!madeMoves.isEmpty()) {
             Tuple<Tuple<Long, Long>, Integer> moveInfo = madeMoves.pop();
 
-            //get moved piece tuple
+            // get moved piece tuple
             Tuple<Long, Long> lastMove = moveInfo.getStart();
 
             Long endPosition = lastMove.getMoves();
             Long startPosition = lastMove.getStart();
+            int capturedPiece = moveInfo.getMoves();
 
+            boolean isWhitePawn = (currentBoard.whitePawnBoard & endPosition) != 0;
+            boolean isBlackPawn = (currentBoard.blackPawnBoard & endPosition) != 0;
+            boolean wasEnPassantCapture = (capturedPiece == pieceNames.WP.getPieceNum()
+                    || capturedPiece == pieceNames.BP.getPieceNum()) &&
+                    ((isWhitePawn && (endPosition & Board.RANK_6) != 0) ||
+                            (isBlackPawn && (endPosition & Board.RANK_3) != 0));
 
             // Identifying the moving piece and moving it back
             if ((currentBoard.whitePawnBoard & endPosition) != 0) {
@@ -935,27 +1184,26 @@ public class Move {
                 currentBoard.blackPawnBoard &= ~endPosition;
                 currentBoard.blackPawnBoard |= startPosition;
             }
-            //castle info
+            // castle info
             else if ((currentBoard.whiteKingBoard & endPosition) != 0) {
                 // If the move was a castling move
                 if (Math.abs(startPosition - endPosition) > 2) { // This is a castling move
                     boolean isKingside = endPosition > startPosition;
 
                     if (isKingside) {
-                        currentBoard.whiteKingBoard = startPosition; //put king back
-                        currentBoard.whiteRookBoard &= ~(1L << 61); //clear moved rook
+                        currentBoard.whiteKingBoard = startPosition; // put king back
+                        currentBoard.whiteRookBoard &= ~(1L << 61); // clear moved rook
                         currentBoard.whiteRookBoard |= 1L << 63; // Restore H1 rook
                     } else { // Queenside
                         currentBoard.whiteKingBoard = startPosition;
-                        currentBoard.whiteRookBoard &= ~(1L << 59); //clear moved rook
+                        currentBoard.whiteRookBoard &= ~(1L << 59); // clear moved rook
                         currentBoard.whiteRookBoard |= 1L << 56; // Restore A1
                     }
                 } else {
                     currentBoard.whiteKingBoard &= ~endPosition;
                     currentBoard.whiteKingBoard |= startPosition;
                 }
-            }
-            else if ((currentBoard.whiteKnightBoard & endPosition) != 0) {
+            } else if ((currentBoard.whiteKnightBoard & endPosition) != 0) {
                 currentBoard.whiteKnightBoard &= ~endPosition;
                 currentBoard.whiteKnightBoard |= startPosition;
             } else if ((currentBoard.blackKnightBoard & endPosition) != 0) {
@@ -984,14 +1232,22 @@ public class Move {
                 currentBoard.blackKingBoard |= startPosition;
             }
 
-            //NEED TO ADD BACK CAPTURED PIECE
+            // NEED TO ADD BACK CAPTURED PIECE
             int pieceType = moveInfo.getMoves();
 
             if (pieceType != pieceNames.NA.getPieceNum()) {
-                if (pieceType == pieceNames.WP.getPieceNum()) {
-                    currentBoard.whitePawnBoard |= endPosition;
-                } else if (pieceType == pieceNames.BP.getPieceNum()) {
-                    currentBoard.blackPawnBoard |= endPosition;
+                if (capturedPiece == pieceNames.WP.getPieceNum()) {
+                    if (wasEnPassantCapture) {
+                        currentBoard.whitePawnBoard |= endPosition << 8;
+                    } else {
+                        currentBoard.whitePawnBoard |= endPosition;
+                    }
+                } else if (capturedPiece == pieceNames.BP.getPieceNum()) {
+                    if (wasEnPassantCapture) {
+                        currentBoard.blackPawnBoard |= endPosition >>> 8;
+                    } else {
+                        currentBoard.blackPawnBoard |= endPosition;
+                    }
                 } else if (pieceType == pieceNames.WN.getPieceNum()) {
                     currentBoard.whiteKnightBoard |= endPosition;
                 } else if (pieceType == pieceNames.BN.getPieceNum()) {
@@ -1015,6 +1271,15 @@ public class Move {
                 }
 
             }
+
+            // Restore the previous en passant target
+            if (!madeMoves.isEmpty()) {
+                Tuple<Tuple<Long, Long>, Integer> previousMove = madeMoves.peek();
+                setEnPassantTarget(previousMove.getStart().getStart(), previousMove.getStart().getMoves());
+            } else {
+                enPassantTarget = 0L;
+            }
+
             // Update occupancy boards
             currentBoard.whiteOccBoard = currentBoard.whitePawnBoard | currentBoard.whiteKnightBoard |
                     currentBoard.whiteBishopBoard | currentBoard.whiteRookBoard |
@@ -1029,38 +1294,37 @@ public class Move {
         }
     }
 
-    //This is used only for making a random move
+    // This is used only for making a random move
     // this returns an error when there are no black pieces on the board
     public Tuple choseMove(List<Tuple<Long, List<Long>>> moveList){
 
         Tuple piece = moveList.get(randomGenerator.nextInt(moveList.size()));
-        List<Long> moves = (List<Long>) piece.getMoves();  //get list of moves
+        List<Long> moves = (List<Long>) piece.getMoves(); // get list of moves
 
-        Long endMove = moves.get(randomGenerator.nextInt(moves.size()));   //chooses which move in the list of moves for the given piece to execute, will have to edit later just for testing logic in move generate function***
+        Long endMove = moves.get(randomGenerator.nextInt(moves.size())); // chooses which move in the list of moves for
+                                                                         // the given piece to execute, will have to
+                                                                         // edit later just for testing logic in move
+                                                                         // generate function***
 
         piece.setSecond(endMove);
         return piece;
     }
 
-    public Tuple randomBlackMove(Board chessBoard){
-        List<Tuple<Long, List<Long>>> moveList = generateBlackMoves(chessBoard);     //generate all moves
+    public Tuple randomBlackMove(Board chessBoard) throws InterruptedException, ExecutionException {
+        List<Tuple<Long, List<Long>>> moveList = generateBlackMoves(chessBoard); // generate all moves
 
-        Tuple piece = choseMove(moveList); //select Piece and Move for piece
-
-        return piece;
-    }
-
-    public Tuple randomWhiteMove(Board chessBoard){
-        List<Tuple<Long, List<Long>>> moveList = generateWhiteMoves(chessBoard);     //generate all moves
-
-        Tuple piece = choseMove(moveList); //select Piece and Move for piece
+        Tuple piece = choseMove(moveList); // select Piece and Move for piece
 
         return piece;
     }
 
+    public Tuple randomWhiteMove(Board chessBoard) throws InterruptedException, ExecutionException {
+        List<Tuple<Long, List<Long>>> moveList = generateWhiteMoves(chessBoard); // generate all moves
 
+        Tuple piece = choseMove(moveList); // select Piece and Move for piece
 
-
+        return piece;
+    }
 
     // Function to generate white castling moves
     public List<Tuple<Long, List<Long>>> generateWhiteCastlingMoves(Board board) {
@@ -1072,7 +1336,7 @@ public class Move {
         // Check if queenside castling is allowed
         if (board.whiteCastleQueen) {
             if ((allOccupied & board.whiteCastleQueenMask) == 0) {
-                //System.out.println("Queenside castling is possible for white.");
+                // System.out.println("Queenside castling is possible for white.");
                 // Perform queenside castling logic here
                 endLoactions.add(1L << 58);
             }
@@ -1081,12 +1345,12 @@ public class Move {
         if (board.whiteCastleKing) {
             // Ensure no pieces in between and the king doesn't move through check
             if ((allOccupied & board.whiteCastleKingMask) == 0) {
-                //System.out.println("Kingside castling is possible for white.");
-                //kingside castling logic
+                // System.out.println("Kingside castling is possible for white.");
+                // kingside castling logic
                 endLoactions.add(1L << 62);
             }
         }
-        //construct tuple
+        // construct tuple
         Tuple tuple = new Tuple(1L << 60, endLoactions);
         castlingMoves.add(tuple);
         return castlingMoves;
@@ -1094,5 +1358,6 @@ public class Move {
 
 }
 
-//Later on: if we want to speed up move generation functions, make king and knight lookup instead of calculation
-//use magic bitboard for sliding pieces like rook and bishop
+// Later on: if we want to speed up move generation functions, make king and
+// knight lookup instead of calculation
+// use magic bitboard for sliding pieces like rook and bishop
