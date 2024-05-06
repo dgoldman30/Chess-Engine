@@ -35,13 +35,13 @@ public class Main {
         final String testBoard =
                 // H G F E D C B A
                 "--------" + // 8
-                        "--------" + // 7
+                        "---K----" + // 7
                         "--------" + // 6
                         "--------" + // 5
                         "--------" + // 4
                         "----k---" + // 3
                         "--------" + // 2
-                        "----Q---"; // 1
+                        "----b---"; // 1
         final String emptyBoard = "--------" +
                 "--------" +
                 "--------" +
@@ -116,13 +116,14 @@ public class Main {
         }
 
         for (int i = 0; i < moves; i++) {
-
+            System.out.println(chessBoard);
             try {
 
                 Tuple<Long, Long> whiteMove = miniMax.computeMove(chessBoard, whiteDepth, true);
                 // Tuple<Long, Long> whiteMove = move.randomWhiteMove(chessBoard);
 
                 move.doMove(chessBoard, whiteMove, true);
+                chessBoard.isInsufficientMaterial();
                 System.out.println("White move:\n" + chessBoard);
 
                 if (chessBoard.isStalemate()) {
@@ -150,6 +151,7 @@ public class Main {
                 }
 
                 move.doMove(chessBoard, blackMove, false);
+                chessBoard.isInsufficientMaterial();
                 System.out.println("Black move:\n" + chessBoard);
 
                 if (chessBoard.isStalemate()) {
