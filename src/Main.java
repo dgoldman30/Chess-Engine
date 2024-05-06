@@ -68,6 +68,13 @@ public class Main {
         // MULTIPLE MOVE
         int moves = 0;
 
+        /*
+         * //INDIVIDUAL MOVE
+         * Tuple<Long, Long> whiteMove = miniMax.computeMove(chessBoard, 2, true);
+         * move.doMove(chessBoard, whiteMove);
+         * System.out.println("White move: \n" + chessBoard);
+         */
+
         Scanner scanner = new Scanner(System.in);
         boolean validInput = false;
         while (!validInput) {
@@ -97,7 +104,6 @@ public class Main {
                 scanner.nextLine(); // Clear the invalid input from scanner
             }
         }
-
         int whiteDepth = 4;
         int blackDepth = 0;
         boolean blackRand = false;
