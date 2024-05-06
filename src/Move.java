@@ -1162,7 +1162,7 @@ public class Move {
 
             // Identifying the moving piece and moving it back
             if ((currentBoard.whitePawnBoard & endPosition) != 0) {
-                System.out.println("End:    " + Long.toBinaryString(endPosition));
+                // System.out.println("End:    " + Long.toBinaryString(endPosition));
                 if (promoteWhite) {
                     currentBoard.whiteQueenBoard &= ~endPosition;
                     currentBoard.whitePawnBoard |= startPosition;
