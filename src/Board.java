@@ -84,6 +84,56 @@ public class Board {
     protected static final long mainDiag = 0x8040201008040201L;
     protected static final long antiDiag = 0x8040201008040201L;
 
+
+
+    //CASTLEING
+    public boolean whiteCastleKing = true;
+    public boolean whiteCastleQueen = true;
+    public boolean blackCastleKing = true;
+    public boolean blackCastleQueen = true;
+
+    public long whiteCastleKingMask;  //F1 G1 White
+    public long whiteCastleQueenMask; //B1 C1 D1 White
+    public long blackCastleKingMask;  //F8 G8 black
+    public long blackCastleQueenMask; //B8 C8 D8 black
+
+    public long whiteKing;
+    public long whiteRookKing;
+    public long whiteRookQueen;
+    public long blackKing;
+    public long blackRookKing;
+    public long blackRookQueen;
+
+    public void createCastleBoards(){
+
+        // Set bits for black kingside castling (F1, G1)
+        blackCastleKingMask = (1L << 5) | (1L << 6);
+
+        // Set bits for black queenside castling (B1, C1, D1)
+        blackCastleQueenMask = (1L << 1) | (1L << 2) | (1L << 3);
+
+        // Set bits for white kingside castling (F8, G8)
+        whiteCastleKingMask = (1L << 61) | (1L << 62);
+
+        // Set bits for white queenside castling (B8, C8, D8)
+        whiteCastleQueenMask = (1L << 57) | (1L << 58) | (1L << 59);
+
+        //white king starting location
+        blackKing = 1L << 4;
+
+        //black king starting location
+        whiteKing = 1L << 60;
+
+        //white rook starting location kingside
+        blackRookKing = 1L << 7;
+        //white rook starting location queenside
+        blackRookQueen = 1L;
+        //black rook starting location kingside
+        whiteRookKing = 1L << 56;
+        //black rook starting location queenside
+        whiteRookQueen = 1L << 63;
+    }
+
     //all args constructor
     public Board(long whitePawnBoard, long whiteKnightBoard, long whiteRookBoard, long whiteBishopBoard, long whiteKingBoard,
                  long whiteQueenBoard, long whiteOccBoard, long blackPawnBoard, long blackKnightBoard, long blackBishopBoard,
@@ -114,6 +164,7 @@ public class Board {
         this.blackPawnAttacks = blackPawnAttackBitboards();
         this.knightAttacks = knightAttackBitboards();
         this.kingAttacks = kingAttackBitboards();
+        createCastleBoards();
     }
 
     // used for testing purposes
@@ -442,12 +493,12 @@ public class Board {
         long queenAttacks = chessBoard.getQueenAttacks(kingPos, chessBoard.whiteOccBoard, chessBoard.blackOccBoard);
 
         Board b = new Board(rookAttacks);
-        System.out.println("rook attacks\n" + b);
+        //System.out.println("rook attacks\n" + b);
 
-        System.out.println("king Pos = " + kingPos);
+        //System.out.println("king Pos = " + kingPos);
 
         Board b2 = new Board(bishopAttacks);
-        System.out.println("bishop attacks \n" + b2);
+        //System.out.println("bishop attacks \n" + b2);
 
         if (((isWhite ? chessBoard.blackPawnBoard : chessBoard.whitePawnBoard) & pawnAttacks[kingPos]) != 0
                 || ((isWhite ? chessBoard.blackKnightBoard : chessBoard.whiteKnightBoard) & knightAttacks[kingPos]) != 0

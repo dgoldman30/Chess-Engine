@@ -6,8 +6,7 @@ public class Move {
 
 
     // current move errors:
-    // rooks wrap around the board (fixed?)
-    // white pawns capture one square forward (Fixed?)
+    // white pawns capture one square forward (Fixed by TC)
     // black queen and pawns captures other black pieces (Fixed by TC, occboards were reversed in parameters for move functions)
 
     Random randomGenerator = new Random(); //for random move REMOVE LATER LOL***
@@ -34,12 +33,13 @@ public class Move {
     public List<Tuple<Long, List<Long>>> generateWhiteMoves(Board chessBoard) {
         List<Tuple<Long, List<Long>>> moveList = new ArrayList<>();
 
-        moveList.addAll(whitePawnMove(chessBoard, chessBoard.whitePawnBoard, chessBoard.whiteOccBoard, chessBoard.blackOccBoard, chessBoard.isInCheck()));
-        moveList.addAll(whiteKnightMove(chessBoard, chessBoard.whiteKnightBoard, chessBoard.whiteOccBoard, chessBoard.isInCheck()));
-        moveList.addAll(whiteRookMove(chessBoard, chessBoard.whiteRookBoard, chessBoard.whiteOccBoard, chessBoard.blackOccBoard, chessBoard.isInCheck()));
-        moveList.addAll(whiteBishopMove(chessBoard, chessBoard.whiteBishopBoard, chessBoard.whiteOccBoard, chessBoard.blackOccBoard, chessBoard.isInCheck()));
-        moveList.addAll(whiteQueenMove(chessBoard, chessBoard.whiteQueenBoard, chessBoard.whiteOccBoard, chessBoard.blackOccBoard, chessBoard.isInCheck()));
-        moveList.addAll(whiteKingMove(chessBoard, chessBoard.whiteKingBoard, chessBoard.whiteOccBoard, chessBoard.isInCheck()));
+        moveList.addAll(whitePawnMove(chessBoard, chessBoard.whitePawnBoard, chessBoard.whiteOccBoard, chessBoard.blackOccBoard, false));
+        //moveList.addAll(whiteKnightMove(chessBoard.whiteKnightBoard, chessBoard.whiteOccBoard));
+       // moveList.addAll(whiteRookMove(chessBoard.whiteRookBoard, chessBoard.whiteOccBoard, chessBoard.blackOccBoard));
+        //moveList.addAll(whiteBishopMove(chessBoard.whiteBishopBoard, chessBoard.whiteOccBoard, chessBoard.blackOccBoard));
+        //moveList.addAll(whiteQueenMove(chessBoard.whiteQueenBoard, chessBoard.whiteOccBoard, chessBoard.blackOccBoard));
+        //moveList.addAll(whiteKingMove(chessBoard.whiteKingBoard, chessBoard.whiteOccBoard));
+        moveList.addAll(generateWhiteCastlingMoves(chessBoard));
 
         return moveList;
     }
@@ -823,9 +823,28 @@ public class Move {
             } else if ((currentBoard.blackQueenBoard & start) != 0) {
                 currentBoard.blackQueenBoard = currentBoard.blackQueenBoard & ~start;
                 currentBoard.blackQueenBoard |= endMove;
-            } else if ((currentBoard.whiteKingBoard & start) != 0) {
-                currentBoard.whiteKingBoard = currentBoard.whiteKingBoard & ~start;
-                currentBoard.whiteKingBoard |= endMove;
+            } else if ((currentBoard.whiteKingBoard & start) != 0) {    //ADD CASTLE LOGIC
+                if (Math.abs(start - endMove) > 2) { // This is a castling move
+                    // Identify if it's kingside or queenside
+                    boolean isKingside = endMove > start;
+
+                    // If kingside, move king and rook appropriately
+                    if (isKingside) {
+                        currentBoard.whiteKingBoard = endMove;
+                        currentBoard.whiteRookBoard &= ~(1L << 63); //clear moved rook
+                        currentBoard.whiteRookBoard |= 1L << 61; // H1 to F1
+                    } else { // Queenside
+                        currentBoard.whiteKingBoard = endMove;
+                        currentBoard.whiteRookBoard &= ~(1L << 56); //clear moved rook
+                        currentBoard.whiteRookBoard |= 1L << 59; // A1 to D1
+                    }
+                }
+                    else{
+                        currentBoard.whiteKingBoard = currentBoard.whiteKingBoard & ~start;
+                        currentBoard.whiteKingBoard |= endMove;
+                        currentBoard.whiteCastleKing = false;
+                    currentBoard.whiteCastleQueen = false;
+                    }
             } else if ((currentBoard.blackKingBoard & start) != 0) {
                 currentBoard.blackKingBoard = currentBoard.blackKingBoard & ~start;
                 currentBoard.blackKingBoard |= endMove;
@@ -874,7 +893,28 @@ public class Move {
             } else if ((currentBoard.blackPawnBoard & endPosition) != 0) {
                 currentBoard.blackPawnBoard &= ~endPosition;
                 currentBoard.blackPawnBoard |= startPosition;
-            } else if ((currentBoard.whiteKnightBoard & endPosition) != 0) {
+            }
+            //castle info
+            else if ((currentBoard.whiteKingBoard & endPosition) != 0) {
+                // If the move was a castling move
+                if (Math.abs(startPosition - endPosition) > 2) { // This is a castling move
+                    boolean isKingside = endPosition > startPosition;
+
+                    if (isKingside) {
+                        currentBoard.whiteKingBoard = startPosition; //put king back
+                        currentBoard.whiteRookBoard &= ~(1L << 61); //clear moved rook
+                        currentBoard.whiteRookBoard |= 1L << 63; // Restore H1 rook
+                    } else { // Queenside
+                        currentBoard.whiteKingBoard = startPosition;
+                        currentBoard.whiteRookBoard &= ~(1L << 59); //clear moved rook
+                        currentBoard.whiteRookBoard |= 1L << 56; // Restore A1
+                    }
+                } else {
+                    currentBoard.whiteKingBoard &= ~endPosition;
+                    currentBoard.whiteKingBoard |= startPosition;
+                }
+            }
+            else if ((currentBoard.whiteKnightBoard & endPosition) != 0) {
                 currentBoard.whiteKnightBoard &= ~endPosition;
                 currentBoard.whiteKnightBoard |= startPosition;
             } else if ((currentBoard.blackKnightBoard & endPosition) != 0) {
@@ -898,9 +938,6 @@ public class Move {
             } else if ((currentBoard.blackQueenBoard & endPosition) != 0) {
                 currentBoard.blackQueenBoard &= ~endPosition;
                 currentBoard.blackQueenBoard |= startPosition;
-            } else if ((currentBoard.whiteKingBoard & endPosition) != 0) {
-                currentBoard.whiteKingBoard &= ~endPosition;
-                currentBoard.whiteKingBoard |= startPosition;
             } else if ((currentBoard.blackKingBoard & endPosition) != 0) {
                 currentBoard.blackKingBoard &= ~endPosition;
                 currentBoard.blackKingBoard |= startPosition;
@@ -982,6 +1019,36 @@ public class Move {
 
 
 
+
+    // Function to generate white castling moves
+    public List<Tuple<Long, List<Long>>> generateWhiteCastlingMoves(Board board) {
+        long allOccupied = board.whiteOccBoard | board.blackOccBoard;
+
+        List<Tuple<Long, List<Long>>> castlingMoves = new ArrayList<>();
+        List<Long> endLoactions = new ArrayList<>();
+
+        // Check if queenside castling is allowed
+        if (board.whiteCastleQueen) {
+            if ((allOccupied & board.whiteCastleQueenMask) == 0) {
+                //System.out.println("Queenside castling is possible for white.");
+                // Perform queenside castling logic here
+                endLoactions.add(1L << 58);
+            }
+        }
+        // Check if kingside castling is allowed
+        if (board.whiteCastleKing) {
+            // Ensure no pieces in between and the king doesn't move through check
+            if ((allOccupied & board.whiteCastleKingMask) == 0) {
+                //System.out.println("Kingside castling is possible for white.");
+                //kingside castling logic
+                endLoactions.add(1L << 62);
+            }
+        }
+        //construct tuple
+        Tuple tuple = new Tuple(1L << 60, endLoactions);
+        castlingMoves.add(tuple);
+        return castlingMoves;
+    }
 
 }
 

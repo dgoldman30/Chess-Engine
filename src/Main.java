@@ -35,14 +35,14 @@ public class Main {
        //On this board, the pawn should take the knight instead of the queen, saving its own queen
     final String testBoard =
             //   H G F E D C B A
-                    "K--R--B-" + // 8
-                    "--------" + // 7
-                    "R---q---" + // 6
+                    "--------" + // 8
+                    "--pp--p-" + // 7
+                    "--------" + // 6
                     "--------" + // 5
-                    "-pp---p-" + // 4
-                    "R-------" + // 3
-                    "----R---" + // 2
-                    "-------P"; // 1
+                    "--------" + // 4
+                    "--------" + // 3
+                    "--------" + // 2
+                    "R---K--R"; // 1
         final String emptyBoard =
                         "--------" +
                         "--------" +
@@ -58,94 +58,73 @@ public class Main {
 
         Instant inst1 = Instant.now();                          //start tracking time
 
-        //INDIVIDUAL MOVE
-//        miniMax.computeMove(chessBoard, 6, true);
-//        Tuple<Long, Long> whiteMove = miniMax.computeMove(chessBoard, 6, true);
-//       move.doMove(chessBoard, whiteMove);
-//        System.out.println("White move: \n" + chessBoard);
+/*        //INDIVIDUAL MOVE
+        Tuple<Long, Long> whiteMove = miniMax.computeMove(chessBoard, 2, true);
+        move.doMove(chessBoard, whiteMove);
+        System.out.println("White move: \n" + chessBoard);*/
 
 
         //MULTIPLE MOVE
-//        int moves = 0;
-//
-//        Scanner scanner = new Scanner(System.in);
-//        boolean validInput = false;
-//        while (!validInput) {
-//            System.out.println("Enter the amount of moves you would like to see: ");
-//            try {
-//                moves = scanner.nextInt();
-//                validInput = true; // Set to true if input is valid
-//            } catch (InputMismatchException e) {
-//                System.out.println("Invalid input. Please try again.");
-//                scanner.nextLine(); // Clear the invalid input from scanner
-//            }
-//        }
-//        validInput = false;
-//        String inputStr = " ";
-//        while (!validInput) {
-//            System.out.println("Enter opponent(black) strength: \n(R: Random, W: Weak, S: Strong)");
-//            try {
-//                inputStr = scanner.next();
-//                if (inputStr.equals("R") || inputStr.equals("W") || inputStr.equals("S")) {
-//                    validInput = true; // Set to true if input is valid
-//                } else {
-//                    System.out.println("Invalid input. Please try again.");
-//                    scanner.nextLine(); // Clear the invalid input from scanner
-//                }
-//            } catch (InputMismatchException e) {
-//                System.out.println("Invalid input. Please try again.");
-//                scanner.nextLine(); // Clear the invalid input from scanner
-//            }
-//        }
-//        int whiteDepth = 4;
-//        int blackDepth = 0;
-//        boolean blackRand = false;
-//        if (inputStr.equals("W")) {
-//            blackDepth = 2;
-//        } else if (inputStr.equals("S")) {
-//            blackDepth = 4;
-//        } else {
-//            blackRand = true;
-//        }
-//
-//        for (int i = 0; i < moves; i++) {
-//            Tuple<Long, Long> whiteMove = miniMax.computeMove(chessBoard, whiteDepth, true);
-//            //Tuple<Long, Long> whiteMove = move.randomWhiteMove(chessBoard);
-//
-//            move.doMove(chessBoard, whiteMove);
-//            System.out.println("White move:\n" + chessBoard);
-//            Tuple<Long, Long> blackMove;
-//            if (!blackRand) {
-//                blackMove = miniMax.computeMove(chessBoard, blackDepth, false);
-//            } else {
-//                blackMove = move.randomBlackMove(chessBoard);
-//            }
-//
-//            move.doMove(chessBoard, blackMove);
-//            System.out.println("Black move:\n" + chessBoard);
-//        }
+        int moves = 0;
 
-       // i = number of turns (i < 1 = one move for white and black)
-//        for (int i = 0; i < 6; i++) {
-//            Tuple<Long, Long> whiteMove = miniMax.computeMove(chessBoard, 4, true);
-////            if (whiteMove.getMoves() == null) {
-////                Board.BoardState bs = chessBoard.getBoardState();
-////                if (bs == Board.BoardState.CHECKMATE){
-////                    System.out.println("Checkmate");
-////                }
-////            }
-//                move.doMove(chessBoard, whiteMove);
-//
-//
-////            if(chessBoard.inCheck(chessBoard, false))
-////                chessBoard.setInCheck(true);
-//            System.out.println("White move:\n" + chessBoard);
-//            Tuple<Long,Long> blackMove = miniMax.computeMove(chessBoard, 2, false);
-//            move.doMove(chessBoard, blackMove);
-////            if(chessBoard.inCheck(chessBoard, true))
-////                chessBoard.setInCheck(true);
-//            System.out.println("Black move:\n" + chessBoard);
-//        }
+        Scanner scanner = new Scanner(System.in);
+        boolean validInput = false;
+        while (!validInput) {
+            System.out.println("Enter the amount of moves you would like to see: ");
+            try {
+                moves = scanner.nextInt();
+                validInput = true; // Set to true if input is valid
+            } catch (InputMismatchException e) {
+                System.out.println("Invalid input. Please try again.");
+                scanner.nextLine(); // Clear the invalid input from scanner
+            }
+        }
+        validInput = false;
+        String inputStr = " ";
+        while (!validInput) {
+            System.out.println("Enter opponent(black) strength: \n(R: Random, W: Weak, S: Strong)");
+            try {
+                inputStr = scanner.next();
+                if (inputStr.equals("R") || inputStr.equals("W") || inputStr.equals("S")) {
+                    validInput = true; // Set to true if input is valid
+                } else {
+                    System.out.println("Invalid input. Please try again.");
+                    scanner.nextLine(); // Clear the invalid input from scanner
+                }
+            } catch (InputMismatchException e) {
+                System.out.println("Invalid input. Please try again.");
+                scanner.nextLine(); // Clear the invalid input from scanner
+            }
+        }
+        int whiteDepth = 4;
+        int blackDepth = 0;
+        boolean blackRand = false;
+        if (inputStr.equals("W")) {
+            blackDepth = 2;
+        } else if (inputStr.equals("S")) {
+            blackDepth = 4;
+        } else {
+            blackRand = true;
+        }
+
+        for (int i = 0; i < moves; i++) {
+            Tuple<Long, Long> whiteMove = miniMax.computeMove(chessBoard, whiteDepth, true);
+            //Tuple<Long, Long> whiteMove = move.randomWhiteMove(chessBoard);
+
+            move.doMove(chessBoard, whiteMove);
+            System.out.println("White move:\n" + chessBoard);
+            Tuple<Long, Long> blackMove;
+            if (!blackRand) {
+                blackMove = miniMax.computeMove(chessBoard, blackDepth, false);
+            } else {
+                blackMove = move.randomBlackMove(chessBoard);
+            }
+
+            move.doMove(chessBoard, blackMove);
+            System.out.println("Black move:\n" + chessBoard);
+        }
+
+
         chessBoard.inCheck(chessBoard, true);
         System.out.println("chessBoard = \n" + chessBoard);
         if(chessBoard.isInCheck())
