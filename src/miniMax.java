@@ -23,6 +23,7 @@ public class miniMax {
         // if (capScore > bestMoveScore) bestMove = bestQuiScores.get(capScore);
         // else bestMove = bestScores.get(bestMoveScore);
         bestMove = bestScores.get(bestMoveScore);
+        chessBoard.updateHalfMoveClock(bestMove);
         return bestMove;
     }
 

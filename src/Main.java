@@ -131,8 +131,14 @@ public class Main {
                 } else if (chessBoard.threeFoldRepetition) {
                     System.out.println("Threefold Repetition!");
                     break;
-                } else if (chessBoard.insufficientPiece) {
+                } else if (chessBoard.isInsufficientPiece()) {
                     System.out.println("Insufficient Piece!");
+                    break;
+                } else if (chessBoard.isFiftyMoveDraw()) {
+                    System.out.println("50 Move Draw!");
+                    break;
+                } else if (chessBoard.isWhiteInCheckmate()) {
+                    System.out.println("Checkmate for Black");
                     break;
                 }
 
@@ -152,8 +158,14 @@ public class Main {
                 } else if (chessBoard.threeFoldRepetition) {
                     System.out.println("Threefold Repetition!");
                     break;
-                } else if (chessBoard.insufficientPiece) {
+                } else if (chessBoard.isInsufficientPiece()) {
                     System.out.println("Insufficient Piece!");
+                    break;
+                } else if (chessBoard.isFiftyMoveDraw()) {
+                    System.out.println("50 Move Draw!");
+                    break;
+                } else if (chessBoard.isBlackInCheckmate()) {
+                    System.out.println("Checkmate for White");
                     break;
                 }
 

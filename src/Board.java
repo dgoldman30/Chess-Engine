@@ -37,7 +37,74 @@ public class Board {
 
     public boolean threeFoldRepetition = false;
     private boolean isStalemate = false;
-    public boolean insufficientPiece = false;
+
+    private int halfMoveClock; // Tracks the number of half moves since the last pawn move or capture
+
+    // Method to check if the game is drawn due to the fifty-move rule
+    public boolean isFiftyMoveDraw() {
+        return halfMoveClock >= 100; // Fifty moves by each player
+    }
+
+    // Method to update the halfMoveClock
+    public void updateHalfMoveClock(Tuple<Long, Long> move) {
+        // Increment the halfMoveClock if the move is not a pawn move or capture
+        if (true) {
+            halfMoveClock++;
+        } else {
+            halfMoveClock = 0; // Reset the counter if a pawn move or capture is made
+        }
+    }
+
+    private boolean insufficientPiece = false;
+
+    public boolean isInsufficientPiece() {
+        return insufficientPiece;
+    }
+
+    public boolean isInsufficientMaterial() {
+        // Check if both sides have only kings
+        if (isOnlyKings()) {
+            return true;
+        }
+
+        // Check if one side has only a king while the other has a king and a knight or
+        // a king and a bishop
+        if (isKingVsKingAndKnightOrBishop()) {
+            return true;
+        }
+
+        // Add more conditions as needed for other insufficient material scenarios
+
+        return false;
+    }
+
+    private boolean isOnlyKings() {
+        // Assuming whiteOcc and blackOcc represent the bitboards of occupied squares
+        // for white and black pieces respectively
+        long whiteOcc = this.whiteOccBoard;
+        long blackOcc = this.blackOccBoard;
+
+        // Check if both sides have only kings (i.e., no other pieces)
+        return whiteOcc == this.whiteKingBoard && blackOcc == this.blackKingBoard;
+    }
+
+    private boolean isKingVsKingAndKnightOrBishop() {
+        long whiteOcc = this.whiteOccBoard;
+        long blackOcc = this.blackOccBoard;
+
+        // Assuming these represent the bitboards of the occupied squares for knights
+        // and bishops respectively
+        long whiteKnights = this.whiteKnightBoard;
+        long blackKnights = this.blackKnightBoard;
+        long whiteBishops = this.whiteBishopBoard;
+        long blackBishops = this.blackBishopBoard;
+
+        // Check if one side has only a king and the other side has a king and either a
+        // knight or a bishop
+        return ((whiteOcc == this.whiteKingBoard && blackOcc != this.blackKingBoard)
+                || (whiteOcc != this.whiteKingBoard && blackOcc == this.blackKingBoard))
+                && ((whiteKnights != 0 || whiteBishops != 0) || (blackKnights != 0 || blackBishops != 0));
+    }
 
     public boolean isStalemate() {
         return isStalemate;
@@ -81,12 +148,6 @@ public class Board {
 
     public boolean isBlackInCheckmate() {
         return blackInCheckmate;
-    }
-
-    private boolean checkMate = false;
-
-    public boolean isCheckMate() {
-        return checkMate;
     }
 
     // Bitmasks for each file
@@ -594,19 +655,19 @@ public class Board {
         return inCheck;
     }
 
-    protected void boardState() {
-        if (whiteInCheck)
-            whiteInCheckmate = true;
-        if (blackInCheck)
-            blackInCheckmate = true;
-    }
+    // protected void boardState() {
+    // if (whiteInCheck)
+    // whiteInCheckmate = true;
+    // if (blackInCheck)
+    // blackInCheckmate = true;
+    // }
 
-    protected BoardState getBoardState() {
-        if (checkMate)
-            return BoardState.CHECKMATE;
+    // protected BoardState getBoardState() {
+    // if (checkMate)
+    // return BoardState.CHECKMATE;
 
-        return null;
-    }
+    // return null;
+    // }
 
     @Override
     public String toString() {
