@@ -155,14 +155,15 @@ public class Evaluation {
     public int evaluatePSQ(Board board) {
         int whiteScore = 0;
         int blackScore = 0;
-
+        int[] currWhiteBoard = Long.bitCount(board.whiteOccBoard) > 3 ? KING_TABLE_MID : KING_TABLE_END ;
+        int[] currBlackBoard = Long.bitCount(board.blackOccBoard) > 3 ? KING_TABLE_MID_BLACK: KING_TABLE_END_BLACK ;
         // Evaluate white pieces
         whiteScore += evaluatePiece(board.whitePawnBoard, PAWN_TABLE);
         whiteScore += evaluatePiece(board.whiteKnightBoard, KNIGHT_TABLE);
         whiteScore += evaluatePiece(board.whiteBishopBoard, BISHOP_TABLE);
         whiteScore += evaluatePiece(board.whiteRookBoard, ROOK_TABLE);
         whiteScore += evaluatePiece(board.whiteQueenBoard,QUEEN_TABLE);
-        whiteScore += evaluatePiece(board.whiteKingBoard, KING_TABLE_MID);  // Assuming mid-game
+        whiteScore += evaluatePiece(board.whiteKingBoard, currWhiteBoard);  // Assuming mid-game
 
         // Evaluate black pieces
         blackScore += evaluatePiece(board.blackPawnBoard, PAWN_TABLE_BLACK);
@@ -170,7 +171,7 @@ public class Evaluation {
         blackScore += evaluatePiece(board.blackBishopBoard, BISHOP_TABLE_BLACK);
         blackScore += evaluatePiece(board.blackRookBoard, ROOK_TABLE_BLACK);
         blackScore += evaluatePiece(board.blackQueenBoard, QUEEN_TABLE_BLACK);
-        blackScore += evaluatePiece(board.blackKingBoard, KING_TABLE_MID_BLACK);  // Assuming mid-game
+        blackScore += evaluatePiece(board.blackKingBoard, currBlackBoard);  // Assuming mid-game
 
         return whiteScore - blackScore;
     }

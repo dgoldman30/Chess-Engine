@@ -91,9 +91,7 @@ public class Move {
         for (Future<List<Tuple<Long, List<Long>>>> future : futures) {
             moveList.addAll(future.get());
         }
-
         return moveList;
-
     }
 
     public List<Tuple<Long, List<Long>>> generateWhiteMoves(Board chessBoard) {
@@ -630,6 +628,7 @@ public class Move {
         }
 
         int[] arr = findPieces(rooks);
+
         // Iterate through each rook's position individually
         // for each rook, so need some kind of loop or to do it for all of them at once?
         // not sure how to do it without the loop yet
@@ -977,7 +976,6 @@ public class Move {
             boolean isWhitePawn = (currentBoard.whitePawnBoard & start) != 0;
             boolean isBlackPawn = (currentBoard.blackPawnBoard & start) != 0;
             boolean enPassantCapture = (endMove.equals(enPassantTarget));
-
             if (enPassantCapture) {
                 if (isWhitePawn) {
                     // Remove black pawn captured via en passant
@@ -1039,6 +1037,7 @@ public class Move {
             if ((currentBoard.whitePawnBoard & start) != 0) {
                 currentBoard.whitePawnBoard = currentBoard.whitePawnBoard & ~start; // REMOVES THE STARTING SQUARE PIECE
                 currentBoard.whitePawnBoard |= endMove; // ADDS ENDMOVE TO CORRECT BITBOARD
+
                 // Set en passant target if the white pawn made a double move
                 setEnPassantTarget(start, endMove);
             } else if ((currentBoard.blackPawnBoard & start) != 0) {
@@ -1247,7 +1246,6 @@ public class Move {
                 } else if (pieceType == pieceNames.BK.getPieceNum()) {
                     currentBoard.blackKingBoard |= endPosition;
                 }
-
             }
 
             // Restore the previous en passant target
