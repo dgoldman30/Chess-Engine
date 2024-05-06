@@ -1,3 +1,8 @@
+import java.util.LinkedList;
+import java.util.List;
+
+import static java.lang.Long.SIZE;
+
 public class Board {
     //set the bitboards for each type
 
@@ -31,6 +36,25 @@ public class Board {
 
     protected long[] kingAttacks;
 
+    private boolean inCheck;
+
+    public boolean isInCheck() {
+        return inCheck;
+    }
+
+    public void setInCheck(boolean inCheck) {
+        this.inCheck = inCheck;
+    }
+
+    protected enum BoardState{
+        CHECKMATE, STALEMATE;
+
+    }
+    private boolean checkMate = false;
+
+    public boolean isCheckMate() {
+        return checkMate;
+    }
 
     // Bitmasks for each file
     // NOTICE: this is alphabetically backwards! FILE_A is the file to the far right and FILE_H is the file to the far left
@@ -64,6 +88,56 @@ public class Board {
     protected static final long mainDiag = 0x8040201008040201L;
     protected static final long antiDiag = 0x8040201008040201L;
 
+
+
+    //CASTLEING
+    public boolean whiteCastleKing = true;
+    public boolean whiteCastleQueen = true;
+    public boolean blackCastleKing = true;
+    public boolean blackCastleQueen = true;
+
+    public long whiteCastleKingMask;  //F1 G1 White
+    public long whiteCastleQueenMask; //B1 C1 D1 White
+    public long blackCastleKingMask;  //F8 G8 black
+    public long blackCastleQueenMask; //B8 C8 D8 black
+
+    public long whiteKing;
+    public long whiteRookKing;
+    public long whiteRookQueen;
+    public long blackKing;
+    public long blackRookKing;
+    public long blackRookQueen;
+
+    public void createCastleBoards(){
+
+        // Set bits for black kingside castling (F1, G1)
+        blackCastleKingMask = (1L << 5) | (1L << 6);
+
+        // Set bits for black queenside castling (B1, C1, D1)
+        blackCastleQueenMask = (1L << 1) | (1L << 2) | (1L << 3);
+
+        // Set bits for white kingside castling (F8, G8)
+        whiteCastleKingMask = (1L << 61) | (1L << 62);
+
+        // Set bits for white queenside castling (B8, C8, D8)
+        whiteCastleQueenMask = (1L << 57) | (1L << 58) | (1L << 59);
+
+        //white king starting location
+        blackKing = 1L << 4;
+
+        //black king starting location
+        whiteKing = 1L << 60;
+
+        //white rook starting location kingside
+        blackRookKing = 1L << 7;
+        //white rook starting location queenside
+        blackRookQueen = 1L;
+        //black rook starting location kingside
+        whiteRookKing = 1L << 56;
+        //black rook starting location queenside
+        whiteRookQueen = 1L << 63;
+    }
+
     //all args constructor
     public Board(long whitePawnBoard, long whiteKnightBoard, long whiteRookBoard, long whiteBishopBoard, long whiteKingBoard,
                  long whiteQueenBoard, long whiteOccBoard, long blackPawnBoard, long blackKnightBoard, long blackBishopBoard,
@@ -94,10 +168,93 @@ public class Board {
         this.blackPawnAttacks = blackPawnAttackBitboards();
         this.knightAttacks = knightAttackBitboards();
         this.kingAttacks = kingAttackBitboards();
+        createCastleBoards();
     }
 
+    // used for testing purposes
     public Board(long blackKingBoard){
         this.blackKingBoard = blackKingBoard;
+    }
+
+    public Board (Board origBoard){
+        this.whitePawnBoard = origBoard.whitePawnBoard;
+        this.whiteKnightBoard = origBoard.whiteKnightBoard;
+        this.whiteRookBoard = origBoard.whiteRookBoard;
+        this.whiteBishopBoard = origBoard.whiteBishopBoard;
+        this.whiteKingBoard = origBoard.whiteKingBoard;
+        this.whiteQueenBoard = origBoard.whiteQueenBoard;
+        this.whiteOccBoard = origBoard.whiteOccBoard;
+        this.blackPawnBoard = origBoard.blackPawnBoard;
+        this.blackKnightBoard = origBoard.blackKnightBoard;
+        this.blackBishopBoard = origBoard.blackBishopBoard;
+        this.blackRookBoard = origBoard.blackRookBoard;
+        this.blackQueenBoard = origBoard.blackQueenBoard;
+        this.blackKingBoard = origBoard.blackKingBoard;
+        this.blackOccBoard = origBoard.blackOccBoard;
+        this.whitePawnAttacks = origBoard.whitePawnAttacks;
+        this.blackPawnAttacks = origBoard.blackPawnAttacks;
+        this.knightAttacks = origBoard.knightAttacks;
+        this.kingAttacks = origBoard.kingAttacks;
+    }
+
+    public void setWhitePawnBoard(long whitePawnBoard) {
+        this.whitePawnBoard = whitePawnBoard;
+    }
+
+    public void setWhiteKnightBoard(long whiteKnightBoard) {
+        this.whiteKnightBoard = whiteKnightBoard;
+    }
+
+    public void setWhiteRookBoard(long whiteRookBoard) {
+        this.whiteRookBoard = whiteRookBoard;
+    }
+
+    public void setWhiteBishopBoard(long whiteBishopBoard) {
+        this.whiteBishopBoard = whiteBishopBoard;
+    }
+
+    public void setWhiteKingBoard(long whiteKingBoard) {
+        this.whiteKingBoard = whiteKingBoard;
+    }
+
+    public void setWhiteQueenBoard(long whiteQueenBoard) {
+        this.whiteQueenBoard = whiteQueenBoard;
+    }
+
+    public void setWhiteOccBoard(long whiteOccBoard) {
+        this.whiteOccBoard = whiteOccBoard;
+    }
+
+    public void setBlackPawnBoard(long blackPawnBoard) {
+        this.blackPawnBoard = blackPawnBoard;
+    }
+
+    public void setBlackKnightBoard(long blackKnightBoard) {
+        this.blackKnightBoard = blackKnightBoard;
+    }
+
+    public void setBlackBishopBoard(long blackBishopBoard) {
+        this.blackBishopBoard = blackBishopBoard;
+    }
+
+    public void setBlackRookBoard(long blackRookBoard) {
+        this.blackRookBoard = blackRookBoard;
+    }
+
+    public void setBlackQueenBoard(long blackQueenBoard) {
+        this.blackQueenBoard = blackQueenBoard;
+    }
+
+    public void setBlackKingBoard(long blackKingBoard) {
+        this.blackKingBoard = blackKingBoard;
+    }
+
+    public void setBlackOccBoard(long blackOccBoard) {
+        this.blackOccBoard = blackOccBoard;
+    }
+
+    public void setOccBoard(long occBoard) {
+        this.occBoard = occBoard;
     }
 
     protected long[] pawnWhiteAttackBitboards(){
@@ -263,13 +420,13 @@ public class Board {
         }
 
         if (southBlock != 0){
-            blockIdx = 63 - Long.numberOfLeadingZeros(southBlock);
+            blockIdx = Long.numberOfTrailingZeros(southBlock);
             blockMask = southMask(blockIdx);
             rookAttacks ^= blockMask;
         }
 
         if(eastBlock != 0){
-            blockIdx = 63 - Long.numberOfLeadingZeros(eastBlock);
+            blockIdx = Long.numberOfTrailingZeros(eastBlock);
             blockMask = eastMask(blockIdx);
             rookAttacks ^= blockMask;
         }
@@ -308,13 +465,13 @@ public class Board {
         }
 
         if(SWblock != 0){
-            blockIdx = 63 - Long.numberOfLeadingZeros(SWblock);
+            blockIdx = Long.numberOfTrailingZeros(SWblock);
             blockMask = SWmask(blockIdx);
-           bishopAttacks ^= blockMask;
+            bishopAttacks ^= blockMask;
         }
 
         if(SEblock != 0){
-            blockIdx = 63 - Long.numberOfLeadingZeros(SEblock);
+            blockIdx = Long.numberOfTrailingZeros(SEblock);
             blockMask = SEmask(blockIdx);
             bishopAttacks ^= blockMask;
         }
@@ -326,6 +483,85 @@ public class Board {
         return getBishopAttacks(sq, whiteOccBoard, blackOccBoard) | getRookAttacks(sq, whiteOccBoard, blackOccBoard);
     }
 
+
+    //inCheck testing
+    protected boolean inCheck(Board chessBoard, boolean isWhite){
+        long kingBoard = isWhite ? chessBoard.whiteKingBoard : chessBoard.blackKingBoard;
+        int kingPos = (SIZE - Long.numberOfLeadingZeros(kingBoard)) - 1;
+        // Attacks are from the king position
+        long[] pawnAttacks = isWhite ? chessBoard.blackPawnAttacks : chessBoard.whitePawnAttacks;
+        long[] knightAttacks = chessBoard.knightAttacks;
+        long[] kingAttacks = chessBoard.kingAttacks;
+        long rookAttacks = chessBoard.getRookAttacks(kingPos, chessBoard.whiteOccBoard, chessBoard.blackOccBoard);
+        long bishopAttacks = chessBoard.getBishopAttacks(kingPos, chessBoard.whiteOccBoard, chessBoard.blackOccBoard);
+        long queenAttacks = chessBoard.getQueenAttacks(kingPos, chessBoard.whiteOccBoard, chessBoard.blackOccBoard);
+
+        Board b = new Board(rookAttacks);
+        //System.out.println("rook attacks\n" + b);
+
+        //System.out.println("king Pos = " + kingPos);
+
+        Board b2 = new Board(bishopAttacks);
+        //System.out.println("bishop attacks \n" + b2);
+
+        if (((isWhite ? chessBoard.blackPawnBoard : chessBoard.whitePawnBoard) & pawnAttacks[kingPos]) != 0
+                || ((isWhite ? chessBoard.blackKnightBoard : chessBoard.whiteKnightBoard) & knightAttacks[kingPos]) != 0
+                || ((isWhite ? chessBoard.blackBishopBoard : chessBoard.whiteBishopBoard)& bishopAttacks) != 0
+                || ((isWhite ? chessBoard.blackRookBoard : chessBoard.whiteRookBoard) & rookAttacks) != 0
+                || ((isWhite ? chessBoard.blackQueenBoard : chessBoard.whiteQueenBoard) & queenAttacks) != 0
+                // illegal for kings to check other kings -> still want to check as we generate all possible moves
+                || ((isWhite ? chessBoard.blackKingBoard : chessBoard.whiteKingBoard) & kingAttacks[kingPos]) != 0)
+            return true;
+
+        return false;
+    }
+
+    protected static List<Tuple<Move.pieceNames, Long>> inCheckList(Board chessBoard, boolean isWhite){
+        List<Tuple<Move.pieceNames, Long>> inCheck = new LinkedList<>();
+        long kingBoard = isWhite ? chessBoard.whiteKingBoard : chessBoard.blackKingBoard;
+        int kingPos = (SIZE - Long.numberOfLeadingZeros(kingBoard)) - 1;
+        // Attacks are from the king position
+        long[] pawnAttacks = isWhite ? chessBoard.blackPawnAttacks : chessBoard.whitePawnAttacks;
+        long[] knightAttacks = chessBoard.knightAttacks;
+        long[] kingAttacks = chessBoard.kingAttacks;
+        long rookAttacks = chessBoard.getRookAttacks(kingPos, chessBoard.whiteOccBoard, chessBoard.blackOccBoard);
+        long bishopAttacks = chessBoard.getBishopAttacks(kingPos, chessBoard.whiteOccBoard, chessBoard.blackOccBoard);
+        long queenAttacks = chessBoard.getQueenAttacks(kingPos, chessBoard.whiteOccBoard, chessBoard.blackOccBoard);
+
+        long pawnAttacker = ((isWhite ? chessBoard.blackPawnBoard : chessBoard.whitePawnBoard) & pawnAttacks[kingPos]);
+        long knightAttacker = ((isWhite ? chessBoard.blackKnightBoard : chessBoard.whiteKnightBoard) & knightAttacks[kingPos]);
+        long bishopAttacker = ((isWhite ? chessBoard.blackBishopBoard : chessBoard.whiteBishopBoard)& bishopAttacks);
+        long rookAttacker = ((isWhite ? chessBoard.blackRookBoard : chessBoard.whiteRookBoard) & rookAttacks);
+        long queenAttacker = ((isWhite ? chessBoard.blackQueenBoard : chessBoard.whiteQueenBoard) & queenAttacks);
+        long kingAttacker = ((isWhite ? chessBoard.blackKingBoard : chessBoard.whiteKingBoard) & kingAttacks[kingPos]);
+
+        if (pawnAttacker != 0)
+            inCheck.add(isWhite ? new Tuple<>(Move.pieceNames.BP, pawnAttacker) : new Tuple<>(Move.pieceNames.WP, pawnAttacker));
+        else if (knightAttacker != 0)
+            inCheck.add(isWhite ? new Tuple<>(Move.pieceNames.BN, knightAttacker) : new Tuple<>(Move.pieceNames.WN, knightAttacker));
+        else if (bishopAttacker != 0)
+            inCheck.add(isWhite ? new Tuple<>(Move.pieceNames.BB, bishopAttacker) : new Tuple<>(Move.pieceNames.WB, bishopAttacker));
+        else if (rookAttacker != 0)
+            inCheck.add(isWhite ? new Tuple<>(Move.pieceNames.BR, rookAttacker) : new Tuple<>(Move.pieceNames.WR, rookAttacker));
+        else if (queenAttacker != 0)
+            inCheck.add(isWhite ? new Tuple<>(Move.pieceNames.BQ, queenAttacker) : new Tuple<>(Move.pieceNames.WQ, queenAttacker));
+        else if (kingAttacker != 0)
+            inCheck.add(isWhite ? new Tuple<>(Move.pieceNames.BK, kingAttacker) : new Tuple<>(Move.pieceNames.WK, kingAttacker));
+
+        return inCheck;
+    }
+
+    protected void boardState(){
+        if (inCheck)
+            checkMate = true;
+    }
+
+    protected BoardState getBoardState(){
+        if (checkMate)
+            return BoardState.CHECKMATE;
+
+        return null;
+    }
 
     @Override
     public String toString() {

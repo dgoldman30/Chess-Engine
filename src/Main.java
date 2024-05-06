@@ -24,27 +24,27 @@ public class Main {
                         "PPPPPPPP" +
                         "RNBKQBNR";
         final String activeBoard =
+                        "------p-" +
                         "--------" +
-                        "--------" +
-                        "--------" +
-                        "---q----" +
-                        "---P----" +
-                        "--------" +
+                        "---p--P-" +
+                        "-p-P-p--" +
+                        "-P-P-p--" +
+                        "---P-P--" +
                         "--------" +
                         "--------";
        //On this board, the pawn should take the knight instead of the queen, saving its own queen
     final String testBoard =
             //   H G F E D C B A
-                    "--------" + // 8
-                    "-------R" + // 7
+                    "K-------" + // 8
+                    "-P------" + // 7
                     "--------" + // 6
                     "--------" + // 5
                     "--------" + // 4
-                    "----n---" + // 3
-                    "--------" + // 2
-                    "---------"; // 1
+                    "--------" + // 3
+                    "------p-" + // 2
+                    "--------"; // 1
         final String emptyBoard =
-                "--------" +
+                        "--------" +
                         "--------" +
                         "--------" +
                         "--------" +
@@ -53,16 +53,15 @@ public class Main {
                         "--------" +
                         "--------";
 
-    chessBoard.stringToBitBoard(testBoard);  //make bitboards out of board string
+    chessBoard.stringToBitBoard(regBoard);  //make bitboards out of board string
 
 
         Instant inst1 = Instant.now();                          //start tracking time
 
-        //INDIVIDUAL MOVE
-//        miniMax.computeMove(chessBoard, 6, true);
-//        Tuple<Long, Long> whiteMove = miniMax.computeMove(chessBoard, 6, true);
-//       move.doMove(chessBoard, whiteMove);
-//        System.out.println("White move: \n" + chessBoard);
+/*        //INDIVIDUAL MOVE
+        Tuple<Long, Long> whiteMove = miniMax.computeMove(chessBoard, 2, true);
+        move.doMove(chessBoard, whiteMove);
+        System.out.println("White move: \n" + chessBoard);*/
 
 
         //MULTIPLE MOVE
@@ -125,20 +124,12 @@ public class Main {
             System.out.println("Black move:\n" + chessBoard);
         }
 
-        //i = number of turns (i < 1 = one move for white and black)
-//        for (int i = 0; i < 20; i++) {
-//            Tuple<Long, Long> whiteMove = miniMax.computeMove(chessBoard, 4, true);
-//            move.doMove(chessBoard, whiteMove);
-//            System.out.println("White move:\n" + chessBoard);
-//            Tuple<Long,Long> blackMove = miniMax.computeMove(chessBoard, 2, false);
-//            move.doMove(chessBoard, blackMove);
-//            System.out.println("Black move:\n" + chessBoard);
-//        }
-/*
-        if(move.inCheck(chessBoard, false))
+
+        chessBoard.inCheck(chessBoard, true);
+        System.out.println("chessBoard = \n" + chessBoard);
+        if(chessBoard.isInCheck())
             System.out.println("incheck");
         else System.out.println("not");
- */
         Instant inst2 = Instant.now();                          //end tracking time
         System.out.println("Elapsed Time: " + Duration.between(inst1, inst2).toString());//print time
     }
