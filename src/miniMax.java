@@ -35,6 +35,10 @@ public class miniMax {
         } else {
             //find all new possible moves for player to move
             List<Tuple<Long, List<Long>>> moveList = isWhite ? Move.generateWhiteMoves(chessBoard) : Move.generateBlackMoves(chessBoard);
+
+            if(moveList.isEmpty())
+                return retVal;
+
             //iterate through move list
             for (int i = 0; i < moveList.size(); i++) {
                 //get each piece, grabs each tuple
@@ -74,6 +78,12 @@ public class miniMax {
             //set the best score to be min number possible
             //find all new possible moves for player to move
             List<Tuple<Long, List<Long>>> moveList = isWhite ? Move.generateWhiteMoves(chessBoard) : Move.generateBlackMoves(chessBoard);
+
+            if(moveList.isEmpty()){
+                chessBoard.boardState();
+                return retVal;
+            }
+
             //iterate through move list
             for (int i = 0; i < moveList.size(); i++) {
                 //get each piece, grabs each tuple

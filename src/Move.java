@@ -78,7 +78,7 @@ public class Move {
                     newBoard.setBlackQueenBoard(move);
                     break;
                 case BR:
-                    newBoard.setBlackQueenBoard(move);
+                    newBoard.setBlackRookBoard(move);
                     break;
                 case WB:
                     newBoard.setWhiteBishopBoard(move);

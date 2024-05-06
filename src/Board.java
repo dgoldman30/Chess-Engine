@@ -46,6 +46,16 @@ public class Board {
         this.inCheck = inCheck;
     }
 
+    protected enum BoardState{
+        CHECKMATE, STALEMATE;
+
+    }
+    private boolean checkMate = false;
+
+    public boolean isCheckMate() {
+        return checkMate;
+    }
+
     // Bitmasks for each file
     // NOTICE: this is alphabetically backwards! FILE_A is the file to the far right and FILE_H is the file to the far left
     public static final long FILE_A = 0x0101010101010101L; // 1s on the right edge (with white on bottom)
@@ -431,6 +441,13 @@ public class Board {
         long bishopAttacks = chessBoard.getBishopAttacks(kingPos, chessBoard.whiteOccBoard, chessBoard.blackOccBoard);
         long queenAttacks = chessBoard.getQueenAttacks(kingPos, chessBoard.whiteOccBoard, chessBoard.blackOccBoard);
 
+        Board b = new Board(rookAttacks);
+        System.out.println("rook attacks\n" + b);
+
+        System.out.println("king Pos = " + kingPos);
+
+        Board b2 = new Board(bishopAttacks);
+        System.out.println("bishop attacks \n" + b2);
 
         if (((isWhite ? chessBoard.blackPawnBoard : chessBoard.whitePawnBoard) & pawnAttacks[kingPos]) != 0
                 || ((isWhite ? chessBoard.blackKnightBoard : chessBoard.whiteKnightBoard) & knightAttacks[kingPos]) != 0
@@ -477,6 +494,18 @@ public class Board {
             inCheck.add(isWhite ? new Tuple<>(Move.pieceNames.BK, kingAttacker) : new Tuple<>(Move.pieceNames.WK, kingAttacker));
 
         return inCheck;
+    }
+
+    protected void boardState(){
+        if (inCheck)
+            checkMate = true;
+    }
+
+    protected BoardState getBoardState(){
+        if (checkMate)
+            return BoardState.CHECKMATE;
+
+        return null;
     }
 
     @Override

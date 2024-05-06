@@ -35,14 +35,14 @@ public class Main {
        //On this board, the pawn should take the knight instead of the queen, saving its own queen
     final String testBoard =
             //   H G F E D C B A
-                    "--------" + // 8
+                    "K--R--B-" + // 8
                     "--------" + // 7
-                    "--------" + // 6
+                    "R---q---" + // 6
                     "--------" + // 5
-                    "--------" + // 4
-                    "----k---" + // 3
-                    "--------" + // 2
-                    "----R---"; // 1
+                    "-pp---p-" + // 4
+                    "R-------" + // 3
+                    "----R---" + // 2
+                    "-------P"; // 1
         final String emptyBoard =
                         "--------" +
                         "--------" +
@@ -128,13 +128,25 @@ public class Main {
        // i = number of turns (i < 1 = one move for white and black)
 //        for (int i = 0; i < 6; i++) {
 //            Tuple<Long, Long> whiteMove = miniMax.computeMove(chessBoard, 4, true);
-//            move.doMove(chessBoard, whiteMove);
+////            if (whiteMove.getMoves() == null) {
+////                Board.BoardState bs = chessBoard.getBoardState();
+////                if (bs == Board.BoardState.CHECKMATE){
+////                    System.out.println("Checkmate");
+////                }
+////            }
+//                move.doMove(chessBoard, whiteMove);
+//
+//
+////            if(chessBoard.inCheck(chessBoard, false))
+////                chessBoard.setInCheck(true);
 //            System.out.println("White move:\n" + chessBoard);
 //            Tuple<Long,Long> blackMove = miniMax.computeMove(chessBoard, 2, false);
 //            move.doMove(chessBoard, blackMove);
+////            if(chessBoard.inCheck(chessBoard, true))
+////                chessBoard.setInCheck(true);
 //            System.out.println("Black move:\n" + chessBoard);
 //        }
-        chessBoard.inCheck(chessBoard, false);
+        chessBoard.inCheck(chessBoard, true);
         System.out.println("chessBoard = \n" + chessBoard);
         if(chessBoard.isInCheck())
             System.out.println("incheck");
