@@ -53,6 +53,8 @@ public class Main {
 
         Instant inst1 = Instant.now(); // start tracking time
 
+        chessBoard.stringToBitBoard(regBoard);
+
         // INDIVIDUAL MOVE
         // miniMax.computeMove(chessBoard, 6, true);
         // System.out.println("White move: \n" + chessBoard);

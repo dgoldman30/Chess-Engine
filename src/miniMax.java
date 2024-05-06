@@ -28,7 +28,7 @@ public class miniMax {
     }
 
     public Tuple<Integer, Tuple<Long, Long>> min(Board chessBoard, int cutoffDepth, int curDepth, int alpha, int beta,
-            boolean isWhite) {
+            boolean isWhite) throws InterruptedException, ExecutionException {
         Tuple<Integer, Tuple<Long, Long>> retVal = new Tuple<>(0, null);
 
         if (curDepth == cutoffDepth) {
@@ -44,7 +44,6 @@ public class miniMax {
                 return retVal;
 
             // iterate through move list
-
             for (int i = 0; i < moveList.size(); i++) {
                 // get each piece, grabs each tuple
                 Tuple<Long, List<Long>> piece = moveList.get(i);
@@ -55,9 +54,8 @@ public class miniMax {
                     // construct the move with the starting position of the piece and the current(i)
                     // end move
                     Tuple<Long, Long> singleMoveTuple = new Tuple<>(piece.getStart(), pieceMoves.get(z));
-
                     // apply the move
-                    Move.doMove(chessBoard, singleMoveTuple);
+                    Move.doMove(chessBoard, singleMoveTuple, isWhite);
                     Tuple<Integer, Tuple<Long, Long>> child = max(chessBoard, cutoffDepth, curDepth + 1, alpha, beta,
                             !isWhite);
                     Move.undoMove(chessBoard);
@@ -66,7 +64,7 @@ public class miniMax {
                         beta = childScore;
                         retVal.setFirst(childScore);
                         if (beta <= alpha) {
-                            return beta; // Beta cutoff
+                            break;
                         }
                     }
                 }
@@ -106,7 +104,7 @@ public class miniMax {
                     // end move
                     Tuple<Long, Long> singleMoveTuple = new Tuple<>(piece.getStart(), pieceMoves.get(z));
                     // apply the move
-                    Move.doMove(chessBoard, singleMoveTuple);
+                    Move.doMove(chessBoard, singleMoveTuple, isWhite);
                     Tuple<Integer, Tuple<Long, Long>> child = min(chessBoard, cutoffDepth, curDepth + 1, alpha, beta,
                             !isWhite);
                     Move.undoMove(chessBoard);
@@ -117,7 +115,7 @@ public class miniMax {
                         retVal.setFirst(childScore);
                         retVal.setSecond(singleMoveTuple);
                         if (beta <= alpha) {
-                            return alpha; // Alpha cutoff
+                            break;
                         }
                     }
                 }

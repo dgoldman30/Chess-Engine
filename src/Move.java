@@ -46,7 +46,7 @@ public class Move {
     Stack<Tuple<Tuple<Long, Long>, Integer>> madeMoves = new Stack<>(); // make tuple constructor for third element
                                                                         // String, twice as efficient
 
-    public List<Tuple<Long, List<Long>>> generateWhiteMoves(Board chessBoard)
+    public List<Tuple<Long, List<Long>>> naiveGenerateWhiteMoves(Board chessBoard)
             throws InterruptedException, ExecutionException {
 
         List<Callable<List<Tuple<Long, List<Long>>>>> tasks = new ArrayList<>();
@@ -76,7 +76,7 @@ public class Move {
 
     }
 
-    public List<Tuple<Long, List<Long>>> naiveGenerateWhiteMoves(Board chessBoard) {
+    public List<Tuple<Long, List<Long>>> generateWhiteMoves(Board chessBoard) {
         List<Tuple<Long, List<Long>>> moveList = new ArrayList<>();
 
         moveList.addAll(whitePawnMove(chessBoard, chessBoard.whitePawnBoard, chessBoard.whiteOccBoard,
@@ -96,7 +96,7 @@ public class Move {
         return moveList;
     }
 
-    public List<Tuple<Long, List<Long>>> generateBlackMoves(Board chessBoard)
+    public List<Tuple<Long, List<Long>>> naiveGenerateBlackMoves(Board chessBoard)
             throws InterruptedException, ExecutionException {
 
         List<Callable<List<Tuple<Long, List<Long>>>>> tasks = new ArrayList<>();
@@ -126,7 +126,7 @@ public class Move {
 
     }
 
-    public List<Tuple<Long, List<Long>>> navieGenerateBlackMoves(Board chessBoard) {
+    public List<Tuple<Long, List<Long>>> generateBlackMoves(Board chessBoard) {
         List<Tuple<Long, List<Long>>> moveList = new ArrayList<>();
         moveList.addAll(blackPawnMove(chessBoard, chessBoard.blackPawnBoard, chessBoard.whiteOccBoard,
                 chessBoard.blackOccBoard, chessBoard.isBlackInCheck()));
