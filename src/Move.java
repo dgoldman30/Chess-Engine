@@ -6,6 +6,7 @@ import java.util.concurrent.*;
 public class Move {
 
     private ExecutorService executor;
+    private Long enPassantTarget = 0L;
 
     public void shutdown() {
         // Shutdown the executor service
@@ -38,6 +39,25 @@ public class Move {
             return pieceNum;
         }
 
+    }
+
+    public void setEnPassantTarget(long fromSquare, long toSquare) {
+        int fromIndex = Long.numberOfTrailingZeros(fromSquare);
+        int toIndex = Long.numberOfTrailingZeros(toSquare);
+
+        // Check if the move was a two-square pawn move
+        if (Math.abs(toIndex - fromIndex) == 16) {
+            // White pawn moving two squares forward (from RANK_2 to RANK_4)
+            if ((fromSquare & Board.RANK_2) != 0) {
+                enPassantTarget = toSquare >>> 8;
+            }
+            // Black pawn moving two squares forward (from RANK_7 to RANK_5)
+            else if ((fromSquare & Board.RANK_7) != 0) {
+                enPassantTarget = toSquare << 8;
+            }
+        } else {
+            enPassantTarget = 0L;
+        }
     }
 
     // madeMoves represents a Stack(Move((startPosition, endPosition), Captured
@@ -243,6 +263,17 @@ public class Move {
                 if (captureRight != 0) {
                     moveList.add(captureRight);
                 }
+                if ((pawnMask & Board.RANK_5) != 0) {
+                    Long enPassantLeft = (pawnMask >>> 7) & ~Board.FILE_A & enPassantTarget;
+                    if (enPassantLeft != 0) {
+                        moveList.add(enPassantLeft);
+                    }
+
+                    Long enPassantRight = (pawnMask >>> 9) & ~Board.FILE_H & enPassantTarget;
+                    if (enPassantRight != 0) {
+                        moveList.add(enPassantRight);
+                    }
+                }
 
                 if (inCheck)
                     moveList = filterMoves(moveList, chessBoard, pieceNames.WP, true);
@@ -301,6 +332,18 @@ public class Move {
                 Long captureRight = (pawnMask << 9) & ~Board.FILE_A & whiteOcc;
                 if (captureRight != 0) {
                     moveList.add(captureRight);
+                }
+
+                if ((pawnMask & Board.RANK_4) != 0) {
+                    Long enPassantLeft = (pawnMask << 7) & ~Board.FILE_H & enPassantTarget;
+                    if (enPassantLeft != 0) {
+                        moveList.add(enPassantLeft);
+                    }
+
+                    Long enPassantRight = (pawnMask << 9) & ~Board.FILE_A & enPassantTarget;
+                    if (enPassantRight != 0) {
+                        moveList.add(enPassantRight);
+                    }
                 }
 
                 if (inCheck)
@@ -500,7 +543,7 @@ public class Move {
                     | (antiDiagonalMoves & antidiagonal[(arr[i] / 8) + 7 - (arr[i] % 8)]);
             // System.out.println(Long.toBinaryString(available));
 
-            convertMultipleBitboards(available, moveList);
+            moveList = convertMultipleBitboards(available, moveList);
 
             if (inCheck)
                 moveList = filterMoves(moveList, chessBoard, pieceNames.WB, true);
@@ -559,7 +602,7 @@ public class Move {
                     | (antiDiagonalMoves & antidiagonal[(arr[i] / 8) + 7 - (arr[i] % 8)]);
             // System.out.println(Long.toBinaryString(available));
 
-            convertMultipleBitboards(available, moveList);
+            moveList = convertMultipleBitboards(available, moveList);
 
             if (inCheck)
                 moveList = filterMoves(moveList, chessBoard, pieceNames.BB, false);
@@ -632,7 +675,7 @@ public class Move {
             // converts the bitboard of all possible moves into individual bitboards to add
             // to the moveList
             // Iterate over each set bit in the original bitboard
-            convertMultipleBitboards(available, moveList);
+            moveList = convertMultipleBitboards(available, moveList);
 
             if (inCheck)
                 moveList = filterMoves(moveList, chessBoard, pieceNames.WR, true);
@@ -674,7 +717,7 @@ public class Move {
                     ^ Long.reverse(Long.reverse(occupied & Board.files[arr[i] % 8]) - (2 * Long.reverse(piece)));
             long available = horizontal & Board.ranks[arr[i] / 8] ^ vertical & Board.files[arr[i] % 8];
 
-            convertMultipleBitboards(available, moveList);
+            moveList = convertMultipleBitboards(available, moveList);
 
             if (inCheck)
                 moveList = filterMoves(moveList, chessBoard, pieceNames.BR, false);
@@ -930,6 +973,23 @@ public class Move {
             // piece type of captured piece
             int capturedPiece = pieceNames.NA.getPieceNum();
 
+            // Handle en passant captures
+            boolean isWhitePawn = (currentBoard.whitePawnBoard & start) != 0;
+            boolean isBlackPawn = (currentBoard.blackPawnBoard & start) != 0;
+            boolean enPassantCapture = (endMove.equals(enPassantTarget));
+
+            if (enPassantCapture) {
+                if (isWhitePawn) {
+                    // Remove black pawn captured via en passant
+                    currentBoard.blackPawnBoard &= ~(enPassantTarget << 8);
+                    capturedPiece = pieceNames.BP.getPieceNum();
+                } else if (isBlackPawn) {
+                    // Remove white pawn captured via en passant
+                    currentBoard.whitePawnBoard &= ~(enPassantTarget >>> 8);
+                    capturedPiece = pieceNames.WP.getPieceNum();
+                }
+            }
+
             // CLEAR END SQUARE FIRST
             // find type of piece on end square to capture
             if ((currentBoard.whitePawnBoard & endMove) != 0) {
@@ -979,9 +1039,13 @@ public class Move {
             if ((currentBoard.whitePawnBoard & start) != 0) {
                 currentBoard.whitePawnBoard = currentBoard.whitePawnBoard & ~start; // REMOVES THE STARTING SQUARE PIECE
                 currentBoard.whitePawnBoard |= endMove; // ADDS ENDMOVE TO CORRECT BITBOARD
+                // Set en passant target if the white pawn made a double move
+                setEnPassantTarget(start, endMove);
             } else if ((currentBoard.blackPawnBoard & start) != 0) {
                 currentBoard.blackPawnBoard = currentBoard.blackPawnBoard & ~start;
                 currentBoard.blackPawnBoard |= endMove;
+                // Set en passant target if the black pawn made a double move
+                setEnPassantTarget(start, endMove);
             } else if ((currentBoard.whiteKnightBoard & start) != 0) {
                 currentBoard.whiteKnightBoard = currentBoard.whiteKnightBoard & ~start;
                 currentBoard.whiteKnightBoard |= endMove;
@@ -1081,6 +1145,14 @@ public class Move {
 
             Long endPosition = lastMove.getMoves();
             Long startPosition = lastMove.getStart();
+            int capturedPiece = moveInfo.getMoves();
+
+            boolean isWhitePawn = (currentBoard.whitePawnBoard & endPosition) != 0;
+            boolean isBlackPawn = (currentBoard.blackPawnBoard & endPosition) != 0;
+            boolean wasEnPassantCapture = (capturedPiece == pieceNames.WP.getPieceNum()
+                    || capturedPiece == pieceNames.BP.getPieceNum()) &&
+                    ((isWhitePawn && (endPosition & Board.RANK_6) != 0) ||
+                            (isBlackPawn && (endPosition & Board.RANK_3) != 0));
 
             // Identifying the moving piece and moving it back
             if ((currentBoard.whitePawnBoard & endPosition) != 0) {
@@ -1142,10 +1214,18 @@ public class Move {
             int pieceType = moveInfo.getMoves();
 
             if (pieceType != pieceNames.NA.getPieceNum()) {
-                if (pieceType == pieceNames.WP.getPieceNum()) {
-                    currentBoard.whitePawnBoard |= endPosition;
-                } else if (pieceType == pieceNames.BP.getPieceNum()) {
-                    currentBoard.blackPawnBoard |= endPosition;
+                if (capturedPiece == pieceNames.WP.getPieceNum()) {
+                    if (wasEnPassantCapture) {
+                        currentBoard.whitePawnBoard |= endPosition << 8;
+                    } else {
+                        currentBoard.whitePawnBoard |= endPosition;
+                    }
+                } else if (capturedPiece == pieceNames.BP.getPieceNum()) {
+                    if (wasEnPassantCapture) {
+                        currentBoard.blackPawnBoard |= endPosition >>> 8;
+                    } else {
+                        currentBoard.blackPawnBoard |= endPosition;
+                    }
                 } else if (pieceType == pieceNames.WN.getPieceNum()) {
                     currentBoard.whiteKnightBoard |= endPosition;
                 } else if (pieceType == pieceNames.BN.getPieceNum()) {
@@ -1169,6 +1249,15 @@ public class Move {
                 }
 
             }
+
+            // Restore the previous en passant target
+            if (!madeMoves.isEmpty()) {
+                Tuple<Tuple<Long, Long>, Integer> previousMove = madeMoves.peek();
+                setEnPassantTarget(previousMove.getStart().getStart(), previousMove.getStart().getMoves());
+            } else {
+                enPassantTarget = 0L;
+            }
+
             // Update occupancy boards
             currentBoard.whiteOccBoard = currentBoard.whitePawnBoard | currentBoard.whiteKnightBoard |
                     currentBoard.whiteBishopBoard | currentBoard.whiteRookBoard |
