@@ -188,6 +188,8 @@ public class Board {
 
     public long whiteCastleKingMask; // F1 G1 White
     public long whiteCastleQueenMask; // B1 C1 D1 White
+    public long whiteKingMoveMaskKing;
+    public long whiteKingMoveMaskQueen;
     public long blackCastleKingMask; // F8 G8 black
     public long blackCastleQueenMask; // B8 C8 D8 black
 
@@ -200,32 +202,22 @@ public class Board {
 
     public void createCastleBoards() {
 
-        // Set bits for black kingside castling (F1, G1)
-        blackCastleKingMask = (1L << 5) | (1L << 6);
 
-        // Set bits for black queenside castling (B1, C1, D1)
-        blackCastleQueenMask = (1L << 1) | (1L << 2) | (1L << 3);
-
+        //king move mask
+        whiteKingMoveMaskKing = (1L << 57);
+        whiteKingMoveMaskQueen = (1L << 61);
         // Set bits for white kingside castling (F8, G8)
-        whiteCastleKingMask = (1L << 61) | (1L << 62);
+        whiteCastleKingMask = (1L << 57) | (1L << 58);
 
         // Set bits for white queenside castling (B8, C8, D8)
-        whiteCastleQueenMask = (1L << 57) | (1L << 58) | (1L << 59);
-
-        // white king starting location
-        blackKing = 1L << 4;
+        whiteCastleQueenMask = (1L << 60) | (1L << 61) | (1L << 62);
 
         // black king starting location
         whiteKing = 1L << 60;
 
-        // white rook starting location kingside
-        blackRookKing = 1L << 7;
-        // white rook starting location queenside
-        blackRookQueen = 1L;
-        // black rook starting location kingside
-        whiteRookKing = 1L << 56;
-        // black rook starting location queenside
-        whiteRookQueen = 1L << 63;
+
+        whiteRookKing = 56;
+        whiteRookQueen = 63;
     }
 
     // all args constructor

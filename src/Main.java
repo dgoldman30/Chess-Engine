@@ -22,14 +22,14 @@ public class Main {
                 "--------" +
                 "PPPPPPPP" +
                 "RNBKQBNR";
-        final String activeBoard = "------p-" +
+        final String activeBoard = "r---kb-r" +
+                "ppp--pp-" +
+                "--np-p-p" +
                 "--------" +
-                "---p--P-" +
-                "-p-P-p--" +
-                "-P-P-p--" +
-                "---P-P--" +
                 "--------" +
-                "--------";
+                "--NP-P-P" +
+                "PPP--PP-" +
+                "-KR--B-R";
         // On this board, the pawn should take the knight instead of the queen, saving
         // its own queen
         final String testBoard =
@@ -54,16 +54,17 @@ public class Main {
         Instant inst1 = Instant.now(); // start tracking time
 
         chessBoard.stringToBitBoard(regBoard);
-
+        //chessBoard.whiteRookBoard &= (1L << 56);
+        //System.out.println(chessBoard);
         // MULTIPLE MOVE
         int moves = 0;
 
-        /*
-         * //INDIVIDUAL MOVE
+
+        /* * //INDIVIDUAL MOVE
          * Tuple<Long, Long> whiteMove = miniMax.computeMove(chessBoard, 2, true);
          * move.doMove(chessBoard, whiteMove);
-         * System.out.println("White move: \n" + chessBoard);
-         */
+         * System.out.println("White move: \n" + chessBoard);*/
+
 
         Scanner scanner = new Scanner(System.in);
         boolean validInput = false;
@@ -178,7 +179,6 @@ public class Main {
         }
         Instant inst2 = Instant.now(); // end tracking time
         System.out.println("Elapsed Time: " + Duration.between(inst1, inst2).toString());// print time
-
     }
 }
 

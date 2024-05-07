@@ -37,6 +37,7 @@ public class Evaluation {
             880, 890, 890, 895, 895, 890, 890, 880,
     };
 
+
     private final int[] ROOK_TABLE = {
             500, 500, 500, 500, 500, 500, 500, 500,
             505, 510, 510, 510, 510, 510, 510, 505,
@@ -47,6 +48,7 @@ public class Evaluation {
             495, 500, 500, 500, 500, 500, 500, 495,
             500, 500, 600, 600, 600, 600, 500, 500,
     };
+
 
     //BISHOP VAL = 330
     private final int[] BISHOP_TABLE = {
@@ -152,6 +154,8 @@ public class Evaluation {
     };
 
 
+
+
     public int evaluatePSQ(Board board) {
         int whiteScore = 0;
         int blackScore = 0;
@@ -165,6 +169,7 @@ public class Evaluation {
         whiteScore += evaluatePiece(board.whiteQueenBoard,QUEEN_TABLE);
         whiteScore += evaluatePiece(board.whiteKingBoard, currWhiteBoard);  // Assuming mid-game
 
+
         // Evaluate black pieces
         blackScore += evaluatePiece(board.blackPawnBoard, PAWN_TABLE_BLACK);
         blackScore += evaluatePiece(board.blackKnightBoard, KNIGHT_TABLE_BLACK);
@@ -173,8 +178,10 @@ public class Evaluation {
         blackScore += evaluatePiece(board.blackQueenBoard, QUEEN_TABLE_BLACK);
         blackScore += evaluatePiece(board.blackKingBoard, currBlackBoard);  // Assuming mid-game
 
+
         return whiteScore - blackScore;
     }
+
 
     private int evaluatePiece(long bitboard, int[] table) {
         int score = 0;
@@ -189,15 +196,18 @@ public class Evaluation {
     // Existing evaluation weights and tables
     private static final int PASSED_PAWN_BONUS = 20;  // Fixed bonus for each passed pawn
 
+
     public int evaluate(Board board, int turn) {
         return turn * (evaluatePSQ(board) + evaluatePassedPawns(board));
     }
+
 
     private int evaluatePassedPawns(Board board) {
         int whitePassedPawnScore = countPassedPawns(board.whitePawnBoard, board.blackPawnBoard, true);
         int blackPassedPawnScore = countPassedPawns(board.blackPawnBoard, board.whitePawnBoard, false);
         return (whitePassedPawnScore - blackPassedPawnScore) * PASSED_PAWN_BONUS;
     }
+
 
     private int countPassedPawns(long pawns, long opposingPawns, boolean isWhite) {
         int count = 0;
@@ -212,6 +222,7 @@ public class Evaluation {
         return count;
     }
 
+
     private boolean isPassedPawn(int pawnIndex, long opposingPawns, boolean isWhite) {
         int rank = pawnIndex / 8;
         int file = pawnIndex % 8;
@@ -220,6 +231,7 @@ public class Evaluation {
         if (file > 0) forwardMask |= fileMask(file - 1);  // Left file
         forwardMask |= fileMask(file);                  // Center file
         if (file < 7) forwardMask |= fileMask(file + 1);  // Right file
+
 
         // Modify forwardMask based on the pawn's color
         if (isWhite) {
@@ -230,8 +242,10 @@ public class Evaluation {
             forwardMask &= -(1L << ((rank + 1) * 8));
         }
 
+
         return (opposingPawns & forwardMask) == 0;
     }
+
 
     private long fileMask(int file) {
         long mask = 0;
@@ -241,5 +255,9 @@ public class Evaluation {
         return mask;
     }
 
+
 }
+
+
+
 
