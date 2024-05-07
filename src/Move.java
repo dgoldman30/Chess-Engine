@@ -26,7 +26,7 @@ public class Move {
 
     protected enum pieceNames {
         NA(0), WP(1), BP(2), WQ(3), BQ(4), WN(5), BN(6),
-        WR(7), BR(8), WB(9), BB(10), WK(11), BK(12);
+        WR(7), BR(8), WB(9), BB(10), WK(11), BK(12), CW(13);
 
         private final int pieceNum;
 
@@ -959,7 +959,7 @@ public class Move {
     public Board doMove(Board currentBoard, Tuple tuple, Boolean isWhite) {
 
         if (tuple != null) { // make sure there is an available move
-
+canCastle(currentBoard);
             // this inputs the bitboard of the piece that is being moved and removes the
             // starting piece
             Long start = (Long) tuple.getStart();
@@ -1068,20 +1068,22 @@ public class Move {
                 currentBoard.blackQueenBoard = currentBoard.blackQueenBoard & ~start;
                 currentBoard.blackQueenBoard |= endMove;
             } else if ((currentBoard.whiteKingBoard & start) != 0) { // ADD CASTLE LOGIC
-                if (Math.abs(start - endMove) == 2) { // This is a castling move
+                if (((start & (1<<59))!=0L) && ((endMove & ((1L<< 57) | (1L<<61))) != 0L )) { // This is a castling move
                     // Identify if it's kingside or queenside
-                    boolean isKingside = endMove > start;
-
+                    boolean isKingside = ((endMove & (1L<< 57)) != 0L);
+                    currentBoard.whiteCastleKing = false;
+                    currentBoard.whiteCastleQueen = false;
                     // If kingside, move king and rook appropriately
                     if (isKingside) {
                         currentBoard.whiteKingBoard = endMove;
-                        currentBoard.whiteRookBoard &= ~(1L << 63); // clear moved rook
-                        currentBoard.whiteRookBoard |= 1L << 61; // H1 to F1
+                        currentBoard.whiteRookBoard &= ~(1L << 56); // clear moved rook
+                        currentBoard.whiteRookBoard |= 1L << 58; // H1 to F1
                     } else { // Queenside
                         currentBoard.whiteKingBoard = endMove;
-                        currentBoard.whiteRookBoard &= ~(1L << 56); // clear moved rook
-                        currentBoard.whiteRookBoard |= 1L << 59; // A1 to D1
+                        currentBoard.whiteRookBoard &= ~(1L << 63); // clear moved rook
+                        currentBoard.whiteRookBoard |= 1L << 60; // A1 to D1
                     }
+                    capturedPiece = pieceNames.WB.getPieceNum();
                 } else {
                     currentBoard.whiteKingBoard = currentBoard.whiteKingBoard & ~start;
                     currentBoard.whiteKingBoard |= endMove;
@@ -1144,6 +1146,9 @@ public class Move {
             Long startPosition = lastMove.getStart();
             int capturedPiece = moveInfo.getMoves();
 
+            // NEED TO ADD BACK CAPTURED PIECE
+            int pieceType = moveInfo.getMoves();
+
             boolean isWhitePawn = (currentBoard.whitePawnBoard & endPosition) != 0;
             boolean isBlackPawn = (currentBoard.blackPawnBoard & endPosition) != 0;
             /*boolean wasEnPassantCapture = (capturedPiece == pieceNames.WP.getPieceNum()
@@ -1162,17 +1167,17 @@ public class Move {
             // castle info
             else if ((currentBoard.whiteKingBoard & endPosition) != 0) {
                 // If the move was a castling move
-                if (Math.abs(startPosition - endPosition) == 2) { // This is a castling move
-                    boolean isKingside = endPosition > startPosition;
+                if (pieceType == pieceNames.CW.getPieceNum()) { // This is a castling move
+                    boolean isKingside = ((endPosition & (1<<57L))!= 0L);
 
                     if (isKingside) {
                         currentBoard.whiteKingBoard = startPosition; // put king back
-                        currentBoard.whiteRookBoard &= ~(1L << 61); // clear moved rook
-                        currentBoard.whiteRookBoard |= 1L << 63; // Restore H1 rook
+                        currentBoard.whiteRookBoard &= ~(1L << 58); // clear moved rook
+                        currentBoard.whiteRookBoard |= 1L << 56; // Restore H1 rook
                     } else { // Queenside
                         currentBoard.whiteKingBoard = startPosition;
-                        currentBoard.whiteRookBoard &= ~(1L << 59); // clear moved rook
-                        currentBoard.whiteRookBoard |= 1L << 56; // Restore A1
+                        currentBoard.whiteRookBoard &= ~(1L << 60); // clear moved rook
+                        currentBoard.whiteRookBoard |= 1L << 63; // Restore A1
                     }
                 } else {
                     currentBoard.whiteKingBoard &= ~endPosition;
@@ -1207,8 +1212,6 @@ public class Move {
                 currentBoard.blackKingBoard |= startPosition;
             }
 
-            // NEED TO ADD BACK CAPTURED PIECE
-            int pieceType = moveInfo.getMoves();
 
             if (pieceType != pieceNames.NA.getPieceNum()) {
                 if (capturedPiece == pieceNames.WP.getPieceNum()) {
@@ -1311,7 +1314,7 @@ public class Move {
             if ((allOccupied & board.whiteCastleQueenMask) == 0) {
                 // System.out.println("Queenside castling is possible for white.");
                 // Perform queenside castling logic here
-                endLocations.add(1L << 58);
+                endLocations.add(1L << 61);
             }
         }
         // Check if kingside castling is allowed
@@ -1320,17 +1323,34 @@ public class Move {
             if ((allOccupied & board.whiteCastleKingMask) == 0) {
                 // System.out.println("Kingside castling is possible for white.");
                 // kingside castling logic
-                endLocations.add(1L << 62);
+                endLocations.add(1L << 57);
             }
         }
         // construct tuple
         if (!endLocations.isEmpty()) {
-            Tuple<Long, List<Long>> tuple = new Tuple<>(1L << 60, endLocations);
+            Tuple<Long, List<Long>> tuple = new Tuple<>(1L << 59, endLocations);
             castlingMoves.add(tuple);
         }
         return castlingMoves;
 }
-}
+    public void canCastle(Board chessBoard) {
+        chessBoard.whiteCastleKing = false;
+        chessBoard.whiteCastleQueen = false;
+
+        if ((chessBoard.whiteKingBoard & (1L << 59)) != 0L) {
+            chessBoard.whiteCastleKing = true;
+            chessBoard.whiteCastleQueen = true;
+            //System.out.print("kingMove");
+        } else if ((chessBoard.whiteRookBoard & (1L << chessBoard.whiteRookQueen)) != 0L) { // Kingside rook on H1
+            chessBoard.whiteCastleQueen = true;
+            //System.out.print("rookMove");
+        } else if ((chessBoard.whiteRookBoard & (1L << chessBoard.whiteRookKing)) != 0L) { // Queenside rook on A1
+            chessBoard.whiteCastleKing = true;
+            //System.out.print("rookMove");
+        }
+
+    }
+    }
 
 // Later on: if we want to speed up move generation functions, make king and
 // knight lookup instead of calculation

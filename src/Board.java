@@ -207,10 +207,10 @@ public class Board {
         blackCastleQueenMask = (1L << 1) | (1L << 2) | (1L << 3);
 
         // Set bits for white kingside castling (F8, G8)
-        whiteCastleKingMask = (1L << 61) | (1L << 62);
+        whiteCastleKingMask = (1L << 57) | (1L << 58);
 
         // Set bits for white queenside castling (B8, C8, D8)
-        whiteCastleQueenMask = (1L << 57) | (1L << 58) | (1L << 59);
+        whiteCastleQueenMask = (1L << 60) | (1L << 61) | (1L << 62);
 
         // white king starting location
         blackKing = 1L << 4;
