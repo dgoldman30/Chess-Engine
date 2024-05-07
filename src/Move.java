@@ -40,7 +40,7 @@ public class Move {
 
     }
 
-    public void setEnPassantTarget(long fromSquare, long toSquare) {
+   /* public void setEnPassantTarget(long fromSquare, long toSquare) {
         int fromIndex = Long.numberOfTrailingZeros(fromSquare);
         int toIndex = Long.numberOfTrailingZeros(toSquare);
 
@@ -57,11 +57,10 @@ public class Move {
         } else {
             enPassantTarget = 0L;
         }
-    }
+    }*/
 
     // madeMoves represents a Stack(Move((startPosition, endPosition), Captured
     // Piece type)). Used for undoMove to keep track of past moves
-
     Stack<Tuple<Tuple<Long, Long>, Integer>> madeMoves = new Stack<>(); // make tuple constructor for third element
                                                                         // String, twice as efficient
 
@@ -261,7 +260,7 @@ public class Move {
                 if (captureRight != 0) {
                     moveList.add(captureRight);
                 }
-                if ((pawnMask & Board.RANK_5) != 0) {
+                /*if ((pawnMask & Board.RANK_5) != 0) {
                     Long enPassantLeft = (pawnMask >>> 7) & ~Board.FILE_A & enPassantTarget;
                     if (enPassantLeft != 0) {
                         moveList.add(enPassantLeft);
@@ -271,7 +270,7 @@ public class Move {
                     if (enPassantRight != 0) {
                         moveList.add(enPassantRight);
                     }
-                }
+                }*/
 
                 if (inCheck)
                     moveList = filterMoves(moveList, chessBoard, pieceNames.WP, true);
@@ -332,7 +331,7 @@ public class Move {
                     moveList.add(captureRight);
                 }
 
-                if ((pawnMask & Board.RANK_4) != 0) {
+                /*if ((pawnMask & Board.RANK_4) != 0) {
                     Long enPassantLeft = (pawnMask << 7) & ~Board.FILE_H & enPassantTarget;
                     if (enPassantLeft != 0) {
                         moveList.add(enPassantLeft);
@@ -342,7 +341,7 @@ public class Move {
                     if (enPassantRight != 0) {
                         moveList.add(enPassantRight);
                     }
-                }
+                }*/
 
                 if (inCheck)
                     moveList = filterMoves(moveList, chessBoard, pieceNames.BP, false);
@@ -972,7 +971,7 @@ public class Move {
             // Handle en passant captures
             boolean isWhitePawn = (currentBoard.whitePawnBoard & start) != 0;
             boolean isBlackPawn = (currentBoard.blackPawnBoard & start) != 0;
-            boolean enPassantCapture = (endMove.equals(enPassantTarget));
+            /*boolean enPassantCapture = (endMove.equals(enPassantTarget));
             if (enPassantCapture) {
                 if (isWhitePawn) {
                     // Remove black pawn captured via en passant
@@ -983,7 +982,7 @@ public class Move {
                     currentBoard.whitePawnBoard &= ~(enPassantTarget >>> 8);
                     capturedPiece = pieceNames.WP.getPieceNum();
                 }
-            }
+            }*/
 
             // CLEAR END SQUARE FIRST
             // find type of piece on end square to capture
@@ -1036,12 +1035,12 @@ public class Move {
                 currentBoard.whitePawnBoard |= endMove; // ADDS ENDMOVE TO CORRECT BITBOARD
 
                 // Set en passant target if the white pawn made a double move
-                setEnPassantTarget(start, endMove);
+                //setEnPassantTarget(start, endMove);
             } else if ((currentBoard.blackPawnBoard & start) != 0) {
                 currentBoard.blackPawnBoard = currentBoard.blackPawnBoard & ~start;
                 currentBoard.blackPawnBoard |= endMove;
                 // Set en passant target if the black pawn made a double move
-                setEnPassantTarget(start, endMove);
+                //setEnPassantTarget(start, endMove);
             } else if ((currentBoard.whiteKnightBoard & start) != 0) {
                 currentBoard.whiteKnightBoard = currentBoard.whiteKnightBoard & ~start;
                 currentBoard.whiteKnightBoard |= endMove;
@@ -1051,6 +1050,8 @@ public class Move {
             } else if ((currentBoard.whiteRookBoard & start) != 0) {
                 currentBoard.whiteRookBoard = currentBoard.whiteRookBoard & ~start;
                 currentBoard.whiteRookBoard |= endMove;
+                currentBoard.whiteCastleKing = false;
+                currentBoard.whiteCastleQueen = false;
             } else if ((currentBoard.blackRookBoard & start) != 0) {
                 currentBoard.blackRookBoard = currentBoard.blackRookBoard & ~start;
                 currentBoard.blackRookBoard |= endMove;
@@ -1067,7 +1068,7 @@ public class Move {
                 currentBoard.blackQueenBoard = currentBoard.blackQueenBoard & ~start;
                 currentBoard.blackQueenBoard |= endMove;
             } else if ((currentBoard.whiteKingBoard & start) != 0) { // ADD CASTLE LOGIC
-                if (Math.abs(start - endMove) > 2) { // This is a castling move
+                if (Math.abs(start - endMove) == 2) { // This is a castling move
                     // Identify if it's kingside or queenside
                     boolean isKingside = endMove > start;
 
@@ -1145,11 +1146,11 @@ public class Move {
 
             boolean isWhitePawn = (currentBoard.whitePawnBoard & endPosition) != 0;
             boolean isBlackPawn = (currentBoard.blackPawnBoard & endPosition) != 0;
-            boolean wasEnPassantCapture = (capturedPiece == pieceNames.WP.getPieceNum()
+            /*boolean wasEnPassantCapture = (capturedPiece == pieceNames.WP.getPieceNum()
                     || capturedPiece == pieceNames.BP.getPieceNum()) &&
                     ((isWhitePawn && (endPosition & Board.RANK_6) != 0) ||
                             (isBlackPawn && (endPosition & Board.RANK_3) != 0));
-
+*/
             // Identifying the moving piece and moving it back
             if ((currentBoard.whitePawnBoard & endPosition) != 0) {
                 currentBoard.whitePawnBoard &= ~endPosition;
@@ -1161,7 +1162,7 @@ public class Move {
             // castle info
             else if ((currentBoard.whiteKingBoard & endPosition) != 0) {
                 // If the move was a castling move
-                if (Math.abs(startPosition - endPosition) > 2) { // This is a castling move
+                if (Math.abs(startPosition - endPosition) == 2) { // This is a castling move
                     boolean isKingside = endPosition > startPosition;
 
                     if (isKingside) {
@@ -1211,17 +1212,17 @@ public class Move {
 
             if (pieceType != pieceNames.NA.getPieceNum()) {
                 if (capturedPiece == pieceNames.WP.getPieceNum()) {
-                    if (wasEnPassantCapture) {
+                    /*if (wasEnPassantCapture) {
                         currentBoard.whitePawnBoard |= endPosition << 8;
-                    } else {
+                    } else {*/
                         currentBoard.whitePawnBoard |= endPosition;
-                    }
+                    //}
                 } else if (capturedPiece == pieceNames.BP.getPieceNum()) {
-                    if (wasEnPassantCapture) {
+                    /*if (wasEnPassantCapture) {
                         currentBoard.blackPawnBoard |= endPosition >>> 8;
-                    } else {
+                    } else {*/
                         currentBoard.blackPawnBoard |= endPosition;
-                    }
+                    //}
                 } else if (pieceType == pieceNames.WN.getPieceNum()) {
                     currentBoard.whiteKnightBoard |= endPosition;
                 } else if (pieceType == pieceNames.BN.getPieceNum()) {
@@ -1246,12 +1247,12 @@ public class Move {
             }
 
             // Restore the previous en passant target
-            if (!madeMoves.isEmpty()) {
+            /*if (!madeMoves.isEmpty()) {
                 Tuple<Tuple<Long, Long>, Integer> previousMove = madeMoves.peek();
                 setEnPassantTarget(previousMove.getStart().getStart(), previousMove.getStart().getMoves());
             } else {
                 enPassantTarget = 0L;
-            }
+            }*/
 
             // Update occupancy boards
             currentBoard.whiteOccBoard = currentBoard.whitePawnBoard | currentBoard.whiteKnightBoard |

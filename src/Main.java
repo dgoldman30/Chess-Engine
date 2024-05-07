@@ -55,16 +55,6 @@ public class Main {
 
         chessBoard.stringToBitBoard(regBoard);
 
-        // INDIVIDUAL MOVE
-        // miniMax.computeMove(chessBoard, 6, true);
-        // System.out.println("White move: \n" + chessBoard);
-
-        // INDIVIDUAL MOVE
-        // miniMax.computeMove(chessBoard, 6, true);
-        // Tuple<Long, Long> whiteMove = miniMax.computeMove(chessBoard, 6, true);
-        // move.doMove(chessBoard, whiteMove);
-        // System.out.println("White move: \n" + chessBoard);
-
         // MULTIPLE MOVE
         int moves = 0;
 
@@ -116,7 +106,7 @@ public class Main {
         }
 
         for (int i = 0; i < moves; i++) {
-            System.out.println(chessBoard);
+            //System.out.println(chessBoard);
             try {
 
                 Tuple<Long, Long> whiteMove = miniMax.computeMove(chessBoard, whiteDepth, true);
