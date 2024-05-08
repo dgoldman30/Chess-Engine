@@ -710,7 +710,6 @@ public class Move {
             long vertical = ((occupied & Board.files[arr.get(i) % 8]) - (2 * piece))
                     ^ Long.reverse(Long.reverse(occupied & Board.files[arr.get(i) % 8]) - (2 * Long.reverse(piece)));
             long available = (horizontal & Board.ranks[arr.get(i) / 8] ^ vertical & Board.files[arr.get(i) % 8]) & ~blackOcc;
-             // drawBitboard(available);
 
             moveList = convertMultipleBitboards(available, moveList);
 

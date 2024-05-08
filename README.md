@@ -1,6 +1,6 @@
 # Chess AI
 
-This is a simple Java-based Chess AI that uses a basic minimax algorithm with alpha-beta pruning (IN PROGRESS) to determine the best move.
+This is a simple Java-based Chess AI that uses a basic minimax algorithm with alpha-beta pruning to determine the best move.
 
 ## How to Run the Code
 
@@ -19,7 +19,7 @@ Alternatively, open the project in IntelliJ and run the project.
 
 ## Setting up the game
 
-1. input the board state in any of the given string.
+1. Input the board state in any of the given Strings.
    
 ```  
 final String STRING_NAME_HERE =
@@ -32,8 +32,8 @@ final String STRING_NAME_HERE =
 "PPPPPPPP" +
 "RNBKQBNR"; 
 ```
-This is an example of the string for the starting board state of a game.
-2. Update stringToBitBoard's input to the string you just made
+This is an example of the String for the starting board state of a game.
+2. Update stringToBitBoard's input to the String you just made or modified.
 ```
 chessBoard.stringToBitBoard(STRING_NAME_HERE);
 ```
@@ -41,18 +41,18 @@ chessBoard.stringToBitBoard(STRING_NAME_HERE);
 ```
 Enter the amount of moves you would like to see:
 ```
-any integer can be entered. A white move and then a black move consists of one move
+any integer can be entered. One move consists of a white move and then a black move.
 4.  The program will then ask
 ```
 Enter opponent(black) strength:
 (R: Random, W: Weak, S: Strong)
 ```
-To which you must respond with one of the three letters(R,W,S) in uppercase.
-Weak is alow depth and Strong is a higher depth.
+To which you must respond with one of the three letters (R,W,S) in uppercase.
+Weak is a low depth and Strong is a higher depth.
 
 ## Board Representation
 
-The board is represented using a bitboard approach. Each piece type (pawn, knight, bishop, rook, queen, king) for both white and black has its own bitboard. Creating a board state is done in the main class through strings. These strings represent white pieces with uppercase and black pieces with lowercase. Board.stringToBitboard() then turns this string into the bitboards.
+The board is represented using a bitboard approach. Each piece type (pawn, knight, bishop, rook, queen, king) for both white and black has its own bitboard. Creating a board state is done in the Main class through Strings. These Strings represent white pieces with uppercase letters and black pieces with lowercase letters. Board.stringToBitboard() then turns this String into the bitboards.
 
 ## Interpreting Output
 
@@ -64,7 +64,7 @@ The `Tuple` class is used to represent pairs of elements. In this project, it is
 
 ## Main Class
 
-The `Main` class is the entry point of the program. It initializes the chess board, performs a search for the best move using the minimax algorithm and then executes that move.
+The `Main` class is the entry point of the program. It initializes the chess board, performs a search for the best move using the minimax algorithm, and then executes that move.
 
 ## Board Class
 
