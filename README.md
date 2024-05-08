@@ -37,41 +37,19 @@ This is an example of the string for the starting board state of a game.
 ```
 chessBoard.stringToBitBoard(STRING_NAME_HERE);
 ```
-3. To run a single move, make sure the following code labeled INDIVIDUAL MOVE is uncommented
-```   
-miniMax.computeMove(chessBoard, 6, true);
-System.out.println("White move: \n" + chessBoard);
+3. When the program is run, the user will be asked to
 ```
-and make the next block of code labeled MULTIPLE MOVES is commented out.
+Enter the amount of moves you would like to see:
 ```
- //MULTIPLE MOVE
-        int moves = 20;
-        int whiteDepth = 4;
-        int blackDepth = 2;
+any integer can be entered. A white move and then a black move consists of one move
+4.  The program will then ask
+```
+Enter opponent(black) strength:
+(R: Random, W: Weak, S: Strong)
+```
+To which you must respond with one of the three letters(R,W,S) in uppercase.
+Weak is alow depth and Strong is a higher depth.
 
-        for (int i = 0; i < moves; i++) {
-            Tuple<Long, Long> whiteMove = miniMax.computeMove(chessBoard, whiteDepth, true);
-            //move.randomWhiteMove(chessBoard);
-            
-            move.doMove(chessBoard, whiteMove);
-            System.out.println("White move:\n" + chessBoard);
-            Tuple<Long,Long> blackMove = miniMax.computeMove(chessBoard, blackDepth, false);
-            //move.randomBlackMove(chessBoard);
-            
-            move.doMove(chessBoard, blackMove);
-            System.out.println("Black move:\n" + chessBoard);
-        }
-```
-To run multiple moves, set the integer Moves the number of moves(White then black is one move), and set whiteDepth and blackDepth to the desired depths.
-
-To run a random move instead of utilizing the minimax, comment out
-```
-Tuple<Long, Long> whiteMove = miniMax.computeMove(chessBoard, whiteDepth, true);
-```
-for black or white(or both) and uncomment the next line
-```
-move.randomWhiteMove(chessBoard);
-```
 ## Board Representation
 
 The board is represented using a bitboard approach. Each piece type (pawn, knight, bishop, rook, queen, king) for both white and black has its own bitboard. Creating a board state is done in the main class through strings. These strings represent white pieces with uppercase and black pieces with lowercase. Board.stringToBitboard() then turns this string into the bitboards.
@@ -97,7 +75,6 @@ The `Board` class represents the chessboard and handles operations related to bo
 The `Evaluation` class calculates the evaluation score for a given board position. It assigns weights to different types of pieces and their location on the board. This is done through piece square tables. Evaluation computes the overall score based on the pieces present on the board.
 
 ### TODO: ✓
-- [ ] Finish check and checkmate, allowing for a complete game to be played.
 - [ ] Implement more difficult Chess rules (en passant, castling, promotion, etc.)
 - [ ] Taper evaluation
 - [ ] Opening book or endgame tables
